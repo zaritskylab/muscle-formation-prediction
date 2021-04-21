@@ -23,9 +23,9 @@ class CoordinationValidations():
         df.to_csv(file_saving_nave + '.csv', index=False)
 
     def validate_change_distances(self, video):
-        for i in (50, 100, 150, 200, 250, 300, 350, 400, 450):
+        for i in (30, 100, 170, 240, 310, 380, 450, 520, 590):
             self.coord.NEIGHBORING_DISTANCE = i
-            self.coord.build_coordination_df(validation=False)
+            self.coord.build_coordination_df(validation=False, rings=True)
             self.coord.save_coordinationDF("validation_s{}_rings_{}_mikro.pkl".format(video, i))
 
     def plot_validate_distances(self, name_for_saving):
@@ -33,8 +33,8 @@ class CoordinationValidations():
         fig = plt.figure(figsize=(8, 4))
         ax1 = fig.add_subplot(111)
 
-        for i in (50, 100):
-            coord_path = "coordination_outputs/validations/pickled coordination dfs/0104_rings/range_50/validation_s1_rings_{}_mikro.pkl".format(
+        for i in (30, 100, 310, 590):
+            coord_path = "coordination_outputs/validations/pickled coordination dfs/0104_rings/range_70/validation_s12_rings_{}_mikro.pkl".format(
                 i)
             builder = CoordGraphBuilder(coord_path, coord_path, "", "")
             # Read coordination DFs
@@ -53,16 +53,17 @@ class CoordinationValidations():
         for i, j in enumerate(ax1.lines):
             j.set_color(colors[i])
 
-        plt.legend(['20-30', '60-70', '150-160', 'Randomized null model'], title="neighboring distance (0.548*10^-6 m)",
+        plt.legend(['0-30', '30-100', '240-310', '520-590', 'Randomized null model'], title="neighboring distance (um)",
                    loc=2, fontsize='small', fancybox=True)
-        plt.title(r'Coordination over time with different neighboring distances - ERK inhibitor')
+        plt.title(r'Coordination over time with different neighboring distances - Control, s12')
         plt.xticks(np.arange(0, 921, 100), labels=np.around(np.arange(0, 921, 100) * 1.5 / 60, decimals=1))
         # plt.yticks(np.arange(0.45, 1, 0.05))
         plt.ylim(0.6, 0.88, 0.25)
         plt.grid()
         plt.xlabel('Time (hours)')
         plt.ylabel(r'Coordination')
-        # plt.savefig('Coordination_over_time_distances-ERK.eps', format='eps')
+        # plt.savefig('Coordination_over_time_distances-Control.eps', format='eps')
+        plt.savefig('Coordination_over_time_distances-Control, s12.png')
         plt.show()
         plt.close(fig)
 
@@ -88,8 +89,11 @@ class CoordinationValidations():
 
 
 if __name__ == '__main__':
-    for i in range(1,13):
-        validator = CoordinationValidations(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=0.3,
-                                        xml_path=r"muscle-formation-diff/data/tracks_xml/0104/Experiment1_w1Widefield550_s{}_all_0104.xml".format(i))
-        # validator.validate_change_distances(video=i)
-    validator.plot_validate_distances("neighboring distance changes- control")
+    # for i in (10,11,12):
+    #     validator = CoordinationValidations(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=0.3,
+    #                                     xml_path=r"muscle-formation-diff/data/tracks_xml/0104/Experiment1_w1Widefield550_s{}_all_0104.xml".format(i))
+    #     validator.validate_change_distances(video=i)
+    # validator.plot_validate_distances("neighboring distance changes- control")
+    validator = CoordinationValidations(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=0.3,
+                                        xml_path=r"muscle-formation-diff/data/tracks_xml/0104/Experiment1_w1Widefield550_s3_all_0104.xml")
+    validator.plot_validate_distances("neighboring distance changes- ERK")

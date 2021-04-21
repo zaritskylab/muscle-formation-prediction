@@ -7,19 +7,17 @@ The output is a set of cropped images of the cells from each frame.
 @author: Amit Shakarchy
 """
 import collections
-
 import cv2
 import tensorflow as tf
 import numpy as np
 from skimage import io
 from tensorflow.python.keras import Model
 from tqdm import tqdm
-
+from PIL import Image
+import matplotlib.pyplot as plt
 from load_tracks_xml import load_tracks_xml
 import pandas as pd
-
-VIDEO_PATH = r"../../data/videos/Experiment1_w2Brightfield_s{}_all.tif"
-XML_PATH = r"../../data/tracks_xml/Experiment1_w1Widefield550_s{}_all.xml"
+import matplotlib.patches as patches
 
 
 def get_empty_encode_time_df():
@@ -29,6 +27,48 @@ def get_empty_encode_time_df():
     names.append("time")
     enc_time_df = pd.DataFrame(columns=names)
     return enc_time_df
+
+
+def crop_cells_new(normalized, bf_video, tm_xml, resize, resize_to, image_size, crop_single_cell=False):
+    # Load the tracks XML (TrackMate's output)
+    tracks01, df = load_tracks_xml(tm_xml)
+    im = io.imread(bf_video)
+    # Initialize dataset with all of the needed frames in it
+    img_data_list = []
+    # Iterate over all frames- of the tracked cells and their brightfeild's matching image
+    image_size = 32
+    for i in tqdm(range(len(df))):
+        x = int(df.iloc[i]["x"])
+        y = int(df.iloc[i]["y"])
+        current_time = df.iloc[i]["t_stamp"]
+        current_label = df.iloc[i]["label"]
+        # clean cells from the edges
+        if x > 1140 or y > 1140 or x < image_size or y < image_size:
+            continue
+
+        # clean multiple cells in a crop
+        n_cells = df[(df["t_stamp"] == current_time) &
+                     (df["label"] != current_label) &
+                     (df["x"] > x - image_size) & (df["x"] < x + image_size) &
+                     (df["y"] > y - image_size) & (df["y"] < y + image_size)]["label"].nunique()
+        if n_cells > 2:
+            continue
+
+        single_cell_crop = im[int(df.iloc[i]["t_stamp"]), y - image_size:y + image_size,
+                           x - image_size:x + image_size]
+        # plt.gray()
+        # plt.imshow(s01nuc[int(df.iloc[i]["t_stamp"])])
+        # plt.scatter(x, y)
+        # plt.show()
+        # plt.imshow(single_cell_crop)
+        # plt.show()
+
+        if normalized:
+            single_cell_crop = (single_cell_crop - single_cell_crop.min()) / (
+                    single_cell_crop.max() - single_cell_crop.min())
+        img_data_list.append(single_cell_crop)
+
+    return np.array(img_data_list)
 
 
 def crop_cells(normalized, bf_video, tm_xml, resize, resize_to, image_size, crop_single_cell=False):
@@ -49,9 +89,10 @@ def crop_cells(normalized, bf_video, tm_xml, resize, resize_to, image_size, crop
     im = io.imread(bf_video)
     j = 0
     # Initialize dataset with all of the needed frames in it
-    s01nuc = np.zeros((927, 1200 + image_size, 1200 + image_size), )
-    s01nuc[:, (image_size // 2):(image_size // 2 + 1200), (image_size // 2):(image_size // 2 + 1200)] = im
-
+    # s01nuc = np.zeros((927, 1200 + image_size, 1200 + image_size), )
+    # s01nuc[:, (image_size // 2):(image_size // 2 + 1200), (image_size // 2):(image_size // 2 + 1200)] = im
+    s01nuc = np.zeros((927, 1200, 1200), )
+    s01nuc = im
     time_df = pd.DataFrame(columns=['time'])
     img_data_list = []
 
@@ -61,8 +102,8 @@ def crop_cells(normalized, bf_video, tm_xml, resize, resize_to, image_size, crop
         if (crop_single_cell):
             if k > 1:
                 break
-        start = int(np.min(np.asarray(track['t_stamp'])))
-        stop = int(np.max(np.asarray(track['t_stamp'])))
+        start = int(track['t_stamp'].min())
+        stop = int(track['t_stamp'].max())
         single_cell = np.zeros((stop - start + 1, image_size, image_size), )
         single_cell_crop = np.zeros((image_size, image_size), )
 
@@ -72,8 +113,8 @@ def crop_cells(normalized, bf_video, tm_xml, resize, resize_to, image_size, crop
 
         for frame, i in enumerate(track['t_stamp']):
             j = j + 1
-            x = int(track['x'].iloc[frame] * 311.688)
-            y = int(track['y'].iloc[frame] * 311.688)
+            x = int(track['x'].iloc[frame] * 311.688)  # * 311.688
+            y = int(track['y'].iloc[frame] * 311.688)  # * 311.688
             time = int(track['t_stamp'].iloc[frame])
 
             # Crop the needed image
@@ -226,27 +267,23 @@ def get_data_for_classifier(encoder_name):
 
 
 if __name__ == '__main__':
-    from skimage import io
-    image_size = 60
+    VIDEO_PATH = r"muscle-formation-diff/data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s{}_all_pixelratio1.tif"
+    XML_PATH = r"muscle-formation-diff/data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s{}_all_pixelratio1.xml"
 
-    bf_video = r"../../data/videos/Experiment1_w2Brightfield_s3_all.tif"
-    im = io.imread(bf_video)
-    s01nuc = np.zeros((927, 1200 + image_size, 1200 + image_size), )
-    s01nuc[:, (image_size // 2):(image_size // 2 + 1200), (image_size // 2):(image_size // 2 + 1200)] = im
+    for i in range(1, 13):
+        bf_video = VIDEO_PATH.format(i)
+        tm_xml = XML_PATH.format(i)
 
-    # encoder_name = "encoder_vae_exp_261"
-    bf_video = r"../../data/videos/Experiment1_w2Brightfield_s3_all.tif"
-    tm_xml = r'../../data/tracks_xml/Experiment1_w1Widefield550_s3_all.xml'
-    crop_cells(normalized=False, bf_video=bf_video, tm_xml=tm_xml, resize=True, resize_to=64,
-               image_size=64, crop_single_cell=False)
+        crops = crop_cells_new(normalized=False, bf_video=bf_video, tm_xml=tm_xml, resize=False, resize_to=64,
+                               image_size=64, crop_single_cell=False)
 
-    path = "../aae/my_vae_exp_256"
-    vae = tf.keras.models.load_model(path, compile=False)
-    encoder = Model(vae.input, vae.get_layer("origin_encoder").output)
+        save_cells_images(crops, "muscle-formation-diff/data/images/pixelratio1_size32", f"{i}")
 
+    # path = "../aae/my_vae_exp_256"
+    # vae = tf.keras.models.load_model(path, compile=False)
+    # encoder = Model(vae.input, vae.get_layer("origin_encoder").output)
 
-
-    get_data_for_classifier(encoder)
+    # get_data_for_classifier(encoder)
     # for i in ((8, 9, 10, 11, 12)):  # 8 ,9
     #     print(i)
     #     bf_video = r"../../data/videos/Experiment1_w2Brightfield_s{}_all.tif".format(i)

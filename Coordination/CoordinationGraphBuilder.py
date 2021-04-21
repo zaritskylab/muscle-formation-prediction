@@ -9,7 +9,7 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import pickle
 import numpy as np
-from Scripts.DataPreprocessing.load_tracks_xml import load_tracks_xml
+from DataPreprocessing.load_tracks_xml import load_tracks_xml
 import pandas as pd
 
 
@@ -36,22 +36,54 @@ class CoordGraphBuilder():
             time_ = coordDF['t0'].iloc[i]
             N = len(cost)
             ar[i, t0:t0 + N] = cost
-            time[i, t0:t0 + N] = time_ * 1.5 / 60
+            time[i, t0:t0 + N] = time_ * 2.5 / 60
         meanar03 = np.nanmean(ar, axis=0)
         mean_time = np.nanmean(time, axis=0)
         return meanar03, mean_time
 
+    def get_mean_coordination(self, ind1, ind2, ind3):
+        elements_num = 3
+        coord_length = 927
+        pickle_path = r"coordination_outputs/coordination_dfs/Adi/coordination_df_s{}_Adi.pkl"
+        total_coord = np.zeros(shape=(coord_length,))
+        total_time = np.zeros(shape=(coord_length,))
+        for i in (ind1, ind2, ind3):
+            df = pickle.load(
+                open(pickle_path.format(i), 'rb'))
+            coord, time = self.read_coordinationDF(df)
+            total_time += time
+            total_coord += coord
+        return total_coord / elements_num, total_time / elements_num
+
     def plot_coord_over_time(self, name_for_saving):
+
+        coord_control, _ = self.get_mean_coordination(1, 2, 3)
+        coord_diff_fusion, _ = self.get_mean_coordination(4, 5, 6)
+        coord_proliferation, _ = self.get_mean_coordination(7, 8, 9)
+        coord_diff, _ = self.get_mean_coordination(10, 11, 12)
+
         # Read coordination DFs
-        control, time_c = self.read_coordinationDF(self.coord_control)
-        diff, time_d = self.read_coordinationDF(self.coord_diff)
+        # control, _ = self.read_coordinationDF(self.coord_control)
+        # diff, _ = self.read_coordinationDF(self.coord_diff)
+
+        random_total = pickle.load(
+            open(
+                r'C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Tracking\costheta\all_random_angles_video_total_random',
+                'rb'))
+
+        total_random, _ = self.read_coordinationDF(random_total)
         # Plot
         fig = plt.figure(figsize=(6, 4))
-        plt.plot(control[:-7], )
-        plt.plot(diff[:-7], )
-        plt.legend(['Control', 'Diff'])
+        for df in (coord_control, coord_diff, coord_diff_fusion, coord_proliferation):
+            plt.plot(pd.DataFrame(df[:547], columns=["permute_diff"]).rolling(window=10).mean(), )
+        plt.plot(pd.DataFrame(total_random[:547], columns=["permute_diff"]).rolling(window=10).mean(), '--')
+
+        plt.legend(['Negative control -proliferation',
+                    'differentiation',
+                    'differentiation and Fusion',
+                    'proliferation', 'random'])
         plt.title(r'Cos of $\theta$ measure')
-        plt.xticks(np.arange(0, 921, 100), labels=np.around(np.arange(0, 921, 100) * 1.5 / 60, decimals=1))
+        plt.xticks(np.arange(0, 554, 60), labels=np.around(np.arange(0, 554, 60) * 2.5 / 60, decimals=1))
         # plt.yticks(np.arange(0.45, 1, 0.05))
         plt.ylim(0.6, 1, 0.5)
         plt.xlabel('Time [h]')
@@ -75,6 +107,7 @@ class CoordGraphBuilder():
         coord, time = self.read_coordinationDF(coord_df)
         # Get density from xml
         density = self.get_density(coord_xml_path)
+
         # Attach to one DF
         df = pd.DataFrame({'density': pd.DataFrame(density)[0][:920],
                            'coordination': pd.DataFrame(coord)[0][:920],
@@ -113,32 +146,77 @@ class CoordGraphBuilder():
         plt.savefig(name_for_saving)
         plt.show()
 
-    def plot_coor_over_density(self, name_for_saving):
-        control_den_df = self.get_coord_density_df(self.coord_control, self.control_xml_path)
-        diff_den_df = self.get_coord_density_df(self.coord_diff, self.diff_xml_path)
+    def get_mean_density(self, ind1, ind2, ind3):
+        elements_num = 3
+        coord_length = 926
+        xml_path = r"../data/tracks_xml/Adi/201209_p38iexp_live_1_Widefield550_s{}_all_8bit_ScaleTimer.xml"
+        total_density = np.zeros(shape=(coord_length,))
+        for i in (ind1, ind2, ind3):
+            density = self.get_density(xml_path.format(i))
+            total_density += density
+        return total_density / elements_num
 
-        fig = plt.figure(figsize=(8, 4))
+    def get_mean_density_df(self, ind1, ind2, ind3):
+        mean_den = self.get_mean_density(ind1, ind2, ind3)
+        mean_coord, time = self.get_mean_coordination(1, 2, 3)
+        # Attach to one DF
+        den_df = pd.DataFrame({'density': pd.DataFrame(mean_den)[0][:920],
+                                       'coordination': pd.DataFrame(mean_coord)[0][:920],
+                                       'time': pd.DataFrame(time)[0][:920]})
+        return den_df
+
+    def plot_coor_over_density(self, name_for_saving):
+
+        # control_den_df = self.get_coord_density_df(self.coord_control, self.control_xml_path)
+        # diff_den_df = self.get_coord_density_df(self.coord_diff, self.diff_xml_path)
+
+        den_control = self.get_mean_density_df(1, 2, 3)
+        den_diff_fusion = self.get_mean_density_df(4, 5, 6)
+        den_proliferation = self.get_mean_density_df(7, 8, 9)
+        den_diff = self.get_mean_density_df(10, 11, 12)
+
+        # control_den_df = self.get_coord_density_df(con_df,
+        #                                            "../data/tracks_xml/Adi/201209_p38iexp_live_1_Widefield550_s2_all_8bit_ScaleTimer.xml")
+        # diff_fusion_den_df = self.get_coord_density_df(diff_fusion_df,
+        #                                                "../data/tracks_xml/Adi/201209_p38iexp_live_1_Widefield550_s5_all_8bit_ScaleTimer.xml")
+        # proliferation_den_df = self.get_coord_density_df(proliferation_df,
+        #                                                  "../data/tracks_xml/Adi/201209_p38iexp_live_1_Widefield550_s8_all_8bit_ScaleTimer.xml")
+        # diff_den_df = self.get_coord_density_df(diff_df,
+        #                                         "../data/tracks_xml/Adi/201209_p38iexp_live_1_Widefield550_s11_all_8bit_ScaleTimer.xml")
 
         GnBu_rBig = cm.get_cmap('Blues_r', 512)
         GnBu = ListedColormap(GnBu_rBig(np.linspace(0.25, 0.75, 256)))
         RdPu_rBig = cm.get_cmap('Oranges_r', 512)
         RdPu = ListedColormap(RdPu_rBig(np.linspace(0.25, 0.75, 256)))
 
-        plt.scatter(x=control_den_df["density"], y=control_den_df["coordination"], marker=".", color="royalblue",
+        fig = plt.figure(figsize=(8, 4))
+        plt.scatter(x=den_control["density"], y=den_control["coordination"], marker=".", color="royalblue",
                     label="Control")
-        control_scatter = plt.scatter(x=control_den_df["density"], y=control_den_df["coordination"],
-                                      c=control_den_df["time"], marker=".", cmap=GnBu)
-        plt.scatter(x=diff_den_df["density"], y=diff_den_df["coordination"], marker=".", color="orange", label="Diff")
-        dif_scatter = plt.scatter(x=diff_den_df["density"], y=diff_den_df["coordination"], c=diff_den_df["time"],
-                                  marker=".", cmap=RdPu)
+        plt.scatter(x=den_diff["density"], y=den_diff["coordination"], marker=".", color="orange", label="Diff")
+        plt.scatter(x=den_diff_fusion["density"], y=den_diff_fusion["coordination"], marker=".", color="green",
+                    label="Control")
+        plt.scatter(x=den_proliferation["density"], y=den_proliferation["coordination"], marker=".", color="red",
+                    label="Control")
 
+        control_scatter = plt.scatter(x=den_control["density"], y=den_control["coordination"],
+                                      c=den_control["time"], marker=".", cmap=GnBu)
+        dif_scatter = plt.scatter(x=den_diff["density"], y=den_diff["coordination"], c=den_diff["time"],
+                                  marker=".", cmap=RdPu)
+        diff_fusion_scatter = plt.scatter(x=den_diff_fusion["density"], y=den_diff_fusion["coordination"],
+                                          c=den_diff_fusion["time"], marker=".", cmap="Greens_r")
+        proliferation_scatter = plt.scatter(x=den_proliferation["density"], y=den_proliferation["coordination"],
+                                            c=den_proliferation["time"], marker=".", cmap="Reds_r")
         c_bar = plt.colorbar(control_scatter, shrink=0.6)
         c_bar.set_label('time (h), control')
         d_bar = plt.colorbar(dif_scatter, shrink=0.6)
         d_bar.set_label('time (h), diff')
-        plt.legend()
-        plt.xticks(np.arange(50, 450, 50))
-        plt.ylim(0.45, 1, 0.5)
+        d_f_bar = plt.colorbar(diff_fusion_scatter, shrink=0.6)
+        d_f_bar.set_label('time (h), diff_fusion')
+        d_f_bar = plt.colorbar(proliferation_scatter, shrink=0.6)
+        d_f_bar.set_label('time (h), proliferation')
+        plt.legend(["control", "differentiation", "differentiation and fusion", "proliferation"])
+        plt.xticks(np.arange(50, 700, 100))
+        plt.ylim(0.6, 1, 0.5)
         plt.title(r'Cos of $\thet'
                   r'a$ measure (Coordination over Density)')
         plt.xlabel('Density')
@@ -232,7 +310,7 @@ class CoordGraphBuilder():
         plt.show()
         plt.close(fig)
 
-    def plot_coor_over_time_normalized(self, name_for_saving):
+    def plot_coord_over_time_normalized(self, name_for_saving):
         # Read coordination DFs
         control, time_c = self.read_coordinationDF(self.coord_control)
         diff, time_d = self.read_coordinationDF(self.coord_diff)
@@ -254,17 +332,26 @@ class CoordGraphBuilder():
 
 
 if __name__ == '__main__':
-    con_i = 10
-    dif_i = 12
+    # con_i = 10
+    # dif_i = 12
+    #
+    # # Load coordination_outputs dataframes
+    # coord_control_path = r'coordination_outputs/validations/pickled coordination dfs/0104_regular/coordination_df_s{}_0104.pkl'.format(con_i)
+    # coord_diff_path = r'coordination_outputs/validations/pickled coordination dfs/0104_regular/coordination_df_s{}_0104.pkl'.format(dif_i)
+    #
+    # xml_control_path = r'../../data\Tracks_xml\0104\Experiment1_w1Widefield550_s{}_all_0104.xml'.format(con_i)
+    # xml_diff_path = r'../../data\Tracks_xml\0104\Experiment1_w1Widefield550_s{}_all_0104.xml'.format(dif_i)
+    #
+    # builder = CoordGraphBuilder(coord_control_path, coord_diff_path, xml_control_path, xml_diff_path)
+    # # builder.plot_validation("save","blue")
+    # builder.plot_coor_over_density("Coordination Over Density (Exp {},{})".format(con_i,dif_i))
+    # builder.plot_coord_over_time("Coordination Over Time (Exp {},{})".format(con_i,dif_i))
 
-    # Load coordination_outputs dataframes
-    coord_control_path = r'coordination_outputs/validations/pickled coordination dfs/0104_regular/coordination_df_s{}_0104.pkl'.format(con_i)
-    coord_diff_path = r'coordination_outputs/validations/pickled coordination dfs/0104_regular/coordination_df_s{}_0104.pkl'.format(dif_i)
-
-    xml_control_path = r'../../data\Tracks_xml\0104\Experiment1_w1Widefield550_s{}_all_0104.xml'.format(con_i)
-    xml_diff_path = r'../../data\Tracks_xml\0104\Experiment1_w1Widefield550_s{}_all_0104.xml'.format(dif_i)
+    coord_control_path = r'coordination_outputs/coordination_dfs/Adi/coordination_df_s7_Adi.pkl'
+    xml_control_path = r'../data/tracks_xml/Adi/201209_p38iexp_live_1_Widefield550_s7_all_8bit_ScaleTimer.xml'
+    coord_diff_path = r'coordination_outputs/coordination_dfs/Adi/coordination_df_s10_Adi.pkl'
+    xml_diff_path = r'../data/tracks_xml/Adi/201209_p38iexp_live_1_Widefield550_s10_all_8bit_ScaleTimer.xml'
 
     builder = CoordGraphBuilder(coord_control_path, coord_diff_path, xml_control_path, xml_diff_path)
-    # builder.plot_validation("save","blue")
-    builder.plot_coor_over_density("Coordination Over Density (Exp {},{})".format(con_i,dif_i))
-    builder.plot_coord_over_time("Coordination Over Time (Exp {},{})".format(con_i,dif_i))
+    # builder.plot_coord_over_time("Coordination over time Adi")
+    builder.plot_coor_over_density("Coordination_over_density_Adi_s1_s4")
