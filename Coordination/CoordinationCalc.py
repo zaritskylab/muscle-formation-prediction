@@ -8,7 +8,7 @@ Constructing a DataFrame called "coordination_outputs" for a later use.
 import numpy as np
 import pandas as pd
 
-from DataPreprocessing.load_tracks_xml import load_tracks_xml
+from load_tracks_xml import load_tracks_xml
 import pickle
 
 
@@ -108,6 +108,14 @@ class CoordinationCalc():
         # Load tha tracks XML (TrackMate's output)
         tracks01, df = load_tracks_xml(self.xml_path)
 
+        import matplotlib.pyplot as plt
+
+        # for i in range(100, 130):
+        #     plt.plot(tracks01[i]["x"], tracks01[i]["y"])
+        #     plt.xlim(0, 1714)
+        #     plt.ylim(0, 1243)
+        #     plt.show()
+
         # Iterate over all tracks and calculate their velocity vectors, and angles
         for ind, track in enumerate(tracks01, start=0):
             # In case the cell's path is relatively small, ignore it
@@ -156,9 +164,9 @@ class CoordinationCalc():
 
 
 if __name__ == '__main__':
-    for i in range(6, 13):
+    for i in (2, 3, 5, 6, 7, 8, 11, 13, 14, 15, 16, 17, 18, 21):
         coord_control = CoordinationCalc(5, 30,
-                                         r"muscle-formation-diff/data/tracks_xml/Adi/201209_p38iexp_live_1_Widefield550_s{}_all_8bit_ScaleTimer.xml".format(
+                                         r"muscle-formation-diff/data/tracks_xml/different_densities/small field of view/s{}_all.xml".format(
                                              i))
         coord_control.build_coordination_df(False)
-        coord_control.save_coordinationDF(r"coordination_df_s{}_Adi.pkl".format(i))
+        coord_control.save_coordinationDF(r"coordination_df_s{}_30_small.pkl".format(i))

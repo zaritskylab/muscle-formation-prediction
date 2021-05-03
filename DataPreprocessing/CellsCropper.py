@@ -37,7 +37,7 @@ def crop_cells_new(normalized, bf_video, tm_xml, resize, resize_to, image_size, 
     img_data_list = []
     # Iterate over all frames- of the tracked cells and their brightfeild's matching image
     image_size = 32
-    for i in tqdm(range(len(df))):
+    for i in range(len(df)):
         x = int(df.iloc[i]["x"])
         y = int(df.iloc[i]["y"])
         current_time = df.iloc[i]["t_stamp"]
@@ -51,7 +51,7 @@ def crop_cells_new(normalized, bf_video, tm_xml, resize, resize_to, image_size, 
                      (df["label"] != current_label) &
                      (df["x"] > x - image_size) & (df["x"] < x + image_size) &
                      (df["y"] > y - image_size) & (df["y"] < y + image_size)]["label"].nunique()
-        if n_cells > 2:
+        if n_cells > 1:
             continue
 
         single_cell_crop = im[int(df.iloc[i]["t_stamp"]), y - image_size:y + image_size,
@@ -267,17 +267,17 @@ def get_data_for_classifier(encoder_name):
 
 
 if __name__ == '__main__':
-    VIDEO_PATH = r"muscle-formation-diff/data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s{}_all_pixelratio1.tif"
-    XML_PATH = r"muscle-formation-diff/data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s{}_all_pixelratio1.xml"
+    VIDEO_PATH = r"..data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s{}_all_pixelratio1.tif"
+    XML_PATH = r"..data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s{}_all_pixelratio1.xml"
 
-    for i in range(1, 13):
+    for i in tqdm(range(1, 13)):
         bf_video = VIDEO_PATH.format(i)
         tm_xml = XML_PATH.format(i)
 
         crops = crop_cells_new(normalized=False, bf_video=bf_video, tm_xml=tm_xml, resize=False, resize_to=64,
                                image_size=64, crop_single_cell=False)
 
-        save_cells_images(crops, "muscle-formation-diff/data/images/pixelratio1_size32", f"{i}")
+        save_cells_images(crops, "muscle-formation-diff/data/images/tmp/", f"{i}")
 
     # path = "../aae/my_vae_exp_256"
     # vae = tf.keras.models.load_model(path, compile=False)

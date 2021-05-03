@@ -36,18 +36,18 @@ class CoordGraphBuilder():
             time_ = coordDF['t0'].iloc[i]
             N = len(cost)
             ar[i, t0:t0 + N] = cost
-            time[i, t0:t0 + N] = time_ * 2.5 / 60
+            time[i, t0:t0 + N] = time_ * 5 / 60
         meanar03 = np.nanmean(ar, axis=0)
         mean_time = np.nanmean(time, axis=0)
         return meanar03, mean_time
 
-    def get_mean_coordination(self, ind1, ind2, ind3):
-        elements_num = 3
+    def get_mean_coordination(self, ind1, ind2):
+        elements_num = 2
         coord_length = 927
-        pickle_path = r"coordination_outputs/coordination_dfs/Adi/coordination_df_s{}_Adi.pkl"
+        pickle_path = r'coordination_outputs/coordination_dfs/different_densities/small field of view/coordination_df_s{}_30_small.pkl'
         total_coord = np.zeros(shape=(coord_length,))
         total_time = np.zeros(shape=(coord_length,))
-        for i in (ind1, ind2, ind3):
+        for i in (ind1, ind2):
             df = pickle.load(
                 open(pickle_path.format(i), 'rb'))
             coord, time = self.read_coordinationDF(df)
@@ -56,6 +56,27 @@ class CoordGraphBuilder():
         return total_coord / elements_num, total_time / elements_num
 
     def plot_coord_over_time(self, name_for_saving):
+
+        # Read coordination DFs
+        control, _ = self.read_coordinationDF(self.coord_control)
+        diff, _ = self.read_coordinationDF(self.coord_diff)
+
+        # Plot
+        fig = plt.figure(figsize=(6, 4))
+        plt.plot(pd.DataFrame(control[:294], columns=["permute_diff"]).rolling(window=10).mean(), )
+        plt.plot(pd.DataFrame(diff[:294], columns=["permute_diff"]).rolling(window=10).mean(), )
+        plt.legend(['Controll', 'differentiation', ])
+        plt.title(r'Cos of $\theta$ measure')
+        plt.xticks(np.arange(0, 554, 60), labels=np.around(np.arange(0, 554, 60) * 2.5 / 60, decimals=1))
+        # plt.yticks(np.arange(0.45, 1, 0.05))
+        plt.ylim(0.6, 1, 0.5)
+        plt.xlabel('Time [h]')
+        plt.ylabel(r'Cos of $\theta$')
+        plt.savefig(name_for_saving)
+        plt.show()
+        plt.close(fig)
+
+    def plot_coord_over_time_4_measurements(self, name_for_saving):
 
         coord_control, _ = self.get_mean_coordination(1, 2, 3)
         coord_diff_fusion, _ = self.get_mean_coordination(4, 5, 6)
@@ -161,8 +182,8 @@ class CoordGraphBuilder():
         mean_coord, time = self.get_mean_coordination(1, 2, 3)
         # Attach to one DF
         den_df = pd.DataFrame({'density': pd.DataFrame(mean_den)[0][:920],
-                                       'coordination': pd.DataFrame(mean_coord)[0][:920],
-                                       'time': pd.DataFrame(time)[0][:920]})
+                               'coordination': pd.DataFrame(mean_coord)[0][:920],
+                               'time': pd.DataFrame(time)[0][:920]})
         return den_df
 
     def plot_coor_over_density(self, name_for_saving):
@@ -310,48 +331,54 @@ class CoordGraphBuilder():
         plt.show()
         plt.close(fig)
 
-    def plot_coord_over_time_normalized(self, name_for_saving):
-        # Read coordination DFs
-        control, time_c = self.read_coordinationDF(self.coord_control)
-        diff, time_d = self.read_coordinationDF(self.coord_diff)
-
-        fit01 = np.polyval(np.polyfit(np.arange(920), control[:-7], deg=2), np.arange(920))
-        fit03 = np.polyval(np.polyfit(np.arange(920), diff[:-7], deg=2), np.arange(920))
-
-        # Plot
-        fig = plt.figure(figsize=(6, 4))
-        plt.plot(fit01, diff[:-7], color="orange")
-        plt.gca().invert_xaxis()
-        plt.legend(['Diff'])
-        plt.title(r'Cos of $\theta$ measure')
-        plt.xlabel('Control\'s fit line')
-        plt.ylabel(r'Cos of $\theta$')
-        plt.savefig(name_for_saving)
-        plt.show()
-        plt.close(fig)
-
 
 if __name__ == '__main__':
-    # con_i = 10
-    # dif_i = 12
+    coord_control_path = r'coordination_outputs/coordination_dfs/different_densities/coordination_df_s19x2.pkl'
+    xml_control_path = r'../data/tracks_xml/different_densities/s19_all.xml'
     #
-    # # Load coordination_outputs dataframes
-    # coord_control_path = r'coordination_outputs/validations/pickled coordination dfs/0104_regular/coordination_df_s{}_0104.pkl'.format(con_i)
-    # coord_diff_path = r'coordination_outputs/validations/pickled coordination dfs/0104_regular/coordination_df_s{}_0104.pkl'.format(dif_i)
-    #
-    # xml_control_path = r'../../data\Tracks_xml\0104\Experiment1_w1Widefield550_s{}_all_0104.xml'.format(con_i)
-    # xml_diff_path = r'../../data\Tracks_xml\0104\Experiment1_w1Widefield550_s{}_all_0104.xml'.format(dif_i)
-    #
-    # builder = CoordGraphBuilder(coord_control_path, coord_diff_path, xml_control_path, xml_diff_path)
-    # # builder.plot_validation("save","blue")
-    # builder.plot_coor_over_density("Coordination Over Density (Exp {},{})".format(con_i,dif_i))
-    # builder.plot_coord_over_time("Coordination Over Time (Exp {},{})".format(con_i,dif_i))
+    builder = CoordGraphBuilder(coord_control_path, coord_control_path, xml_control_path, xml_control_path)
+    # builder.plot_coord_over_time("Coordination over time s18_s21")
 
-    coord_control_path = r'coordination_outputs/coordination_dfs/Adi/coordination_df_s7_Adi.pkl'
-    xml_control_path = r'../data/tracks_xml/Adi/201209_p38iexp_live_1_Widefield550_s7_all_8bit_ScaleTimer.xml'
-    coord_diff_path = r'coordination_outputs/coordination_dfs/Adi/coordination_df_s10_Adi.pkl'
-    xml_diff_path = r'../data/tracks_xml/Adi/201209_p38iexp_live_1_Widefield550_s10_all_8bit_ScaleTimer.xml'
+    # fig = plt.figure(figsize=(20, 4))
+    # colors = ["Oranges", "Blues"]
+    # for i in (1, 4, 9, 10, 12, 19, 20):
+    #     xml_path = r'../data/tracks_xml/different_densities/s{}_all.xml'.format(i)
+    #     path = r'coordination_outputs/coordination_dfs/different_densities/coordination_df_s{}.pkl'.format(i)
+    #     coord = pickle.load(open(path, 'rb'))
+    #     den_df = builder.get_coord_density_df(coord, xml_path)
+    #     plt.scatter(x=den_df["density"], y=den_df["coordination"], marker=".", label="Control")
+    #     scatter = plt.scatter(x=den_df["density"], y=den_df["coordination"],
+    #                           c=den_df["time"], marker=".")
+    #
+    #     c_bar = plt.colorbar(scatter, shrink=0.6)
+    #     c_bar.set_label('time (h), {}'.format(i))
+    #     plt.legend([1, 4, 9, 10, 12, 19, 20])
+    #     plt.xticks(np.arange(700, 3000, 500))
+    #     # plt.ylim(0.6, 1, 0.5)
+    #     plt.title(r'Cos of $\thet'
+    #               r'a$ measure (Coordination over Density)')
+    #     plt.xlabel('Density')
+    #     plt.ylabel(r'Cos of $\theta$')
+    #     plt.show()
+    #     plt.close(fig)
+fig = plt.figure(figsize=(8, 4))
+for i in ([18, 21],[11, 14], [7, 8], [2, 3],[16, 17], [13, 15],  [5, 6]):
+    df, _ = builder.get_mean_coordination(i[0],i[1])
+    # path = r'coordination_outputs/coordination_dfs/different_densities/small field of view/coordination_df_s{}_30_small.pkl'.format(
+    #     i)
+    # coord = pickle.load(open(path, 'rb'))
+    # df, _ = builder.read_coordinationDF(coord)
+    plt.plot(pd.DataFrame(df[:294], columns=["permute_diff"]).rolling(window=10).mean(), )
 
-    builder = CoordGraphBuilder(coord_control_path, coord_diff_path, xml_control_path, xml_diff_path)
-    # builder.plot_coord_over_time("Coordination over time Adi")
-    builder.plot_coor_over_density("Coordination_over_density_Adi_s1_s4")
+plt.legend(["10k", "20k","30k", "40k",
+            "50k",  "60k", "70k"], loc='upper left',title="preliminary number of cells")
+plt.title(r'Cos of $\theta$ measure')
+plt.xticks(np.arange(0, 350, 60), labels=np.around(np.arange(0, 350, 60) * 5 / 60, decimals=1))
+# plt.yticks(np.arange(0.45, 1, 0.05))
+plt.ylim(0.6, 1, 0.5)
+plt.grid()
+plt.xlabel('Time [h]')
+plt.ylabel(r'Cos of $\theta$')
+# plt.savefig("Coordination over time different distances")
+plt.show()
+plt.close(fig)

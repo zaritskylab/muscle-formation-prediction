@@ -5,7 +5,7 @@ import numpy as np
 import pytrackmate as tm
 from skimage import io
 from sklearn.model_selection import train_test_split
-import Scripts.Coordination.CoordinationValidations
+import Coordination.CoordinationValidations
 
 """
 Created on 10/09/2020

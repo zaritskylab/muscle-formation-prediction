@@ -3,14 +3,14 @@ import time
 from scipy.spatial import distance
 from sklearn.manifold import TSNE
 from sklearn.linear_model import LinearRegression
-from Scripts.DataPreprocessing.load_tracks_xml import *
+from DataPreprocessing.load_tracks_xml import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import math
 from scipy import stats
-from Scripts.PCABuilder import build_pca, plot_pca
+from PCABuilder import build_pca, plot_pca
 
 
 # region measurements
