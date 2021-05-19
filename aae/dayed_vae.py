@@ -17,14 +17,16 @@ from params import PARAMS, api_token
 from NeptuneMethods import lr_scheduler
 import numpy as np
 
+from aae.checking_image_data_generator import get_generators
+
 latent_dim = PARAMS['z_dim']
 image_size = 64
 directory = "../../data/images/train"
 if not path.exists(directory):
-    directory = "muscle-formation-diff/data/images/train"
+    directory = "../data/images/train"
 batch_size = PARAMS['batch_size']
 steps = len(listdir(directory)) // batch_size
-x_test = aae_load_images(image_size=image_size)[:30]
+# x_test = aae_load_images(image_size=image_size)[:30]
 
 
 def block_A(in_b):
@@ -200,8 +202,9 @@ with neptune.create_experiment(name='my_vae - Dyad archi',
     opt = PARAMS['optimizer'](PARAMS['learning_rate'])
     vae.compile(optimizer=opt)
     # vae.summary()
+    train_generator, validation_generator, test_generator = get_generators()
 
-    callback = NeptuneCallback(neptune_experiment=npt_exp, n_batch=steps, images=x_test,
+    callback = NeptuneCallback(neptune_experiment=npt_exp, n_batch=steps, test_generator=validation_generator,
                                img_size=image_size)
 
     callbacks = [callback,
@@ -213,17 +216,8 @@ with neptune.create_experiment(name='my_vae - Dyad archi',
     if PARAMS['scheduler']:
         callbacks.append(LearningRateScheduler(lr_scheduler))
 
-    vae.fit(
-        generate_Data(directory=directory,
-                      batch_size=batch_size,
-                      img_size=image_size),
-        validation_data=val_generator(directory=directory,
-                                      batch_size=batch_size,
-                                      img_size=image_size,
-                                      validation_split=0.3),
-        epochs=PARAMS['n_epochs'],
-        shuffle=PARAMS['shuffle'],
-        steps_per_epoch=steps,
-        validation_steps=steps,
-        callbacks=callbacks
-    )
+    vae.fit(train_generator, steps_per_epoch=len(train_generator),
+            validation_data=validation_generator, validation_steps=len(validation_generator),
+            epochs=PARAMS['n_epochs'],
+            shuffle=PARAMS['shuffle'],
+            callbacks=callbacks)

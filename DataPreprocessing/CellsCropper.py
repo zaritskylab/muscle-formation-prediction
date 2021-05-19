@@ -56,12 +56,8 @@ def crop_cells_new(normalized, bf_video, tm_xml, resize, resize_to, image_size, 
 
         single_cell_crop = im[int(df.iloc[i]["t_stamp"]), y - image_size:y + image_size,
                            x - image_size:x + image_size]
-        # plt.gray()
-        # plt.imshow(s01nuc[int(df.iloc[i]["t_stamp"])])
-        # plt.scatter(x, y)
-        # plt.show()
-        # plt.imshow(single_cell_crop)
-        # plt.show()
+        cv2.imwrite("single_cell_crop.tif", single_cell_crop)
+        single_cell_crop = cv2.imread("single_cell_crop.tif", cv2.IMREAD_COLOR)
 
         if normalized:
             single_cell_crop = (single_cell_crop - single_cell_crop.min()) / (
@@ -232,7 +228,7 @@ def single_cell_time_df(encoder_name, exp_num):
 
 
 def get_data_for_classifier(encoder_name):
-    # build train and test sets for classifier
+    # build train and video4_test sets for classifier
     enc_lables_test = build_encoded_labeled_dataset(to_normalize=True, img_size=64,
                                                     encoder_name=encoder_name, exp_list=[5])
     print(len(enc_lables_test))
@@ -240,19 +236,19 @@ def get_data_for_classifier(encoder_name):
                                                      encoder_name=encoder_name,
                                                      exp_list=[3, 4, 6, 11, 12])
     print(len(enc_lables_train))
-    enc_lables_test.to_pickle("encoded_labeled - test normalized")
+    enc_lables_test.to_pickle("encoded_labeled - video4_test normalized")
     enc_lables_train.to_pickle("encoded_labeled - train normalized")
-    # build real time data for test (video 5)
+    # build real time data for video4_test (video 5)
     all_times_encodings = build_encoded_cells_time_dataset(encoder_name=encoder_name,
                                                            exp_list=[5])
     print((all_times_encodings))
-    all_times_encodings.to_pickle("test - encoded video 5 with timestamp")
+    all_times_encodings.to_pickle("video4_test - encoded video 5 with timestamp")
 
-    # build real time data for test (video 7)
+    # build real time data for video4_test (video 7)
     all_times_encodings = build_encoded_cells_time_dataset(encoder_name=encoder_name,
                                                            exp_list=[7])
     print((all_times_encodings))
-    all_times_encodings.to_pickle("test - encoded video 7 with timestamp")
+    all_times_encodings.to_pickle("video4_test - encoded video 7 with timestamp")
     # get single cell tracks to classify:
     # diff:
     single_cell_df = single_cell_time_df(encoder_name=encoder_name,
@@ -267,17 +263,18 @@ def get_data_for_classifier(encoder_name):
 
 
 if __name__ == '__main__':
-    VIDEO_PATH = r"..data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s{}_all_pixelratio1.tif"
-    XML_PATH = r"..data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s{}_all_pixelratio1.xml"
+    VIDEO_PATH = r"muscle-formation-diff/data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s{}_all_pixelratio1.tif"
+    XML_PATH = r"muscle-formation-diff/data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s{}_all_pixelratio1.xml"
 
-    for i in tqdm(range(1, 13)):
-        bf_video = VIDEO_PATH.format(i)
-        tm_xml = XML_PATH.format(i)
+    # for i in (2, 3, 5, 6, 7, 8, 9, 10, 11, 12):  # 4- validation, 1- test
+    i = 4
+    bf_video = VIDEO_PATH.format(i)
+    tm_xml = XML_PATH.format(i)
 
-        crops = crop_cells_new(normalized=False, bf_video=bf_video, tm_xml=tm_xml, resize=False, resize_to=64,
-                               image_size=64, crop_single_cell=False)
+    crops = crop_cells_new(normalized=False, bf_video=bf_video, tm_xml=tm_xml, resize=False, resize_to=32,
+                           image_size=32, crop_single_cell=False)
 
-        save_cells_images(crops, "muscle-formation-diff/data/images/tmp/", f"{i}")
+    save_cells_images(crops, "muscle-formation-diff/data/images/validation/validation/", f"{i}")
 
     # path = "../aae/my_vae_exp_256"
     # vae = tf.keras.models.load_model(path, compile=False)

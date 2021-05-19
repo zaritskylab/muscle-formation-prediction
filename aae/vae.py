@@ -8,11 +8,13 @@ from tensorflow.keras import backend as K
 import numpy as np
 from os import path, listdir
 
-from Scripts.aae.NeptuneCallback import NeptuneCallback
-from Scripts.aae.Trainers import log_data
-from Scripts.aae.convolutional_aae import AE
-from Scripts.aae.datagen import generate_Data, val_generator
-from Scripts.aae.params import PARAMS
+from aae.NeptuneCallback import NeptuneCallback
+from aae.Trainers import log_data
+from aae.convolutional_aae import AE
+from aae.datagen import generate_Data, val_generator
+from aae.params import PARAMS
+
+from aae.checking_image_data_generator import get_generators
 
 
 class VAE(AE):
@@ -76,27 +78,17 @@ class VAE(AE):
         # self.vae.add_loss(self.kl_reconstruction_loss)
         self.vae.compile(optimizer='adam', loss=self.vae_loss_function, metrics=['accuracy'])
 
+        train_generator, validation_generator, test_generator = get_generators()
+
+        history = self.vae.fit(train_generator, steps_per_epoch=len(train_generator),
+                               validation_data=validation_generator, validation_steps=len(validation_generator),
+                               epochs=PARAMS['n_epochs'],
+                               shuffle=PARAMS['shuffle'],
+                               callbacks=[callbacks,
+                                          LambdaCallback(on_epoch_end=lambda epoch, logs: log_data(logs)),
+                                          EarlyStopping(patience=PARAMS['early_stopping'],
+                                                        monitor='loss',
+                                                        restore_best_weights=True)])
         # self.vae.compile(optimizer=self.optimizer, loss=self.loss_func)
-        history = self.vae.fit(
-            generate_Data(directory=directory,
-                          batch_size=self.batch_size,
-                          img_size=self.img_size),
-            validation_data=val_generator(directory=directory,
-                                          batch_size=self.batch_size,
-                                          img_size=self.img_size,
-                                          validation_split=0.3),
-            epochs=self.n_epochs,
-            steps_per_epoch=steps,
-            validation_steps=steps,
-            callbacks=[callbacks,
-                       LambdaCallback(on_epoch_end=lambda epoch, logs: log_data(logs)),
-                       EarlyStopping(patience=PARAMS['early_stopping'],
-                                     monitor='loss',
-                                     restore_best_weights=True)]
-            # [LambdaCallback(on_epoch_end=lambda epoch, logs: log_data(logs)),
-            #            EarlyStopping(patience=PARAMS['early_stopping'],
-            #                                          monitor='accuracy',
-            #                                          restore_best_weights=True)]
-            # LearningRateScheduler(lr_scheduler)]
-        )
+
         return self.vae, history

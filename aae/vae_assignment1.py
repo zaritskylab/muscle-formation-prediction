@@ -9,21 +9,20 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.losses import binary_crossentropy
 from tensorflow.python.keras.callbacks import LambdaCallback, EarlyStopping, LearningRateScheduler
 
-from NeptuneCallback import NeptuneCallback
-from Trainers import log_data
-from datagen import generate_Data, val_generator, aae_load_images
-from params import PARAMS, api_token
+from aae.NeptuneCallback import NeptuneCallback
+from aae.Trainers import log_data
+from aae.checking_image_data_generator import get_generators
+from aae.params import PARAMS, api_token
 
-from NeptuneMethods import lr_scheduler
+from aae.NeptuneMethods import lr_scheduler
 
 latent_dim = PARAMS['z_dim']
 image_size = 64
 directory = "../../data/images/train"
 if not path.exists(directory):
-    directory = "muscle-formation-diff/data/images/train"
+    directory = "../data/images/train"
 batch_size = PARAMS['batch_size']
 steps = len(listdir(directory)) // batch_size
-x_test = aae_load_images(image_size=image_size)[:30]
 
 
 def sampling(args):
@@ -119,8 +118,9 @@ with neptune.create_experiment(name='my_vae - assignment1 archi',
     opt = PARAMS['optimizer'](PARAMS['learning_rate'])
     vae.compile(optimizer=opt)  # rmsprop
     vae.summary()
+    train_generator, validation_generator, test_generator = get_generators()
 
-    callback = NeptuneCallback(neptune_experiment=npt_exp, n_batch=steps, images=x_test,
+    callback = NeptuneCallback(neptune_experiment=npt_exp, n_batch=steps, test_generator=validation_generator,
                                img_size=image_size)
 
     callbacks = [callback,
@@ -132,17 +132,8 @@ with neptune.create_experiment(name='my_vae - assignment1 archi',
     if PARAMS['scheduler']:
         callbacks.append(LearningRateScheduler(lr_scheduler))
 
-    vae.fit(
-        generate_Data(directory=directory,
-                      batch_size=batch_size,
-                      img_size=image_size),
-        validation_data=val_generator(directory=directory,
-                                      batch_size=batch_size,
-                                      img_size=image_size,
-                                      validation_split=0.3),
-        epochs=PARAMS['n_epochs'],
-        shuffle=PARAMS['shuffle'],
-        steps_per_epoch=steps,
-        validation_steps=steps,
-        callbacks=callbacks
-    )
+    vae.fit(train_generator, steps_per_epoch=len(train_generator),
+            validation_data=validation_generator, validation_steps=len(validation_generator),
+            epochs=PARAMS['n_epochs'],
+            shuffle=PARAMS['shuffle'],
+            callbacks=callbacks)

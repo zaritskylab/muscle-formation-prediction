@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 
 
 class NeptuneCallback(Callback):
-    def __init__(self, neptune_experiment, n_batch, images, img_size):
+    def __init__(self, neptune_experiment, n_batch, test_generator, img_size):
         super().__init__()
         self.exp = neptune_experiment
         self.n = n_batch
         self.current_epoch = 0
-        self.images = images
+        self.X_images, self.Y_images = test_generator.next()
         self.img_size = img_size
 
     def on_batch_end(self, batch, logs=None):
@@ -27,12 +27,12 @@ class NeptuneCallback(Callback):
         if self.current_epoch % 5 == 0:
             # Reconstruction
             n_imgs = 10  # how many images we will display
-            x_test_decoded = self.model.predict(self.images[:n_imgs])
+            x_test_decoded = self.model.predict(self.X_images[:n_imgs])
             fig = plt.figure(figsize=(20, 4))
             for i in range(n_imgs):
                 # display original
                 ax = plt.subplot(2, n_imgs, i + 1)
-                plt.imshow(self.images[i].reshape(self.img_size, self.img_size))
+                plt.imshow(self.X_images[i].reshape(self.img_size, self.img_size))
                 plt.gray()
                 ax.get_xaxis().set_visible(False)
                 ax.get_yaxis().set_visible(False)

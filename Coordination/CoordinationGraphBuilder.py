@@ -335,7 +335,7 @@ class CoordGraphBuilder():
 if __name__ == '__main__':
     coord_control_path = r'coordination_outputs/coordination_dfs/different_densities/coordination_df_s19x2.pkl'
     xml_control_path = r'../data/tracks_xml/different_densities/s19_all.xml'
-    #
+
     builder = CoordGraphBuilder(coord_control_path, coord_control_path, xml_control_path, xml_control_path)
     # builder.plot_coord_over_time("Coordination over time s18_s21")
 

@@ -6,15 +6,14 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Conv2D, Flatten, Lambda, Reshape, Conv2DTranspose, BatchNormalization, MaxPool2D, \
     Dropout, Dense, Input, ReLU, add, GlobalAveragePooling2D, UpSampling2D
 from tensorflow.keras import backend as K
-from tensorflow.keras.losses import binary_crossentropy
+from tensorflow.keras.losses import binary_crossentropy, mean_squared_error
 from tensorflow.python.keras.callbacks import LambdaCallback, EarlyStopping, LearningRateScheduler
-
 from NeptuneCallback import NeptuneCallback
 from Trainers import log_data
-from datagen import generate_Data, val_generator, aae_load_images
 from params import PARAMS, api_token
-
 from NeptuneMethods import lr_scheduler
+
+from checking_image_data_generator import get_generators
 
 latent_dim = PARAMS['z_dim']
 image_size = 64
@@ -23,8 +22,8 @@ if not path.exists(directory):
     directory = "muscle-formation-diff/data/images/train"
 batch_size = PARAMS['batch_size']
 steps = len(listdir(directory)) // batch_size
-x_test = aae_load_images(image_size=image_size)[:30]
 n_filters = 2
+
 
 def sampling(args):
     z_mean, z_log_var = args
@@ -47,12 +46,12 @@ with neptune.create_experiment(name='my_vae - resnet archi',
 
     # <editor-fold desc="block 1">
     '''block_1'''
-    b1_cnv2d_1 = Conv2D(filters=n_filters*16, kernel_size=(3, 3), strides=(2, 2), padding='same',
+    b1_cnv2d_1 = Conv2D(filters=n_filters * 16, kernel_size=(3, 3), strides=(2, 2), padding='same',
                         use_bias=False, name='b1_cnv2d_1', kernel_initializer='normal')(input_img)
     b1_relu_1 = ReLU(name='b1_relu_1')(b1_cnv2d_1)
     b1_bn_1 = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b1_bn_1')(b1_relu_1)  # size: 32*32
 
-    b1_cnv2d_2 = Conv2D(filters=n_filters*32, kernel_size=(1, 1), strides=(2, 2), padding='same',
+    b1_cnv2d_2 = Conv2D(filters=n_filters * 32, kernel_size=(1, 1), strides=(2, 2), padding='same',
                         use_bias=False, name='b1_cnv2d_2', kernel_initializer='normal')(b1_bn_1)
     b1_relu_2 = ReLU(name='b1_relu_2')(b1_cnv2d_2)
     b1_out = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b1_out')(b1_relu_2)  # size: 16*16
@@ -60,14 +59,14 @@ with neptune.create_experiment(name='my_vae - resnet archi',
 
     # <editor-fold desc="block 2">
     '''block 2'''
-    b2_cnv2d_1 = Conv2D(filters=n_filters*32, kernel_size=(1, 1), strides=(1, 1), padding='same',
+    b2_cnv2d_1 = Conv2D(filters=n_filters * 32, kernel_size=(1, 1), strides=(1, 1), padding='same',
                         use_bias=False, name='b2_cnv2d_1', kernel_initializer='normal')(b1_out)
     b2_relu_1 = ReLU(name='b2_relu_1')(b2_cnv2d_1)
     b2_bn_1 = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b2_bn_1')(b2_relu_1)  # size: 16*16
 
     b2_add = add([b1_out, b2_bn_1])  #
 
-    b2_cnv2d_2 = Conv2D(filters=n_filters*64, kernel_size=(3, 3), strides=(2, 2), padding='same',
+    b2_cnv2d_2 = Conv2D(filters=n_filters * 64, kernel_size=(3, 3), strides=(2, 2), padding='same',
                         use_bias=False, name='b2_cnv2d_2', kernel_initializer='normal')(b2_add)
     b2_relu_2 = ReLU(name='b2_relu_2')(b2_cnv2d_2)
     b2_out = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b2_bn_2')(b2_relu_2)  # size: 8*8
@@ -75,14 +74,14 @@ with neptune.create_experiment(name='my_vae - resnet archi',
 
     # <editor-fold desc="block 3">
     '''block 3'''
-    b3_cnv2d_1 = Conv2D(filters=n_filters*64, kernel_size=(1, 1), strides=(1, 1), padding='same',
+    b3_cnv2d_1 = Conv2D(filters=n_filters * 64, kernel_size=(1, 1), strides=(1, 1), padding='same',
                         use_bias=False, name='b3_cnv2d_1', kernel_initializer='normal')(b2_out)
     b3_relu_1 = ReLU(name='b3_relu_1')(b3_cnv2d_1)
     b3_bn_1 = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b3_bn_1')(b3_relu_1)  # size: 8*8
 
     b3_add = add([b2_out, b3_bn_1])  #
 
-    b3_cnv2d_2 = Conv2D(filters=n_filters*128, kernel_size=(3, 3), strides=(2, 2), padding='same',
+    b3_cnv2d_2 = Conv2D(filters=n_filters * 128, kernel_size=(3, 3), strides=(2, 2), padding='same',
                         use_bias=False, name='b3_cnv2d_2', kernel_initializer='normal')(b3_add)
     b3_relu_2 = ReLU(name='b3_relu_2')(b3_cnv2d_2)
     b3_out = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b3_out')(b3_relu_2)  # size: 4*4
@@ -117,7 +116,7 @@ with neptune.create_experiment(name='my_vae - resnet archi',
     #                kernel_initializer='he_uniform')(y)
 
     '''block 3'''
-    b3_cnv2d_1 = Conv2D(filters=n_filters*128, kernel_size=(1, 1), strides=(1, 1), padding='same',
+    b3_cnv2d_1 = Conv2D(filters=n_filters * 128, kernel_size=(1, 1), strides=(1, 1), padding='same',
                         use_bias=False, name='b3_cnv2d_1', kernel_initializer='normal')(b4_out)
     b3_relu_1 = ReLU(name='b3_relu_1')(b3_cnv2d_1)
     b3_bn_1 = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b3_bn_1')(b3_relu_1)  # size: 4*4
@@ -125,13 +124,13 @@ with neptune.create_experiment(name='my_vae - resnet archi',
     b3_add = add([b4_out, b3_bn_1])  #
 
     b3_cnv2d_2 = UpSampling2D((2, 2))(b3_add)
-    b3_cnv2d_2 = Conv2D(filters=n_filters*64, kernel_size=(3, 3), padding='same',
+    b3_cnv2d_2 = Conv2D(filters=n_filters * 64, kernel_size=(3, 3), padding='same',
                         use_bias=False, name='b3_cnv2d_2', kernel_initializer='normal')(b3_cnv2d_2)
     b3_relu_2 = ReLU(name='b3_relu_2')(b3_cnv2d_2)
     b3_out = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b3_out')(b3_relu_2)  # size: 8*8
 
     '''block 2'''
-    b2_cnv2d_1 = Conv2D(filters=n_filters*64, kernel_size=(1, 1), strides=(1, 1), padding='same',
+    b2_cnv2d_1 = Conv2D(filters=n_filters * 64, kernel_size=(1, 1), strides=(1, 1), padding='same',
                         use_bias=False, name='b2_cnv2d_1', kernel_initializer='normal')(b3_out)
     b2_relu_1 = ReLU(name='b2_relu_1')(b2_cnv2d_1)
     # b2_bn_1 = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b2_bn_1')(b2_relu_1)  # size: 8*8
@@ -139,20 +138,20 @@ with neptune.create_experiment(name='my_vae - resnet archi',
     b2_add = add([b3_out, b2_relu_1])  #
 
     b2_cnv2d_2 = UpSampling2D((2, 2))(b2_add)
-    b2_cnv2d_2 = Conv2D(filters=n_filters*32, kernel_size=(3, 3), padding='same',
+    b2_cnv2d_2 = Conv2D(filters=n_filters * 32, kernel_size=(3, 3), padding='same',
                         use_bias=False, name='b2_cnv2d_2', kernel_initializer='normal')(b2_cnv2d_2)
     b2_relu_2 = ReLU(name='b2_relu_2')(b2_cnv2d_2)
     # b2_out = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b2_bn_2')(b2_relu_2)  # size: 16*16
 
     '''block_1'''
     b1_cnv2d_1 = UpSampling2D((2, 2))(b2_relu_2)
-    b1_cnv2d_1 = Conv2D(filters=n_filters*32, kernel_size=(3, 3), padding='same',
+    b1_cnv2d_1 = Conv2D(filters=n_filters * 32, kernel_size=(3, 3), padding='same',
                         use_bias=False, name='b1_cnv2d_1', kernel_initializer='normal')(b1_cnv2d_1)
     b1_relu_1 = ReLU(name='b1_relu_1')(b1_cnv2d_1)
     # b1_bn_1 = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b1_bn_1')(b1_relu_1)  # size: 32*32
 
     b1_cnv2d_2 = UpSampling2D((2, 2))(b1_relu_1)
-    b1_cnv2d_2 = Conv2D(filters=n_filters*16, kernel_size=(1, 1), padding='same',
+    b1_cnv2d_2 = Conv2D(filters=n_filters * 16, kernel_size=(1, 1), padding='same',
                         use_bias=False, name='b1_cnv2d_2', kernel_initializer='normal')(b1_cnv2d_2)
     b1_relu_2 = ReLU(name='b1_relu_2')(b1_cnv2d_2)
     # b1_out = BatchNormalization(epsilon=1e-3, momentum=0.999, name='b1_out')(b1_relu_2)  # size: 64*64
@@ -170,21 +169,32 @@ with neptune.create_experiment(name='my_vae - resnet archi',
     outputs = decoder(encoder(input_img))
     vae = Model(input_img, outputs, name='vae')
 
-    reconst_loss = binary_crossentropy(K.flatten(input_img), K.flatten(outputs))
+
+    def get_vae_loss(input, x_decoded_mean, encoded_sigma, encoded_mean):
+        xent_loss = tf.reduce_mean(mean_squared_error(input, x_decoded_mean))
+        kl_loss = 0.5 * tf.reduce_sum(tf.square(encoded_mean) + tf.square(encoded_sigma) - tf.math.log(
+            tf.square(encoded_sigma)) - 1, -1)
+        return xent_loss + kl_loss
+
+
+    reconst_loss = mean_squared_error(K.flatten(input_img), K.flatten(outputs))
     reconst_loss *= image_size * image_size
-    kl_loss = 1 + z_log_var - K.square(z_mean) - K.exp(z_log_var)
-    kl_loss = K.sum(kl_loss, axis=-1)
-    kl_loss *= -0.5
+    kl_loss = 0.5 * tf.reduce_sum(tf.square(z_mean) + tf.square(tf.exp(z_log_var)) - z_log_var - 1, axis=-1)
+
+    # kl_loss = 1 + z_log_var - K.square(z_mean) - K.exp(z_log_var)
+    # kl_loss = K.sum(kl_loss, axis=-1)
+    # kl_loss *= -0.5
     vae_loss = K.mean(reconst_loss + kl_loss)
 
-    vae.add_loss(vae_loss)
+    vae.add_loss(get_vae_loss(input=input_img, x_decoded_mean=outputs, encoded_sigma=z_log_var, encoded_mean=z_mean))
     opt = PARAMS['optimizer'](PARAMS['learning_rate'])
     vae.compile(optimizer=opt)  # rmsprop
     vae.summary()
 
-    callback = NeptuneCallback(neptune_experiment=npt_exp, n_batch=steps, images=x_test,
-                               img_size=image_size)
+    train_generator, validation_generator, test_generator = get_generators()
 
+    callback = NeptuneCallback(neptune_experiment=npt_exp, n_batch=steps, test_generator=test_generator,
+                               img_size=image_size)
     callbacks = [callback,
                  LambdaCallback(on_epoch_end=lambda epoch, logs: log_data(logs)),
                  EarlyStopping(patience=PARAMS['early_stopping'],
@@ -194,19 +204,10 @@ with neptune.create_experiment(name='my_vae - resnet archi',
     if PARAMS['scheduler']:
         callbacks.append(LearningRateScheduler(lr_scheduler))
 
-    vae.fit(
-        generate_Data(directory=directory,
-                      batch_size=batch_size,
-                      img_size=image_size),
-        validation_data=val_generator(directory=directory,
-                                      batch_size=batch_size,
-                                      img_size=image_size,
-                                      validation_split=0.3),
-        epochs=PARAMS['n_epochs'],
-        shuffle=PARAMS['shuffle'],
-        steps_per_epoch=steps,
-        validation_steps=steps,
-        callbacks=callbacks
-    )
+    vae.fit(train_generator, steps_per_epoch=len(train_generator),
+            validation_data=validation_generator, validation_steps=len(validation_generator),
+            epochs=PARAMS['n_epochs'],
+            shuffle=PARAMS['shuffle'],
+            callbacks=callbacks)
 
-    vae.save("my_vae_exp_261")
+    vae.save("my_vae_exp_272")
