@@ -1,4 +1,4 @@
-from Scripts.AELoader import *
+from AELoader import *
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from bioinfokit.visuz import cluster

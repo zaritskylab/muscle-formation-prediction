@@ -102,12 +102,12 @@ def velocisty_over_time(xml_path):
     for t in range(len(tracks)):
         track_df = tracks[t]
         df_size = len(track_df) - 1
-        velocities = np.ndarray(shape=(df_size, 2))
+        velocities = np.zeros(shape=(df_size, 2))
         xs = track_df["x"].tolist()
         ys = track_df["y"].tolist()
         for i in range(df_size - 1):
-            velocities[i][0] = (xs[i + 1] - xs[i]) * (10 ^ 4) / 58.4564 * 40  # um/h
-            velocities[i][1] = (ys[i + 1] - ys[i]) * (10 ^ 4) / 58.4564 * 40  # um/h
+            velocities[i][0] = np.float16(xs[i + 1] - xs[i])  # * (10 ^ 4) / 58.4564 * 40  # um/h
+            velocities[i][1] = (ys[i + 1] - ys[i])  # * (10 ^ 4) / 58.4564 * 40  # um/h
         dataSet = pd.DataFrame({"x_velocities": velocities[:, 0], "y_velocities": velocities[:, 1],
                                 "velocities": np.sqrt(velocities[:, 0] ** 2 + velocities[:, 1] ** 2)})
 
@@ -184,6 +184,61 @@ def plot_exps_mean_no_motion_proportion(all_props):
     plt.ylabel("mean proportion")
     plt.title("mean non motion proportion per experiment")
     plt.legend(["control", "diff"])
+    plt.show()
+
+
+def get_velocity_stats(col, tracks):
+    max_length = 0
+    mean_velocity = []
+    min_velocity = []
+    max_velocity = []
+    median_velocity = []
+    for track in tracks:
+        max_length = (max_length if max_length > track.shape[0] else track.shape[0])
+    for t in range(max_length):
+        v_t = []
+        for track in velocity_tracks:
+            if True in (track["t_stamp"] == t).unique():
+                v_t.append(track[track["t_stamp"] == t][col].values[0])
+        mean_velocity.append(np.mean(v_t))
+        min_velocity.append(np.min(v_t))
+        max_velocity.append(np.max(v_t))
+        median_velocity.append(np.median(v_t))
+    return mean_velocity, min_velocity, max_velocity, median_velocity
+
+
+def get_total_velocity_stats(col, tracks):
+    velocities = []
+    for track in tracks:
+        velocities.extend(track[col])
+    std = np.std(velocities)
+    avg = np.mean(velocities)
+    return avg, std
+
+
+def plot_avg_speed_plot_bar(*args):
+    labels = []
+    velocities = []
+    error = []
+    for label, tracks in args:
+        labels.append(label)
+        avg_V, std_ = get_total_velocity_stats("velocities", tracks)
+        velocities.append(avg_V)
+        error.append(std_)
+    # Create lists for the plot
+    x_pos = np.arange(len(labels))
+    # Build the plot
+    fig, ax = plt.subplots()
+    ax.bar(labels, velocities, yerr=error, align='center', alpha=0.5, ecolor='black', capsize=15)
+    ax.set_ylabel('pix/min')
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(velocities)
+    ax.set_title('Average Nuclei Speed')
+    ax.yaxis.grid(True)
+
+    # Save the figure and show
+    plt.tight_layout()
+    plt.savefig('avg_speed_plot_bar.png')
     plt.show()
 
 
@@ -320,135 +375,139 @@ def normalize_data(df):
         result[feature_name] = (result[feature_name] - min_value) / (max_value - min_value)
     return result.copy()
 
-
-title = "velocity over time- exp {}"
-xml_path = r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Single cell\Tracks_xml\Experiment1_w1Widefield550_s{}_all.xml"
-
-all_props = []
-mean_lengths = []
-mean_net_distances = []
-mean_total_distances = []
-mean_props = []
-columns = ['total_distance', 'net_distance', 'progressivity',
-           'min_velocity', 'max_velocity', 'mean_velocity',
-           'Time Spent Moving', 'Average moving speed', 'differentiation status', 'linearity',
-           'monotonicity', 'Proportion of right turns', 'Minimum turn magnitude',
-           'Maximum turn magnitude', 'Average turn magnitude', 'Mean squared displacement']
-
-# all_data_df = pd.DataFrame(columns=columns)
-# part1_df = pd.DataFrame(columns=columns)
-lst_all_data = []
-lst_part1 = []
-lst_part2 = []
-for i in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12):  # , 4, 5, 6, 7, 8, 9, 10, 11, 12
-    path = xml_path.format(i)
-    full_title = title.format(i)
-    velocity_tracks = velocisty_over_time(xml_path=path)
-
-    for track in velocity_tracks:
-
-        get_measurements(track, lst_all_data)
-
-        part1_track = track.drop(track[track["t"] > 600].index)
-        if len(part1_track) > 0:
-            get_measurements(part1_track, lst_part1)
-
-        part2_track = track.drop(track[track["t"] < 600].index)
-        if len(part2_track) > 0:            get_measurements(part2_track, lst_part2)
-
-all_data_df = pd.DataFrame(lst_all_data, columns=columns)
-part1_df = pd.DataFrame(lst_part1, columns=columns)
-part2_df = pd.DataFrame(lst_part2, columns=columns)
-
-all_data_df = normalize_data(all_data_df)
-part1_df = normalize_data(part1_df)
-part2_df = normalize_data(part2_df)
-
-all_data_df.hist()
+if __name__ == '__main__':
 
 
-def make_plot_pca(df, title):
-    principal_df_diff, pca = build_pca(num_of_components=3, df=df)
-    print('{}: Explained variation per principal component: {}'.format(title, pca.explained_variance_ratio_))
-    plot_pca(principal_df=principal_df_diff, title=title)
+    title = "velocity over time- exp {}"
+    xml_path = r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Single cell\Tracks_xml\Experiment1_w1Widefield550_s{}_all.xml"
+
+    all_props = []
+    mean_lengths = []
+    mean_net_distances = []
+    mean_total_distances = []
+    mean_props = []
+    columns = ['total_distance', 'net_distance', 'progressivity',
+               'min_velocity', 'max_velocity', 'mean_velocity',
+               'Time Spent Moving', 'Average moving speed', 'differentiation status', 'linearity',
+               'monotonicity', 'Proportion of right turns', 'Minimum turn magnitude',
+               'Maximum turn magnitude', 'Average turn magnitude', 'Mean squared displacement']
+
+    # all_data_df = pd.DataFrame(columns=columns)
+    # part1_df = pd.DataFrame(columns=columns)
+    lst_all_data = []
+    lst_part1 = []
+    lst_part2 = []
+    for i in (1, 3):  # , 4, 5, 6, 7, 8, 9, 10, 11, 12
+        path = xml_path.format(i)
+        full_title = title.format(i)
+        velocity_tracks = velocisty_over_time(xml_path=path)
+
+        plot_avg_speed_plot_bar(("exp1",velocity_tracks))
+
+        for track in velocity_tracks:
+
+            get_measurements(track, lst_all_data)
+
+            part1_track = track.drop(track[track["t"] > 600].index)
+            if len(part1_track) > 0:
+                get_measurements(part1_track, lst_part1)
+
+            part2_track = track.drop(track[track["t"] < 600].index)
+            if len(part2_track) > 0:            get_measurements(part2_track, lst_part2)
+
+    all_data_df = pd.DataFrame(lst_all_data, columns=columns)
+    part1_df = pd.DataFrame(lst_part1, columns=columns)
+    part2_df = pd.DataFrame(lst_part2, columns=columns)
+
+    all_data_df = normalize_data(all_data_df)
+    part1_df = normalize_data(part1_df)
+    part2_df = normalize_data(part2_df)
+
+    all_data_df.hist()
 
 
-# PCA
-diff_df = all_data_df[all_data_df["differentiation status"] == 1]
-control_df = all_data_df[all_data_df["differentiation status"] == 0]
-make_plot_pca(diff_df, title="differentiation")
-make_plot_pca(control_df, title="control")
-all_data_df.drop('differentiation status', axis='columns', inplace=True)
-make_plot_pca(all_data_df, title="all data")
+    def make_plot_pca(df, title):
+        principal_df_diff, pca = build_pca(num_of_components=3, df=df)
+        print('{}: Explained variation per principal component: {}'.format(title, pca.explained_variance_ratio_))
+        plot_pca(principal_df=principal_df_diff, title=title)
 
-diff_part1 = part1_df[part1_df["differentiation status"] == 1]
-control_part1 = part1_df[part1_df["differentiation status"] == 0]
-make_plot_pca(diff_part1, title="differentiation p1")
-make_plot_pca(control_part1, title="control p1")
-part1_df.drop('differentiation status', axis='columns', inplace=True)
-make_plot_pca(part1_df, title="all data p1")
 
-diff_part2 = part2_df[part2_df["differentiation status"] == 1]
-control_part2 = part2_df[part2_df["differentiation status"] == 0]
-make_plot_pca(diff_part2, title="differentiation p2")
-make_plot_pca(control_part2, title="control p2")
-part2_df.drop('differentiation status', axis='columns', inplace=True)
-make_plot_pca(part2_df, title="all data p2")
+    # PCA
+    diff_df = all_data_df[all_data_df["differentiation status"] == 1]
+    control_df = all_data_df[all_data_df["differentiation status"] == 0]
+    make_plot_pca(diff_df, title="differentiation")
+    make_plot_pca(control_df, title="control")
+    all_data_df.drop('differentiation status', axis='columns', inplace=True)
+    make_plot_pca(all_data_df, title="all data")
 
-# rndperm = np.random.permutation(all_data_df.shape[0])
+    diff_part1 = part1_df[part1_df["differentiation status"] == 1]
+    control_part1 = part1_df[part1_df["differentiation status"] == 0]
+    make_plot_pca(diff_part1, title="differentiation p1")
+    make_plot_pca(control_part1, title="control p1")
+    part1_df.drop('differentiation status', axis='columns', inplace=True)
+    make_plot_pca(part1_df, title="all data p1")
 
-# print('Explained variation per principal component: {}'.format(pca.explained_variance_ratio_))
-# plt.figure(figsize=(16, 10))
-# sns.scatterplot(
-#     x="principal component 1", y="principal component 2",
-#     hue="principal component 3",
-#     palette=sns.color_palette("hls", len(principal_df['principal component 3'].unique())),
-#     data=principal_df.loc[rndperm, :],
-#     legend=False,
-#     # alpha=0.3
-# )
-# plt.show()
+    diff_part2 = part2_df[part2_df["differentiation status"] == 1]
+    control_part2 = part2_df[part2_df["differentiation status"] == 0]
+    make_plot_pca(diff_part2, title="differentiation p2")
+    make_plot_pca(control_part2, title="control p2")
+    part2_df.drop('differentiation status', axis='columns', inplace=True)
+    make_plot_pca(part2_df, title="all data p2")
 
-# # TSNE
-# time_start = time.time()
-# tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-# tsne_results = tsne.fit_transform(analysed_df)
-# print('t-SNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
-# df_subset = analysed_df.loc[rndperm,:].copy()
-# df_subset['tsne-2d-one'] = tsne_results[:,0]
-# df_subset['tsne-2d-two'] = tsne_results[:,1]
-#
-# plt.figure(figsize=(16,10))
-# sns.scatterplot(
-#     x="tsne-2d-one", y="tsne-2d-two",
-#     hue="tsne-2d-two",
-#     palette=sns.color_palette("hls", len(df_subset['tsne-2d-two'].unique())),
-#     data=df_subset.loc[rndperm, :],
-#     legend="full",
-#     alpha=0.3
-# )
+    # rndperm = np.random.permutation(all_data_df.shape[0])
 
-# plot_velocity_over_time(velocity_tracks, full_title)
-# no_motion_df, props = get_no_motion_proportions(velocity_tracks)
-# all_props.append(np.mean(props))
-# plot_no_prop_motion(props)
-# plot_no_motion_location(no_motion_df)
-# plot_exps_mean_no_motion_proportion(all_props)
+    # print('Explained variation per principal component: {}'.format(pca.explained_variance_ratio_))
+    # plt.figure(figsize=(16, 10))
+    # sns.scatterplot(
+    #     x="principal component 1", y="principal component 2",
+    #     hue="principal component 3",
+    #     palette=sns.color_palette("hls", len(principal_df['principal component 3'].unique())),
+    #     data=principal_df.loc[rndperm, :],
+    #     legend=False,
+    #     # alpha=0.3
+    # )
+    # plt.show()
 
-# lengths, net_distances, total_distances, props = calc_distances(xml_path=path)
-# mean_lengths.append(np.mean(lengths))
-# mean_net_distances.append(np.mean(net_distances))
-# mean_total_distances.append(np.mean(total_distances))
-# mean_props.append(np.mean(props))
-#
-# indexes_con = [0, 1, 6, 7, 8, 9]
-# indexes_dif = [2, 3, 4, 5, 10, 11]
-# plt.bar(np.arange(1, 7, 1) - 0.2, np.array(props)[indexes_con], width=0.2, align='edge')
-# plt.bar(np.arange(1, 7, 1), np.array(props)[indexes_dif], width=0.2, align='edge')
-# plt.xlabel("exp num")
-# # plt.xticks(range(1, 13))
-# plt.yticks(np.arange(0, 8, 0.5))
-# plt.ylabel("mean net:total proportion")
-# plt.title("mean proportion net/total per experiment")
-# plt.legend(["control", "diff"])
-# plt.show()
+    # # TSNE
+    # time_start = time.time()
+    # tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+    # tsne_results = tsne.fit_transform(analysed_df)
+    # print('t-SNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
+    # df_subset = analysed_df.loc[rndperm,:].copy()
+    # df_subset['tsne-2d-one'] = tsne_results[:,0]
+    # df_subset['tsne-2d-two'] = tsne_results[:,1]
+    #
+    # plt.figure(figsize=(16,10))
+    # sns.scatterplot(
+    #     x="tsne-2d-one", y="tsne-2d-two",
+    #     hue="tsne-2d-two",
+    #     palette=sns.color_palette("hls", len(df_subset['tsne-2d-two'].unique())),
+    #     data=df_subset.loc[rndperm, :],
+    #     legend="full",
+    #     alpha=0.3
+    # )
+
+    # plot_velocity_over_time(velocity_tracks, full_title)
+    # no_motion_df, props = get_no_motion_proportions(velocity_tracks)
+    # all_props.append(np.mean(props))
+    # plot_no_prop_motion(props)
+    # plot_no_motion_location(no_motion_df)
+    # plot_exps_mean_no_motion_proportion(all_props)
+
+    # lengths, net_distances, total_distances, props = calc_distances(xml_path=path)
+    # mean_lengths.append(np.mean(lengths))
+    # mean_net_distances.append(np.mean(net_distances))
+    # mean_total_distances.append(np.mean(total_distances))
+    # mean_props.append(np.mean(props))
+    #
+    # indexes_con = [0, 1, 6, 7, 8, 9]
+    # indexes_dif = [2, 3, 4, 5, 10, 11]
+    # plt.bar(np.arange(1, 7, 1) - 0.2, np.array(props)[indexes_con], width=0.2, align='edge')
+    # plt.bar(np.arange(1, 7, 1), np.array(props)[indexes_dif], width=0.2, align='edge')
+    # plt.xlabel("exp num")
+    # # plt.xticks(range(1, 13))
+    # plt.yticks(np.arange(0, 8, 0.5))
+    # plt.ylabel("mean net:total proportion")
+    # plt.title("mean proportion net/total per experiment")
+    # plt.legend(["control", "diff"])
+    # plt.show()

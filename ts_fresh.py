@@ -1,27 +1,48 @@
+import itertools
+from random import sample
+
+import sklearn
+from sklearn import clone
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+# from xgboost import XGBClassifier
+import joblib
 from DataPreprocessing.load_tracks_xml import *
 from tsfresh import extract_features, extract_relevant_features, select_features
 import tsfresh
 from tsfresh.examples.robot_execution_failures import download_robot_execution_failures, load_robot_execution_failures
 from tsfresh.utilities.dataframe_functions import impute
 import pandas as pd
-from sklearn.metrics import classification_report, roc_auc_score, roc_curve
+from sklearn.metrics import classification_report, roc_auc_score, roc_curve, confusion_matrix
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
-from sklearn.model_selection import cross_val_predict, train_test_split
+from sklearn.model_selection import cross_val_predict, train_test_split, StratifiedKFold, GridSearchCV
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
+import os
+import seaborn as sns
+from ts_interpretation import plot_cell_probability
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
+import tensorflow as tf
+
+tf.get_logger().setLevel('ERROR')
+
 warnings.filterwarnings("ignore", message="A value is trying to be set on a copy of a slice from a DataFrame")
 
-def drop_columns(df):
-    intensity_features = ['median_intensity',
-                          'min_intensity', 'max_intensity', 'mean_intensity',
-                          'total_intensity', 'std_intensity', 'contrast', 'snr']
-    basic_features = ['t_stamp', 'z', 'spot_id']
-    motion_features = ['x', 'y', 'w', 'q']
-    basic_features.extend(intensity_features)
-    df = df[df.columns.drop(basic_features)]
+
+def drop_columns(df, motility=True, intensity=True, basic=False):
+    intensity_features = ['median_intensity', 'min_intensity', 'max_intensity', 'mean_intensity',
+                          'total_intensity', 'std_intensity', 'contrast', 'snr', 'w', 'q']
+    basic_features = ['t_stamp', 'z', 'spot_id', 'q']
+    motility_features = ['x', 'y']
+    to_remove = []
+    to_remove.extend(basic_features) if not basic else to_remove.extend([])
+    to_remove.extend(intensity_features) if not intensity else to_remove.extend([])
+    to_remove.extend(motility_features) if not motility else to_remove.extend([])
+    df = df[df.columns.drop(to_remove)]
     return df
 
 
@@ -32,28 +53,42 @@ def get_unique_indexes(y):
     return y_new
 
 
-def normalize_tracks(df):
-    for label in df['label']:
-        df[df["label"] == label]["x"]= 1
-            # pd.DataFrame(df[df["label"] == label]["x"] - df[df["label"] == label].iloc[0]["x"]).values
-        # df[df["label"]==label]["x"] =  labeld_df["x"]- labeld_df.iloc[0]["x"]
-        # df[df["label"]==label]["y"] =  labeld_df["y"]- labeld_df.iloc[0]["y"]
-    return  df
+def normalize_tracks(df, motility=False, intensity=False):
+    if motility:
+        for label in df.label:
+            to_reduce_x = df[df.label == label].iloc[0].x
+            to_reduce_y = df[df.label == label].iloc[0].y
+            df.loc[(df.label == label).values, "x"] = df[df.label == label].x.apply(lambda num: num - to_reduce_x)
+            df.loc[(df.label == label).values, "y"] = df[df.label == label].y.apply(lambda num: num - to_reduce_y)
+
+    if intensity:
+        columns = list(df.columns)
+        columns.remove("t")
+        columns.remove("label")
+        columns.remove("target")
+
+        # create a scaler
+        scaler = StandardScaler()
+        # transform the feature
+        df[columns] = scaler.fit_transform(df[columns])
+    return df
 
 
-
-def concat_dfs(lst_videos=[2, 4, 5, 6, 7, 8, 9, 10, 11, 12]):
+def concat_dfs(min_time_diff, lst_videos):
+    min_time_diff = min_time_diff
     max_val = 0
     total_df = pd.DataFrame()
-    for i in lst_videos:  # 1,3,
+    for i in lst_videos:
         xml_path = r"data/tracks_xml/0104/Experiment1_w1Widefield550_s{}_all_0104.xml".format(i)
+        xml_path = xml_path if os.path.exists(xml_path) else "muscle-formation-diff/" + xml_path
         _, df = load_tracks_xml(xml_path)
-        df = drop_columns(df)
-        df = normalize_tracks(df)
         df.label = df.label + max_val
         max_val = df["label"].max() + 1
-
-        target = True if i in (3, 4, 5, 6, 11, 12) else False
+        target = False
+        if i in (3, 4, 5, 6, 11, 12):
+            if df["t"].max() >= min_time_diff:
+                target = True
+        # target = True if i in (3, 4, 5, 6, 11, 12) else False
         df['target'] = np.array([target for i in range(len(df))])
         total_df = pd.concat([total_df, df], ignore_index=True)
     return total_df
@@ -71,27 +106,22 @@ def long_extract_features(df):
 
 
 def short_extract_features(df, y):
-    df = df[df.columns.drop(['target'])]
+    # df = df[df.columns.drop(['target'])]
     features_filtered_direct = extract_relevant_features(df, y, column_id="label", column_sort='t', show_warnings=False,
                                                          n_jobs=8)
     return features_filtered_direct
 
 
-def feature_importance(clf):
-    importance = pd.Series(clf.feature_importances_)
-    importance.sort_values(ascending=False)
-    print(importance)
-
-    imp_frame = importance.to_frame()
-    imp_frame.plot(kind="bar")
-    plt.xticks([])
-    plt.xlabel('Features')
-    plt.ylabel('Importance')
+def feature_importance(clf, feature_names, path):
+    sorted_idx = clf.feature_importances_.argsort()
+    plt.barh(clf.feature_importances_[sorted_idx])
+    plt.xlabel("Random Forest Feature Importance")
     plt.title('Feature Importance Plot')
+    plt.savefig(path + "/feature importance.png")
     plt.show()
 
 
-def get_single_cells_diff_scor_plot(tracks, clf):
+def get_single_cells_diff_score_plot(tracks, clf, features_filtered_direct):
     all_probs = []
     for cell in (5, 7, 8, 9, 10):  # , 14, 16, 19, 27, 30
         true_prob = []
@@ -111,28 +141,32 @@ def get_single_cells_diff_scor_plot(tracks, clf):
             track_len = len(tracks[cell])
             label_time = [(tracks[cell].iloc[val]['t'] / 60) / 60 for val in range(0, track_len, n)]
 
-            plt.plot(range(0, track_len, n), true_prob)
-            plt.xticks(range(0, track_len, n), labels=np.around(label_time, decimals=1))
-            plt.ylim(0, 1, 0.1)
-            plt.title(f"probability to differentiation over time- diff, cell #{cell}")
-            plt.xlabel("time [h]")
-            plt.ylabel("prob")
-            plt.grid()
-            plt.show()
+        plt.plot(range(0, track_len, n), true_prob)
+        plt.xticks(range(0, track_len, n), labels=np.around(label_time, decimals=1))
+        plt.ylim(0, 1, 0.1)
+        plt.title(f"probability to differentiation over time- diff, cell #{cell}")
+        plt.xlabel("time [h]")
+        plt.ylabel("prob")
+        plt.grid()
+        plt.show()
         all_probs.append(true_prob)
         return all_probs
 
 
-def train(features_filtered, y):
-    X_train, X_test, y_train, y_test = train_test_split(features_filtered, y,
-                                                        test_size=0.3,
-                                                        random_state=42, shuffle=True)
+def train(X_train, X_test, y_train, y_test):
     clf = RandomForestClassifier()
-    clf.fit(X_train, y_train)
+    # clf.fit(X_train, y_train)
     # feature_importance(clf)
     predicted = cross_val_predict(clf, X_test, y_test, cv=5)
-    print(classification_report(y_test, predicted))
-    print(roc_auc_score(y_test, clf.predict_proba(X_test)[:, 1]))
+    report = classification_report(y_test, predicted)
+    auc_score = roc_auc_score(y_test, clf.predict_proba(X_test)[:, 1])
+    print(report)
+    print(auc_score)
+    return clf, report, auc_score
+
+
+def plot_roc(clf, X_test, y_test, path):
+    fig = plt.figure(figsize=(20, 6))
     # roc curve for models
     fpr1, tpr1, thresh1 = roc_curve(y_test, clf.predict_proba(X_test)[:, 1], pos_label=1)
 
@@ -141,7 +175,6 @@ def train(features_filtered, y):
     p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
 
     plt.style.use('seaborn')
-
     # plot roc curves
     plt.plot(fpr1, tpr1, linestyle='--', color='orange', label='Random Forest')
     plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
@@ -153,30 +186,205 @@ def train(features_filtered, y):
     plt.ylabel('True Positive rate')
 
     plt.legend(loc='best')
-    plt.savefig('ROC', dpi=300)
+    plt.savefig(path + "/" + 'ROC', dpi=300)
     plt.show()
 
-    return clf
 
+def get_x_y(min_length, max_length, min_time_diff, lst_videos, motility, intensity):
+    df = concat_dfs(min_time_diff, lst_videos, motility=motility, intensity=intensity)
+    df = drop_columns(df, motility=motility, intensity=intensity)
+    df = normalize_tracks(df, motility=motility, intensity=intensity)
 
-if __name__ == '__main__':
-    print("start")
-    df = concat_dfs([1, 3])  # 2, # 2, 4, 5, 6, 7, 8, 9, 10, 11, 12
+    occurrences = df.groupby(["label"]).size()
+    labels = []
+    for label in df["label"].unique():
+        if (min_length <= occurrences[label] <= max_length):
+            labels.append(label)
+    df = df[df["label"].isin(labels)]
+
     y = pd.Series(df['target'])
     y.index = df["label"]
     y = get_unique_indexes(y)
-    pickle.dump(y, open("y_1_3_no_intensity", 'wb'))
-    # y = pickle.load(open("data/y_5_12", 'rb'))
+    df = df.drop("target", axis=1)
+    return df, y
 
-    features_filtered_direct = short_extract_features(df, y)
-    pickle.dump(features_filtered_direct, open("features_filtered_no_motion_1_3", 'wb'))
 
-    clf = train(features_filtered_direct, y)
+def nested_cross_validation(X, y):
+    '''
+    :param X:
+    :param y:
+    :return:
+    '''
+    k = 5
+    f1_xgb = 0
+    f1_rf = 0
+    xgb_best_prms = dict()
+    rf_best_prms = dict()
 
-    # features_filtered_direct = pickle.load(open("muscle-formation-diff/data/features_filtered_direct_5_12", 'rb'))
-    # xml_path_diff = r"muscle-formation-diff/data/tracks_xml/0104/Experiment1_w1Widefield550_s4_all_0104.xml"
-    # xml_path_con = r"muscle-formation-diff/data/tracks_xml/0104/Experiment1_w1Widefield550_s2_all_0104.xml"
-    # tracks_dif, df_diff = load_tracks_xml(xml_path_diff)
-    # tracks_con, df_con = load_tracks_xml(xml_path_con)
-    # df_diff = drop_columns(df_diff)
-    # df_con = drop_columns(df_con)
+    cv_outer = StratifiedKFold(n_splits=k, shuffle=True, random_state=1)
+    for train_idx, val_idx in cv_outer.split(X, y):
+        train_data, val_data = X.iloc[train_idx], X.iloc[val_idx]
+        train_target, val_target = y.iloc[train_idx], y.iloc[val_idx]
+
+        cv_inner = StratifiedKFold(n_splits=k, shuffle=True, random_state=1)
+
+        rf = RandomForestClassifier()
+        space_RF = {'n_estimators': np.arange(10, 100, 5).tolist(), 'max_depth': [2, 4, 8, 16, 32, 64]}
+        gd_search = GridSearchCV(rf, space_RF, scoring='f1', n_jobs=-1, cv=cv_inner, refit=True).fit(train_data,
+                                                                                                     train_target)
+        predictions = gd_search.predict(val_data)
+        rf_best_prms = gd_search.best_params_ if sklearn.metrics.f1_score(val_target,
+                                                                          predictions) > f1_rf else rf_best_prms
+
+        xgb = XGBClassifier(use_label_encoder=False, verbosity=0)
+        space_XGB = {'n_estimators': np.arange(10, 100, 5).tolist(), 'max_depth': [2, 4, 8, 16, 32, 64],
+                     'learning_rate': [0.1, 0.05, 0.01]}
+        gd_search = GridSearchCV(xgb, space_XGB, scoring='f1', n_jobs=-1, cv=cv_inner, refit=True).fit(train_data,
+                                                                                                       train_target)
+        predictions = gd_search.predict(val_data)
+        xgb_best_prms = gd_search.best_params_ if sklearn.metrics.f1_score(val_target,
+                                                                           predictions) > f1_rf else xgb_best_prms
+
+    return rf_best_prms, xgb_best_prms
+
+
+def evaluate(y_test, y_hat, scores):
+    cm = confusion_matrix(y_test, y_hat)
+    scores["accuracy"] = sklearn.metrics.accuracy_score(y_test, y_hat)
+    scores["f1_score"] = sklearn.metrics.f1_score(y_test, y_hat)
+    scores["specificity"] = cm[0, 0] / (cm[0, 0] + cm[0, 1])
+    scores["sensitivity"] = cm[1, 1] / (cm[1, 0] + cm[1, 1])
+    scores["AUROC"] = sklearn.metrics.roc_auc_score(y_test, y_hat)
+
+
+def retrain_model(model, params, X_train, X_test, y_train, y_test):
+    '''
+    :param model:
+    :param params:
+    :param X:
+    :param y:
+    :return:
+    '''
+    scores = {'accuracy': [], 'f1_score': [], 'sensitivity': [], 'specificity': [], 'AUROC': []}
+    avg_scores = {}
+    avg_stds = {}
+    print("Retraining {}".format(model))
+    for i in range(10):
+        model = clone(model)
+        model.set_params(**params)
+        model.fit(X_train, y_train)
+        y_hat = model.predict(X_test)
+        evaluate(y_test, y_hat, scores)
+    for metric, lst in scores.items():
+        avg_scores[metric] = str(np.mean(lst)) + "+-" + str(np.std(lst))
+        avg_stds[metric] = np.std(lst)
+    print(f"Average scores for the model : {avg_scores}")
+    return model
+
+
+def build_pca(num_of_components, df):
+    '''
+    The method creates component principle dataframe, with num_of_components components
+    :param num_of_components: number of desired components
+    :param df: encoded images
+    :return: PCA dataframe
+    '''
+    pca = PCA(n_components=num_of_components)
+    principal_components = pca.fit_transform(df)
+    colomns = ['principal component {}'.format(i) for i in range(1, num_of_components + 1)]
+    principal_df = pd.DataFrame(data=principal_components, columns=colomns)
+    return principal_df, pca
+
+
+def plot_pca(principal_df, pca, path):
+    '''
+    The method plots the first 3 dimensions of a given PCA
+    :param principal_df: PCA dataframe
+    :return: no return value
+    '''
+    variance = pca.explained_variance_ratio_
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(
+        x="principal component 1", y="principal component 2",
+        hue='principal component 3',
+        palette=sns.color_palette("hls", len(principal_df['principal component 3'].unique())),
+        data=principal_df,
+        legend=False,
+        alpha=0.3
+    )
+    plt.xlabel(f"PC1 ({variance[0]}) %")
+    plt.ylabel(f"PC2 ({variance[1]}) %")
+    plt.title("PCA")
+    plt.savefig(path + "/pca.png")
+    plt.show()
+
+
+def extract_distinct_features(df, feature_list):
+    df = extract_features(df, column_id="label", column_sort="t")
+    impute(df)
+    return df[feature_list]
+
+
+def get_path(path):
+    return path if os.path.exists(path) else "muscle-formation-diff/" + path
+
+
+if __name__ == '__main__':
+    print("Let's go!")
+
+    motility = False
+    intensity = True
+    min_length = 0
+    max_length = 950
+    min_time_diff = 0
+
+    exp_1 = [1, 2, 3, 4]
+    exp_2 = [5, 6, 7, 8]
+    exp_3 = [9, 10, 11, 12]
+    # exp_1=[1]
+    # exp_2= [3]
+    # exp_3= [1,3]
+
+    train_video_lists = [list(itertools.chain(exp_1, exp_2)),
+                         list(itertools.chain(exp_1, exp_3)), list(itertools.chain(exp_2, exp_3))]
+    test_video_lists = [exp_3, exp_2, exp_1]
+
+    auc_scores = []
+
+    for (exp_train_lst, exp_test_lst) in zip(train_video_lists, test_video_lists):
+
+        dir_name = f"train_set {exp_train_lst}_ test_set {exp_test_lst}_ motility-{motility}_intensity-{intensity}"
+        print(dir_name)
+        if not os.path.exists(dir_name):
+            os.mkdir(dir_name)
+
+        X_train, y_train = get_x_y(min_length=min_length, max_length=max_length, min_time_diff=min_time_diff,
+                                   lst_videos=exp_train_lst, motility=motility, intensity=intensity)
+        # extract features using ts-fresh
+        X_train = short_extract_features(X_train, y_train)
+
+        X_test, y_test = get_x_y(min_length=min_length, max_length=max_length, min_time_diff=min_time_diff,
+                                 lst_videos=exp_test_lst, motility=motility, intensity=intensity)
+        X_test = extract_distinct_features(df=X_test, feature_list=X_train.columns)
+
+        clf, report, auc_score = train(X_train, X_test, y_train, y_test)
+        plot_roc(clf=clf, X_test=X_test, y_test=y_test, path=dir_name)
+        principal_df, pca = build_pca(3, X_test)
+        plot_pca(principal_df, pca, dir_name)
+        feature_importance(clf, X_train.columns, dir_name)
+
+        auc_scores.append(auc_score)
+
+        pickle.dump(X_train, open(dir_name + "/" + "X_train", 'wb'))
+        pickle.dump(X_test, open(dir_name + "/" + "X_test", 'wb'))
+        joblib.dump(clf, dir_name + "/" + "clf.joblib")
+
+        txt_file = open(dir_name + '/info.txt', 'a')
+        txt_file.write(f"classification report: {report}\n auc score: {auc_score}")
+        txt_file.close()
+
+    print(f"AVG AUC score: {np.mean(auc_scores)}")
+
+# rf_best_prms, xgb_best_prms = nested_cross_validation(X_train, y_train)
+# xgb_model = retrain_model(XGBClassifier(), xgb_best_prms, X_train, X_test, y_train, y_test)
+# rf_model = retrain_model(RandomForestClassifier(), rf_best_prms, X_train, X_test, y_train, y_test)

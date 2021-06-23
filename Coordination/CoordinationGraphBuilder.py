@@ -251,7 +251,7 @@ class CoordGraphBuilder():
         control, _ = self.read_coordinationDF(self.coord_control)
         diff, _ = self.read_coordinationDF(self.coord_diff)
         coord_permute_diff = pickle.load(
-            open(r'C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Tracking\costheta\coherence_validaton_3',
+            open(r'C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Tracking\costheta\coherence_validaton_1',
                  'rb'))
         coord_permute_con = pickle.load(
             open(r'C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Tracking\costheta\coherence_validaton_1',
@@ -333,11 +333,13 @@ class CoordGraphBuilder():
 
 
 if __name__ == '__main__':
-    coord_control_path = r'coordination_outputs/coordination_dfs/different_densities/coordination_df_s19x2.pkl'
-    xml_control_path = r'../data/tracks_xml/different_densities/s19_all.xml'
+    coord_control_path = r'coordination_outputs/validations/pickled coordination dfs/0104_regular/coordination_df_s3_0104.pkl'
+    xml_control_path = r'data/tracks_xml/0104/Experiment1_w1Widefield550_s1_all_0104.xml'
+    coord_validation_path = r'C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Tracking\costheta/coherence_validaton_3'
+    xml_validation_path = r'data/tracks_xml/0104/Experiment1_w1Widefield550_s1_all_0104.xml'
 
-    builder = CoordGraphBuilder(coord_control_path, coord_control_path, xml_control_path, xml_control_path)
-    # builder.plot_coord_over_time("Coordination over time s18_s21")
+    builder = CoordGraphBuilder(coord_control_path, coord_validation_path, xml_control_path, xml_validation_path)
+    builder.plot_coord_over_time("Coordination over time validation")
 
     # fig = plt.figure(figsize=(20, 4))
     # colors = ["Oranges", "Blues"]
