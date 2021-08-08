@@ -1,29 +1,25 @@
 import itertools
-from random import sample
-
 import sklearn
+from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 from sklearn import clone
-from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 # from xgboost import XGBClassifier
 import joblib
 from DataPreprocessing.load_tracks_xml import *
 from tsfresh import extract_features, extract_relevant_features, select_features
-import tsfresh
-from tsfresh.examples.robot_execution_failures import download_robot_execution_failures, load_robot_execution_failures
 from tsfresh.utilities.dataframe_functions import impute
 import pandas as pd
-from sklearn.metrics import classification_report, roc_auc_score, roc_curve, confusion_matrix
+from sklearn.metrics import classification_report, roc_auc_score, confusion_matrix
 from sklearn.ensemble import RandomForestClassifier
-import matplotlib.pyplot as plt
-from sklearn.model_selection import cross_val_predict, train_test_split, StratifiedKFold, GridSearchCV
+from sklearn.model_selection import cross_val_predict, StratifiedKFold, GridSearchCV
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 import os
-import seaborn as sns
-from ts_interpretation import plot_cell_probability
+from skimage import io
+
+from ts_interpretation import build_pca, feature_importance, plot_roc, plot_pca
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 import tensorflow as tf
@@ -63,9 +59,12 @@ def normalize_tracks(df, motility=False, intensity=False):
 
     if intensity:
         columns = list(df.columns)
-        columns.remove("t")
-        columns.remove("label")
-        columns.remove("target")
+        try:
+            columns.remove("t")
+            columns.remove("label")
+            columns.remove("target")
+        except:
+            pass
 
         # create a scaler
         scaler = StandardScaler()
@@ -74,14 +73,23 @@ def normalize_tracks(df, motility=False, intensity=False):
     return df
 
 
-def concat_dfs(min_time_diff, lst_videos):
+def concat_dfs(min_time_diff, lst_videos, crop_start=False, crop_end=False):
     min_time_diff = min_time_diff
     max_val = 0
     total_df = pd.DataFrame()
     for i in lst_videos:
         xml_path = r"data/tracks_xml/0104/Experiment1_w1Widefield550_s{}_all_0104.xml".format(i)
-        xml_path = xml_path if os.path.exists(xml_path) else "muscle-formation-diff/" + xml_path
+        if not os.path.exists(xml_path):
+            xml_path = "../" + xml_path if os.path.exists("../" + xml_path) else "muscle-formation-diff/" + xml_path
         _, df = load_tracks_xml(xml_path)
+
+        if crop_start:
+            # keep only the beginning of the track
+            df = df[df["t"] <= 300]  # 300 time unites = 300*1.5/90 = 3.333 hours
+        if crop_end:
+            # keep only the end of the track
+            df = df[df["t"] >= 700]  # 700 time unites = 700*1.5/90 = 17.5 hours
+
         df.label = df.label + max_val
         max_val = df["label"].max() + 1
         target = False
@@ -110,15 +118,6 @@ def short_extract_features(df, y):
     features_filtered_direct = extract_relevant_features(df, y, column_id="label", column_sort='t', show_warnings=False,
                                                          n_jobs=8)
     return features_filtered_direct
-
-
-def feature_importance(clf, feature_names, path):
-    sorted_idx = clf.feature_importances_.argsort()
-    plt.barh(clf.feature_importances_[sorted_idx])
-    plt.xlabel("Random Forest Feature Importance")
-    plt.title('Feature Importance Plot')
-    plt.savefig(path + "/feature importance.png")
-    plt.show()
 
 
 def get_single_cells_diff_score_plot(tracks, clf, features_filtered_direct):
@@ -155,8 +154,7 @@ def get_single_cells_diff_score_plot(tracks, clf, features_filtered_direct):
 
 def train(X_train, X_test, y_train, y_test):
     clf = RandomForestClassifier()
-    # clf.fit(X_train, y_train)
-    # feature_importance(clf)
+    clf.fit(X_train, y_train)
     predicted = cross_val_predict(clf, X_test, y_test, cv=5)
     report = classification_report(y_test, predicted)
     auc_score = roc_auc_score(y_test, clf.predict_proba(X_test)[:, 1])
@@ -165,33 +163,8 @@ def train(X_train, X_test, y_train, y_test):
     return clf, report, auc_score
 
 
-def plot_roc(clf, X_test, y_test, path):
-    fig = plt.figure(figsize=(20, 6))
-    # roc curve for models
-    fpr1, tpr1, thresh1 = roc_curve(y_test, clf.predict_proba(X_test)[:, 1], pos_label=1)
-
-    # roc curve for tpr = fpr
-    random_probs = [0 for i in range(len(y_test))]
-    p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
-
-    plt.style.use('seaborn')
-    # plot roc curves
-    plt.plot(fpr1, tpr1, linestyle='--', color='orange', label='Random Forest')
-    plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
-    # title
-    plt.title('ROC curve')
-    # x label
-    plt.xlabel('False Positive Rate')
-    # y label
-    plt.ylabel('True Positive rate')
-
-    plt.legend(loc='best')
-    plt.savefig(path + "/" + 'ROC', dpi=300)
-    plt.show()
-
-
-def get_x_y(min_length, max_length, min_time_diff, lst_videos, motility, intensity):
-    df = concat_dfs(min_time_diff, lst_videos, motility=motility, intensity=intensity)
+def get_x_y(min_length, max_length, min_time_diff, lst_videos, motility, intensity, crop_start=False, crop_end=False):
+    df = concat_dfs(min_time_diff, lst_videos, crop_start, crop_end)
     df = drop_columns(df, motility=motility, intensity=intensity)
     df = normalize_tracks(df, motility=motility, intensity=intensity)
 
@@ -201,6 +174,7 @@ def get_x_y(min_length, max_length, min_time_diff, lst_videos, motility, intensi
         if (min_length <= occurrences[label] <= max_length):
             labels.append(label)
     df = df[df["label"].isin(labels)]
+    df = df.sample(frac=1).reset_index(drop=True)
 
     y = pd.Series(df['target'])
     y.index = df["label"]
@@ -282,47 +256,156 @@ def retrain_model(model, params, X_train, X_test, y_train, y_test):
     return model
 
 
-def build_pca(num_of_components, df):
-    '''
-    The method creates component principle dataframe, with num_of_components components
-    :param num_of_components: number of desired components
-    :param df: encoded images
-    :return: PCA dataframe
-    '''
-    pca = PCA(n_components=num_of_components)
-    principal_components = pca.fit_transform(df)
-    colomns = ['principal component {}'.format(i) for i in range(1, num_of_components + 1)]
-    principal_df = pd.DataFrame(data=principal_components, columns=colomns)
-    return principal_df, pca
-
-
-def plot_pca(principal_df, pca, path):
-    '''
-    The method plots the first 3 dimensions of a given PCA
-    :param principal_df: PCA dataframe
-    :return: no return value
-    '''
-    variance = pca.explained_variance_ratio_
-    plt.figure(figsize=(8, 6))
-    sns.scatterplot(
-        x="principal component 1", y="principal component 2",
-        hue='principal component 3',
-        palette=sns.color_palette("hls", len(principal_df['principal component 3'].unique())),
-        data=principal_df,
-        legend=False,
-        alpha=0.3
-    )
-    plt.xlabel(f"PC1 ({variance[0]}) %")
-    plt.ylabel(f"PC2 ({variance[1]}) %")
-    plt.title("PCA")
-    plt.savefig(path + "/pca.png")
-    plt.show()
-
-
 def extract_distinct_features(df, feature_list):
     df = extract_features(df, column_id="label", column_sort="t")
     impute(df)
     return df[feature_list]
+
+
+def get_prob_over_track(clf, track, window, features_df):
+    '''
+    Returns a list of the probability of being differentiated, for each track portion
+    :param clf: classifier
+    :param track: cell's track
+    :param window: the size of the track's portion
+    :param features_df: dataframe to take its features, fir using the same features on the tested data
+    :return: list of probabilities
+    '''
+    true_prob = []
+    for i in range(0, len(track), window):
+        track_portion = track[i:i + window]
+        X = extract_distinct_features(df=track_portion, feature_list=features_df.columns)
+        probs = clf.predict_proba(X)
+        true_prob.append(probs[0][1])
+        print(f"track portion: [{i}:{i + window}]")
+        print(clf.classes_)
+        print(probs)
+    return true_prob
+
+
+def get_patches(track, bf_video):
+    '''
+    Returns list of cell crops (images) from a video, according to it's track
+    :param track: the cell's track
+    :param bf_video: video's path
+    :return: list of crops
+    '''
+    image_size = 32
+    im = io.imread(bf_video)
+    crops = []
+    for i in range(len(track)):
+        x = int(track.iloc[i]["x"])
+        y = int(track.iloc[i]["y"])
+        single_cell_crop = im[int(track.iloc[i]["t_stamp"]), y - image_size:y + image_size,
+                           x - image_size:x + image_size]
+        crops.append(single_cell_crop)
+    return crops
+
+
+def plot_cell_probability(cell_ind, bf_video, clf, track, window, target_val, features_df, text, path=None):
+    '''
+    plot image crops together with their probability of being differentiated
+    :param cell_ind: the index of the cell (in the dataframe)
+    :param bf_video: video's path
+    :param clf: classifier
+    :param track: cell's track
+    :param window: the size of the track's portion to calculate its probability
+    :param target_val: True- REK treatment, False- control
+    :param features_df: dataframe to take its features, fir using the same features on the tested data
+    :param text: insert text on the figure
+    :param path: path of a directory to save the figure to
+    :return:-
+    '''
+
+    # compute tsfresh features
+    X_full_track = extract_distinct_features(df=track, feature_list=features_df.columns)
+
+    # predict the full track's probability of being differentiated
+    pred = clf.predict(X_full_track)
+    total_prob = clf.predict_proba(X_full_track)[0][1]
+
+    # calculate list of probabilities per window
+    true_prob = get_prob_over_track(clf, track, window, features_df)
+
+    # create images crops of the cell during its track, adjust them to the window's splits
+    cell_patches = get_patches(track, bf_video)
+    windowed_cell_patches = [cell_patches[i] for i in range(0, len(cell_patches), window)]
+
+    # plot probability over time
+    plt.figure(figsize=(20, 6))
+    fig, ax = plt.subplots()
+
+    # plot the probability
+    track_len = len(track)
+    ax.scatter(range(0, track_len, window), true_prob)
+
+    # add images on the scattered probability points
+    for x0, y0, patch in zip(range(0, track_len, window), true_prob, windowed_cell_patches):
+        ab = AnnotationBbox(OffsetImage(patch, 0.32), (x0, y0), frameon=False)
+        ax.add_artist(ab)
+        plt.gray()
+        plt.grid()
+
+    # plot the line between the probability points
+    ax.plot(range(0, track_len, window), true_prob)
+
+    # adjust axes
+    label_time = [(track.iloc[val]['t']) * 90 / 60 / 60 for val in range(0, track_len, 2 * window)]
+    plt.xticks(range(0, track_len, 2 * window), labels=np.around(label_time, decimals=1))
+    plt.ylim(0.2, 1, 0.05)
+    plt.grid()
+
+    # add title and labels
+    plt.title(f"cell #{cell_ind} probability of differetniation")
+    plt.xlabel("time (h)")
+    plt.ylabel("prob")
+
+    # add target
+    plt.text(0.1, 0.9, f'target: {target_val}', ha='center', va='center', transform=ax.transAxes)
+
+    # total track's prediction probability
+    plt.text(0.2, 0.8, f'total track prediction: {pred[0]}, {total_prob}',
+             ha='center', va='center', transform=ax.transAxes)
+    # add additional entered text
+    plt.text(0.5, 0.9, text, ha='center', va='center', transform=ax.transAxes)
+
+    # save image
+    if path:
+        print(path)
+        plt.savefig(path + ".png")
+    plt.show()
+
+
+def plot_sampled_cells(track_length, clf, features_df, dir_name, con_diff, bf_video, tracks, n_cells=10):
+    '''
+    plot probability over time (with image crops), for several sampled cells
+    :param track_length: minimal track length to plot
+    :param clf: the classifier
+    :param features_df: dataframe to take its features, fir using the same features on the tested data
+    :param dir_name: directory path to save the outputs to
+    :param con_diff: adds the inserted value to the images paths ("control" or "ERK")
+    :param bf_video: video's path
+    :param tracks: list of all cells tracks
+    :param n_cells: how many cells to plot
+    :return: -
+    '''
+    count = 0
+    # iterate through all of the tracks
+    for cell_ind, curr_track in enumerate(tracks):
+
+        # skip the track if its shorter that 'track_length'
+        if len(curr_track) < track_length:
+            continue
+
+        # plot only 'ne_cells' plots
+        if count > n_cells:
+            continue
+
+        count += 1
+        # plot cell's probability over time
+        plot_cell_probability(cell_ind=cell_ind, bf_video=bf_video, clf=clf, track=curr_track, window=40,
+                              target_val=True, features_df=features_df,
+                              text="", path=dir_name + "/" + con_diff + "_" + str(cell_ind))
 
 
 def get_path(path):
@@ -330,60 +413,88 @@ def get_path(path):
 
 
 if __name__ == '__main__':
-    print("Let's go!")
+    print(
+        "Let's go! In this script, we will calculate the average delta of the probability of being differentiated over time")
 
-    motility = False
-    intensity = True
+    # params
+    motility = True
+    intensity = False
     min_length = 0
     max_length = 950
     min_time_diff = 0
+    auc_scores = []
+    window = 40
 
+    # split videos into their experiments
     exp_1 = [1, 2, 3, 4]
     exp_2 = [5, 6, 7, 8]
     exp_3 = [9, 10, 11, 12]
-    # exp_1=[1]
-    # exp_2= [3]
-    # exp_3= [1,3]
 
+    # create combinations for leave one out training
     train_video_lists = [list(itertools.chain(exp_1, exp_2)),
                          list(itertools.chain(exp_1, exp_3)), list(itertools.chain(exp_2, exp_3))]
     test_video_lists = [exp_3, exp_2, exp_1]
 
-    auc_scores = []
+    # load ERK's tracks and dataframe
+    xml_path_diff = get_path(r"data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s3_all_pixelratio1.xml")
+    bf_video_diff = get_path(
+        r"data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s3_all_pixelratio1.tif")
+    tracks_diff, df = load_tracks_xml(xml_path_diff)
 
+    # load control's tracks and dataframe
+    xml_path_con = get_path(r"data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s9_all_pixelratio1.xml")
+    bf_video_con = get_path(
+        r"data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s9_all_pixelratio1.tif")
+    tracks_con, df = load_tracks_xml(xml_path_con)
+
+    # iterate through all experiments, performing leave one out
     for (exp_train_lst, exp_test_lst) in zip(train_video_lists, test_video_lists):
 
-        dir_name = f"train_set {exp_train_lst}_ test_set {exp_test_lst}_ motility-{motility}_intensity-{intensity}"
+        # open a new directory to save the outputs in
+        dir_name = f"shuffle_train_set {exp_train_lst}_ test_set {exp_test_lst}_ motility-{motility}_intensity-{intensity}"
         print(dir_name)
-        if not os.path.exists(dir_name):
-            os.mkdir(dir_name)
 
-        X_train, y_train = get_x_y(min_length=min_length, max_length=max_length, min_time_diff=min_time_diff,
-                                   lst_videos=exp_train_lst, motility=motility, intensity=intensity)
-        # extract features using ts-fresh
-        X_train = short_extract_features(X_train, y_train)
+        clf = joblib.load(dir_name + "/" + "clf.joblib")
 
-        X_test, y_test = get_x_y(min_length=min_length, max_length=max_length, min_time_diff=min_time_diff,
-                                 lst_videos=exp_test_lst, motility=motility, intensity=intensity)
-        X_test = extract_distinct_features(df=X_test, feature_list=X_train.columns)
+        X_test = pickle.load(open(dir_name + "/" + "X_test", 'rb'))
+        # df_prob = pickle.load(open(dir_name + "/" + "df_prob", 'rb'))
 
-        clf, report, auc_score = train(X_train, X_test, y_train, y_test)
-        plot_roc(clf=clf, X_test=X_test, y_test=y_test, path=dir_name)
-        principal_df, pca = build_pca(3, X_test)
-        plot_pca(principal_df, pca, dir_name)
-        feature_importance(clf, X_train.columns, dir_name)
+        wt_cols = [wt for wt in range(0, 950, window)]
+        df_prob = pd.DataFrame(columns=wt_cols)
+        for ind, t in enumerate(tracks_con):
+            track = tracks_diff[ind]
+            if len(track) < 40:
+                continue
+            # normalize track:
+            track = drop_columns(track, motility=motility, intensity=intensity)
+            track = normalize_tracks(track, motility=motility, intensity=intensity)
+            # calculate list of probabilities per window
+            true_prob = get_prob_over_track(clf, track, window, X_test)
+            delta_prob = [(true_prob[i] - true_prob[i - 1]) for i in range(1, len(true_prob))]
+            time_windows = [(track.iloc[val]['t']) for val in range(0 + window, len(track), window)]
 
-        auc_scores.append(auc_score)
+            dic = {}
+            for (wt, prob) in zip(time_windows, delta_prob):
+                dic[int(wt)] = prob
+            data = [dic]
+            df_prob = df_prob.append(data, ignore_index=True, sort=False)
 
-        pickle.dump(X_train, open(dir_name + "/" + "X_train", 'wb'))
-        pickle.dump(X_test, open(dir_name + "/" + "X_test", 'wb'))
-        joblib.dump(clf, dir_name + "/" + "clf.joblib")
-
-        txt_file = open(dir_name + '/info.txt', 'a')
-        txt_file.write(f"classification report: {report}\n auc score: {auc_score}")
-        txt_file.close()
-
-    print(f"AVG AUC score: {np.mean(auc_scores)}")
+        pickle.dump(df_prob, open(dir_name + "/" + "df_prob", 'wb'))
+        mean_values = [df_prob[col].mean() for col in wt_cols]
+        # Plot
+        fig = plt.figure(figsize=(6, 4))
+        plt.plot(wt_cols, mean_values)
+        plt.legend(['mean delta'])
+        plt.suptitle(r'The AVG change in diff probability')
+        plt.title(f"intensity= {intensity}, motility={motility}, video #{11}")
+        plt.xticks(np.arange(0, 950, 100), labels=np.around(np.arange(0, 950, 100) * 1.5 / 60, decimals=1))
+        plt.yticks(np.arange(-1, 1, 0.25))
+        # plt.ylim(0.6, 1, 0.5)
+        plt.xlabel('Time [h]')
+        plt.ylabel(r'AVG of delta in the probability of differentiation')
+        plt.show()
+        plt.savefig(dir_name + "/" + "avg change of diff probability.png")
+        plt.close(fig)
 
 # rf_best_prms, xgb_best_prms = nested_cross_validation(X_train, y_train)
 # xgb_model = retrain_model(XGBClassifier(), xgb_best_prms, X_train, X_test, y_train, y_test)

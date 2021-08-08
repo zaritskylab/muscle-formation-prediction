@@ -1,23 +1,14 @@
-import joblib
-from DataPreprocessing.load_tracks_xml import *
-from tsfresh import extract_features
-from tsfresh.utilities.dataframe_functions import impute
-import matplotlib.pyplot as plt
 from skimage import io
-import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 import seaborn as sns
-# from Motility.MotilityMeasurements import get_monotonicity, get_direction
-# from PCABuilder import build_pca
-# from ts_fresh import get_x_y, get_single_cells_diff_score_plot
-from sklearn.preprocessing import LabelEncoder
-from os import path
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import shap
-from random import sample
 import os
+import pandas as pd
+
+from sklearn.decomposition import PCA
+from sklearn.metrics import roc_curve
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 import tensorflow as tf
@@ -27,17 +18,27 @@ tf.get_logger().setLevel('ERROR')
 warnings.filterwarnings("ignore", message="A value is trying to be set on a copy of a slice from a DataFrame")
 
 
-def extract_features_for_prediction(X, features_df=None):
-    if features_df is None:
-        features_df = pickle.load(open("TimeSeriesAnalysis/train_features_500_750", 'rb'))
-
-    X_extracted = extract_features(X, column_id="label", column_sort="t")
-    impute(X_extracted)
-    X_extracted = X_extracted[features_df.columns]
-    return X_extracted
+def build_pca(num_of_components, df):
+    '''
+    The method creates component principle dataframe, with num_of_components components
+    :param num_of_components: number of desired components
+    :param df: encoded images
+    :return: PCA dataframe
+    '''
+    pca = PCA(n_components=num_of_components)
+    principal_components = pca.fit_transform(df)
+    colomns = ['principal component {}'.format(i) for i in range(1, num_of_components + 1)]
+    principal_df = pd.DataFrame(data=principal_components, columns=colomns)
+    return principal_df, pca
 
 
 def plot_pca(principal_df, path):
+    '''
+    Plot and save a PCA of 3 dimensions (x axis, y axis & color)
+    :param principal_df: principal components dataframe to plot
+    :param path: path of the output directory
+    :return: -
+    '''
     plt.figure(figsize=(8, 6))
     sns.scatterplot(
         x="principal component 1", y="principal component 2",
@@ -47,49 +48,100 @@ def plot_pca(principal_df, path):
         legend='brief',
         alpha=0.3
     )
-    plt.title("exp 5")
-    plt.savefig(path+ "/pca.png")
+    plt.title("PCA plot")
+    plt.savefig(path + "/PCA.png")
+    plt.show()
+
+def plot_roc(clf, X_test, y_test, path):
+    plt.figure(figsize=(20, 6))
+    # roc curve for models
+    fpr1, tpr1, thresh1 = roc_curve(y_test, clf.predict_proba(X_test)[:, 1], pos_label=1)
+
+    # roc curve for tpr = fpr
+    random_probs = [0 for i in range(len(y_test))]
+    p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
+
+    plt.style.use('seaborn')
+    # plot roc curves
+    plt.plot(fpr1, tpr1, linestyle='--', color='orange', label='Random Forest')
+    plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
+    # title
+    plt.title('ROC curve')
+    # x label
+    plt.xlabel('False Positive Rate')
+    # y label
+    plt.ylabel('True Positive rate')
+
+    plt.legend(loc='best')
+    plt.savefig(path + "/" + 'ROC', dpi=300)
     plt.show()
 
 
-def plot_featurs_boxplot(X_extracted, f_list):
+def plot_features_boxplot(X_extracted, f_list):
+    '''
+    Plot all features data as boxplots
+    :param X_extracted: data to plot
+    :param f_list: list of features to plot
+    :return: -
+    '''
     for ind, col in enumerate(f_list):
         ax = sns.boxplot(x="target", y=str(col), hue="target",
                          data=X_extracted, palette="Set3")
         plt.title(col)
         plt.show()
 
+def feature_importance(clf, feature_names, path):
+    # Figure Size
+    fig, ax = plt.subplots(figsize=(16, 9))
 
-def pca(X_extracted, y,):
-    # build PCA on all data
-    principal_df, pca = build_pca(2, X_extracted)
-    principal_df["target"] = y
-    # initializing an object of class LabelEncoder
-    labelencoder = LabelEncoder()
-    # fitting and transforming the desired categorical column.
-    principal_df["target"] = labelencoder.fit_transform(principal_df["target"])
-    # plot_pca(principal_df)
-    return principal_df
+    sorted_idx = clf.feature_importances_.argsort()
 
+    ax.barh(feature_names[sorted_idx], clf.feature_importances_[sorted_idx])
+    # Add padding between axes and labels
+    ax.xaxis.set_tick_params(pad=5)
+    ax.yaxis.set_tick_params(pad=50)
 
-def get_patches(track, bf_video):
-    image_size = 32
-    im = io.imread(bf_video)
-    crops = []
-    for i in range(len(track)):
-        x = int(track.iloc[i]["x"])
-        y = int(track.iloc[i]["y"])
-        single_cell_crop = im[int(track.iloc[i]["t_stamp"]), y - image_size:y + image_size,
-                           x - image_size:x + image_size]
-        crops.append(single_cell_crop)
-        # cv2.imwrite("single_cell_crop.tif", single_cell_crop)
-    return crops
+    plt.xlabel("Random Forest Feature Importance")
+    plt.title('Feature Importance Plot')
+    plt.savefig(path + "/feature importance.png")
+    plt.show()
 
+def plot_pca(principal_df, pca, path):
+    '''
+    The method plots the first 3 dimensions of a given PCA
+    :param principal_df: PCA dataframe
+    :return: no return value
+    '''
+    variance = pca.explained_variance_ratio_
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(
+        x="principal component 1", y="principal component 2",
+        hue='principal component 3',
+        palette=sns.color_palette("hls", len(principal_df['principal component 3'].unique())),
+        data=principal_df,
+        legend=False,
+        alpha=0.3
+    )
+    plt.xlabel(f"PC1 ({variance[0]}) %")
+    plt.ylabel(f"PC2 ({variance[1]}) %")
+    plt.title("PCA")
+    plt.savefig(path + "/pca.png")
+    plt.show()
 
-def get_shap_explainations(model):
+def get_shap_explainations(model, data):
+    '''
+    Plot SHAP's output explanations.
+    "SHAP (SHapley Additive exPlanations) is a game theoretic approach to explain the output
+    of any machine learning model. It connects optimal credit allocation with local explanations
+    using the classic Shapley values from game theory and their related extensions."
+    https://github.com/slundberg/shap
+    :param model: the model to explain
+    :param data: data to explain
+    :return:-
+    '''
     # explain the model's predictions using SHAP
     explainer = shap.Explainer(model)
-    shap_values = explainer(X)
+    shap_values = explainer(data)
 
     # visualize the first prediction's explanation
     shap.plots.waterfall(shap_values[0])
@@ -108,7 +160,7 @@ def get_shap_explainations(model):
 
     shap.plots.bar(shap_values)
 
-    shap.summary_plot(shap_values, X)
+    shap.summary_plot(shap_values, data)
     #
     # shap.dependence_plot(
     #     ("Age", "Sex"),
@@ -117,134 +169,9 @@ def get_shap_explainations(model):
     # )
 
 
-def get_prob_over_track(clf, track, window, features_df):
-    true_prob = []
-    for i in range(0, len(track), window):
-        track_portion = track[i:i + window]
-        X = extract_features_for_prediction(X=track_portion, features_df=features_df)
-        probs = clf.predict_proba(X)
-        true_prob.append(probs[0][1])
-        print(f"track portion: [{i}:{i + window}]")
-        print(clf.classes_)
-        print(probs)
-    return true_prob
-
-
-def features_prob(track):
-    window = 40
-    # calc monotonicity:
-    # monotonicity = get_monotonicity(track)
-    # p_turn, min_theta, max_theta, mean_theta = get_direction(track)
-
-
-def plot_cell_probability(cell_ind, bf_video, clf, track, window, target_val, features_df, text, path=None):
-    '''
-    plot image crops together with their probability of being differentiated
-    :param track:
-    :param window:
-    :param target_val:
-    :return:
-    '''
-    true_prob = get_prob_over_track(clf, track, window, features_df)
-    cell_patches = get_patches(track, bf_video)
-
-    X_full_track = extract_features_for_prediction(X=track, features_df=features_df)
-    pred = clf.predict(X_full_track)
-    total_prob = clf.predict_proba(X_full_track)[0][1]
-
-    windowed_cell_patches = [cell_patches[i] for i in range(0, len(cell_patches), window)]
-    track_len = len(track)
-    label_time = [(track.iloc[val]['t']) * 90 / 60 / 60 for val in range(0, track_len, 2 * window)]
-
-    plt.figure(figsize=(20, 6))
-    fig, ax = plt.subplots()
-    ax.scatter(range(0, track_len, window), true_prob)
-    for x0, y0, patch in zip(range(0, track_len, window), true_prob, windowed_cell_patches):
-        ab = AnnotationBbox(OffsetImage(patch, 0.32), (x0, y0), frameon=False)
-        ax.add_artist(ab)
-        plt.gray()
-        plt.grid()
-    ax.plot(range(0, track_len, window), true_prob)
-    plt.xticks(range(0, track_len, 2 * window), labels=np.around(label_time, decimals=1))
-    plt.title(f"cell #{cell_ind} probability of differetniation")
-    plt.text(0.1, 0.9, f'target: {target_val}', ha='center', va='center', transform=ax.transAxes)
-    plt.text(0.2, 0.8, f'total track prediction: {pred[0]}, {total_prob}', ha='center', va='center',
-             transform=ax.transAxes)
-    plt.text(0.5, 0.9, text, ha='center', va='center', transform=ax.transAxes)
-    plt.xlabel("time (h)")
-    plt.ylabel("prob")
-    plt.ylim(0.2, 1, 0.05)
-    plt.grid()
-    if path:
-        print(path)
-        plt.savefig(path + ".png")
-    plt.show()
-
-
 if __name__ == '__main__':
     print("Let's go!")
-    do_pca = False
-    plot_cells = True
-    do_shap = False
-    motility = False
-    intensity = True
-    lst_videos = [7, 5]
 
-    lst_pickles = ["clf_2_4", "clf_2_4_intensity_all_tracks", "clf_2_4_intensity_tracks500_750.joblib",
-                   "clf_features_200_250_intensity", "clf_features_200_250_intensity_600",
-                   "clf_features_200_250_intensity_new", "clf_features_200_250_motility_600",
-                   "clf_features_350_400_intensity_550.joblib"]
-    lst_features_dfs = ["train_features_2_4_intensity", "train_features_200_250_intensity",
-                        "train_features_200_250_intensity_600", "train_features_200_250_intensity_new",
-                        "train_features_200_250_motility_600", "train_features_350_400_intensity_550"]
-
-    classifiers_features = zip(lst_pickles, lst_features_dfs)
-
-    pickle_name = "train_features_200_250_motility_600"
-
-    X, y = get_x_y(lst_videos, motility, intensity)
-
-    if path.exists(pickle_name):
-        X_extracted = pickle.load(open(pickle_name, 'rb'))
-    else:
-        X_extracted = extract_features_for_prediction(X)
-        pickle.dump(X_extracted, open(pickle_name, 'wb'))
-
-    # load, no need to initialize the clf
-    clf = joblib.load("TimeSeriesAnalysis/clf_features_200_250_motility_600.joblib")
-    pred = clf.predict(X_extracted)
-    prob = clf.predict_proba(X_extracted)
-
-    if plot_cells:
-        xml_path = r"data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s11_all_pixelratio1.xml"
-        bf_video = r"data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s11_all_pixelratio1.tif"
-        tracks, df = load_tracks_xml(xml_path)
-
-        # get_single_cells_diff_score_plot(tracks, clf, X_extracted)
-
-        sampled_tracks = sample(list(enumerate(tracks)), 3500)
-
-        for cell_ind, curr_track in sampled_tracks:
-            if len(curr_track) < 600: continue
-            print(len(curr_track))
-            plot_cell_probability(track=curr_track, window=60, target_val=True, features_df=X_extracted,
-                                  text="clf_features_200_250_intensity_new")
-
-    if do_shap:
-        get_shap_explainations(clf)
-
-    if do_pca:
-        pca(X_extracted, y)
-
-    # # plot each feature's plot
-    # X_extracted["prob"] = prob[:, 1]
-    # X_extracted["target"] = y
-    # # initializing an object of class LabelEncoder
-    # labelencoder = LabelEncoder()
-    # # fitting and transforming the desired categorical column.
-    # X_extracted["target"] = labelencoder.fit_transform(X_extracted["target"])
-
-    # TODO: 1. plot image crops together with their probability of being differentiated- V
     # TODO: 2. shap feature importance
     # TODO: 3. get velocity, direction mof movement, monotonicity - over the probability to differentiate
     # TODO: 4. compare #3 values for several cells with different differentiation probability.
