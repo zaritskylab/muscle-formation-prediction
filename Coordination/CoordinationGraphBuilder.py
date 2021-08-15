@@ -63,11 +63,11 @@ class CoordGraphBuilder():
 
         # Plot
         fig = plt.figure(figsize=(6, 4))
-        plt.plot(pd.DataFrame(control[:294], columns=["permute_diff"]).rolling(window=10).mean(), )
-        plt.plot(pd.DataFrame(diff[:294], columns=["permute_diff"]).rolling(window=10).mean(), )
+        plt.plot(pd.DataFrame(control[:920], columns=["permute_diff"]).rolling(window=10).mean(), )
+        plt.plot(pd.DataFrame(diff[:920], columns=["permute_diff"]).rolling(window=10).mean(), )
         plt.legend(['Controll', 'differentiation', ])
         plt.title(r'Cos of $\theta$ measure')
-        plt.xticks(np.arange(0, 554, 60), labels=np.around(np.arange(0, 554, 60) * 2.5 / 60, decimals=1))
+        plt.xticks(np.arange(0, 920, 100), labels=np.around(np.arange(0, 920, 100) * 1.5 / 60, decimals=1))
         # plt.yticks(np.arange(0.45, 1, 0.05))
         plt.ylim(0.6, 1, 0.5)
         plt.xlabel('Time [h]')
@@ -333,54 +333,60 @@ class CoordGraphBuilder():
 
 
 if __name__ == '__main__':
-    coord_control_path = r'coordination_outputs/validations/pickled coordination dfs/0104_regular/coordination_df_s3_0104.pkl'
-    xml_control_path = r'data/tracks_xml/0104/Experiment1_w1Widefield550_s1_all_0104.xml'
-    coord_validation_path = r'C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Tracking\costheta/coherence_validaton_3'
-    xml_validation_path = r'data/tracks_xml/0104/Experiment1_w1Widefield550_s1_all_0104.xml'
-
-    builder = CoordGraphBuilder(coord_control_path, coord_validation_path, xml_control_path, xml_validation_path)
+    print()
+    coord_control_path = r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\manual tracking\coordination_df_s3_30.pkl"
+    xml_control_path = r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\manual tracking\Experiment1_w1Widefield550_s3_all.xml"
+    builder = CoordGraphBuilder(coord_control_path, coord_control_path, xml_control_path, xml_control_path)
     builder.plot_coord_over_time("Coordination over time validation")
 
-    # fig = plt.figure(figsize=(20, 4))
-    # colors = ["Oranges", "Blues"]
-    # for i in (1, 4, 9, 10, 12, 19, 20):
-    #     xml_path = r'../data/tracks_xml/different_densities/s{}_all.xml'.format(i)
-    #     path = r'coordination_outputs/coordination_dfs/different_densities/coordination_df_s{}.pkl'.format(i)
-    #     coord = pickle.load(open(path, 'rb'))
-    #     den_df = builder.get_coord_density_df(coord, xml_path)
-    #     plt.scatter(x=den_df["density"], y=den_df["coordination"], marker=".", label="Control")
-    #     scatter = plt.scatter(x=den_df["density"], y=den_df["coordination"],
-    #                           c=den_df["time"], marker=".")
-    #
-    #     c_bar = plt.colorbar(scatter, shrink=0.6)
-    #     c_bar.set_label('time (h), {}'.format(i))
-    #     plt.legend([1, 4, 9, 10, 12, 19, 20])
-    #     plt.xticks(np.arange(700, 3000, 500))
-    #     # plt.ylim(0.6, 1, 0.5)
-    #     plt.title(r'Cos of $\thet'
-    #               r'a$ measure (Coordination over Density)')
-    #     plt.xlabel('Density')
-    #     plt.ylabel(r'Cos of $\theta$')
-    #     plt.show()
-    #     plt.close(fig)
-fig = plt.figure(figsize=(8, 4))
-for i in ([18, 21],[11, 14], [7, 8], [2, 3],[16, 17], [13, 15],  [5, 6]):
-    df, _ = builder.get_mean_coordination(i[0],i[1])
-    # path = r'coordination_outputs/coordination_dfs/different_densities/small field of view/coordination_df_s{}_30_small.pkl'.format(
-    #     i)
-    # coord = pickle.load(open(path, 'rb'))
-    # df, _ = builder.read_coordinationDF(coord)
-    plt.plot(pd.DataFrame(df[:294], columns=["permute_diff"]).rolling(window=10).mean(), )
-
-plt.legend(["10k", "20k","30k", "40k",
-            "50k",  "60k", "70k"], loc='upper left',title="preliminary number of cells")
-plt.title(r'Cos of $\theta$ measure')
-plt.xticks(np.arange(0, 350, 60), labels=np.around(np.arange(0, 350, 60) * 5 / 60, decimals=1))
-# plt.yticks(np.arange(0.45, 1, 0.05))
-plt.ylim(0.6, 1, 0.5)
-plt.grid()
-plt.xlabel('Time [h]')
-plt.ylabel(r'Cos of $\theta$')
-# plt.savefig("Coordination over time different distances")
-plt.show()
-plt.close(fig)
+#     coord_control_path = r'coordination_outputs/validations/pickled coordination dfs/0104_regular/coordination_df_s3_0104.pkl'
+#     xml_control_path = r'data/tracks_xml/0104/Experiment1_w1Widefield550_s1_all_0104.xml'
+#     coord_validation_path = r'C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Tracking\costheta/coherence_validaton_3'
+#     xml_validation_path = r'data/tracks_xml/0104/Experiment1_w1Widefield550_s1_all_0104.xml'
+#
+#     # builder = CoordGraphBuilder(coord_control_path, coord_validation_path, xml_control_path, xml_validation_path)
+#     # builder.plot_coord_over_time("Coordination over time validation")
+#
+#     # fig = plt.figure(figsize=(20, 4))
+#     # colors = ["Oranges", "Blues"]
+#     # for i in (1, 4, 9, 10, 12, 19, 20):
+#     #     xml_path = r'../data/tracks_xml/different_densities/s{}_all.xml'.format(i)
+#     #     path = r'coordination_outputs/coordination_dfs/different_densities/coordination_df_s{}.pkl'.format(i)
+#     #     coord = pickle.load(open(path, 'rb'))
+#     #     den_df = builder.get_coord_density_df(coord, xml_path)
+#     #     plt.scatter(x=den_df["density"], y=den_df["coordination"], marker=".", label="Control")
+#     #     scatter = plt.scatter(x=den_df["density"], y=den_df["coordination"],
+#     #                           c=den_df["time"], marker=".")
+#     #
+#     #     c_bar = plt.colorbar(scatter, shrink=0.6)
+#     #     c_bar.set_label('time (h), {}'.format(i))
+#     #     plt.legend([1, 4, 9, 10, 12, 19, 20])
+#     #     plt.xticks(np.arange(700, 3000, 500))
+#     #     # plt.ylim(0.6, 1, 0.5)
+#     #     plt.title(r'Cos of $\thet'
+#     #               r'a$ measure (Coordination over Density)')
+#     #     plt.xlabel('Density')
+#     #     plt.ylabel(r'Cos of $\theta$')
+#     #     plt.show()
+#     #     plt.close(fig)
+# fig = plt.figure(figsize=(8, 4))
+# for i in ([18, 21],[11, 14], [7, 8], [2, 3],[16, 17], [13, 15],  [5, 6]):
+#     # df, _ = builder.get_mean_coordination(i[0],i[1])
+#     # path = r'coordination_outputs/coordination_dfs/different_densities/small field of view/coordination_df_s{}_30_small.pkl'.format(
+#     #     i)
+#     # coord = pickle.load(open(path, 'rb'))
+#     # df, _ = builder.read_coordinationDF(coord)
+#     # plt.plot(pd.DataFrame(df[:294], columns=["permute_diff"]).rolling(window=10).mean(), )
+#
+# plt.legend(["10k", "20k","30k", "40k",
+#             "50k",  "60k", "70k"], loc='upper left',title="preliminary number of cells")
+# plt.title(r'Cos of $\theta$ measure')
+# plt.xticks(np.arange(0, 350, 60), labels=np.around(np.arange(0, 350, 60) * 5 / 60, decimals=1))
+# # plt.yticks(np.arange(0.45, 1, 0.05))
+# plt.ylim(0.6, 1, 0.5)
+# plt.grid()
+# plt.xlabel('Time [h]')
+# plt.ylabel(r'Cos of $\theta$')
+# # plt.savefig("Coordination over time different distances")
+# plt.show()
+# plt.close(fig)

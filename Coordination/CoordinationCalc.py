@@ -7,8 +7,8 @@ Constructing a DataFrame called "coordination_outputs" for a later use.
 """
 import numpy as np
 import pandas as pd
-
-from load_tracks_xml import load_tracks_xml
+import matplotlib.pyplot as plt
+from DataPreprocessing.load_tracks_xml import load_tracks_xml
 import pickle
 
 
@@ -137,6 +137,7 @@ class CoordinationCalc():
             if track is None:
                 continue
             if track.shape[0] < 7:
+                print(f"shape: {track.shape[0]}")
                 continue
             print('Track #{}/{}'.format(str(ind), len(tracks01)))
             t_stamp_array = np.asarray(track['t_stamp'])
@@ -164,9 +165,30 @@ class CoordinationCalc():
 
 
 if __name__ == '__main__':
-    for i in (2, 3, 5, 6, 7, 8, 11, 13, 14, 15, 16, 17, 18, 21):
-        coord_control = CoordinationCalc(5, 30,
-                                         r"muscle-formation-diff/data/tracks_xml/different_densities/small field of view/s{}_all.xml".format(
-                                             i))
-        coord_control.build_coordination_df(False)
-        coord_control.save_coordinationDF(r"coordination_df_s{}_30_small.pkl".format(i))
+    # for i in (2, 3, 5, 6, 7, 8, 11, 13, 14, 15, 16, 17, 18, 21):
+    #     coord_control = CoordinationCalc(5, 30,
+    #                                      r"muscle-formation-diff/data/tracks_xml/different_densities/small field of view/s{}_all.xml".format(
+    #                                          i))
+    #     coord_control.build_coordination_df(False)
+    #     coord_control.save_coordinationDF(r"coordination_df_s{}_30_small.pkl".format(i))
+
+
+        coord_diff = CoordinationCalc(5, 30,
+                                         r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\manual tracking\Experiment1_w1Widefield550_s3_all.xml")
+        coord_diff.build_coordination_df(False)
+        coord_diff.save_coordinationDF(r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\manual tracking\coordination_df_s3_30.pkl")
+
+        # Plot
+        fig = plt.figure(figsize=(6, 4))
+        plt.plot(pd.DataFrame(coord_diff[:920], columns=["permute_diff"]).rolling(window=10).mean(), )
+        # plt.plot(pd.DataFrame(diff[:294], columns=["permute_diff"]).rolling(window=10).mean(), )
+        plt.legend(['Controll', 'differentiation', ])
+        plt.title(r'Cos of $\theta$ measure')
+        plt.xticks(np.arange(0, 554, 60), labels=np.around(np.arange(0, 554, 60) * 1.5 / 60, decimals=1))
+        # plt.yticks(np.arange(0.45, 1, 0.05))
+        plt.ylim(0.6, 1, 0.5)
+        plt.xlabel('Time [h]')
+        plt.ylabel(r'Cos of $\theta$')
+        plt.savefig("name_for_saving")
+        plt.show()
+        plt.close(fig)
