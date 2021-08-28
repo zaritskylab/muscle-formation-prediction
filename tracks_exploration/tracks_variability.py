@@ -9,7 +9,7 @@ from pandas_profiling import ProfileReport
 # from autoviz.AutoViz_Class import AutoViz_Class  # Instantiate the AutoViz class
 
 # seed the random number generator
-from ts_fresh import concat_dfs, normalize_tracks, drop_columns
+from TimeSeriesAnalysis.ts_fresh import concat_dfs, normalize_tracks, drop_columns
 
 seed(1)
 

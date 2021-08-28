@@ -31,7 +31,7 @@ def get_grid_coordination(xml_path, n_grids_x, n_grids_y):
             coord_calculator.build_coordination_df_(grid_tracks, grid_i_df)
 
             g_builder = CoordGraphBuilder()
-            coordination, time_c = g_builder.read_coordinationDF(coord_calculator.coherence)
+            coordination, time_c = g_builder.read_coordination_df(coord_calculator.coherence)
 
             for i in range(0, int(np.max(df["t_stamp"])) - 1):
                 num_of_cells = grid_i_df[(i <= grid_i_df["t_stamp"]) & (grid_i_df["t_stamp"] < i + time_slot)]["label"].nunique()

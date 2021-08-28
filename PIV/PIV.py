@@ -99,11 +99,11 @@ if __name__ == '__main__':
     dt = 90  # 90  # sec, time interval between pulses
     scaling_factor = 0.462  # 1 #0.4620000 um
     width = 0.0025
-    
+
     # load tiff video
     bf_video = r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Videos\18042021\70k\Nuclei\s5\s5_all.tif"
     im = io.imread(bf_video)
 
-    dir_name = "PIV_s5_Nuclei"
+    dir_name = "video_outputs/PIV_s5_Nuclei"
     calc_piv_video(dir_name, im)
     gif_from_images(dir_name, "piv_video.gif", 0.3)

@@ -1,7 +1,7 @@
 import pickle
 import joblib
 from DataPreprocessing.load_tracks_xml import load_tracks_xml
-from ts_fresh import get_path, get_x_y, short_extract_features, train, build_pca, plot_pca, feature_importance, \
+from TimeSeriesAnalysis.ts_fresh import get_path, get_x_y, short_extract_features, train, build_pca, plot_pca, feature_importance, \
     extract_distinct_features, plot_roc, plot_sampled_cells
 import os
 
@@ -19,13 +19,15 @@ if __name__ == '__main__':
     min_time_diff = [0, 500, 300, 550, 550, 400, 300, 300, 300, 300, 300, 300]
 
     # load ERK's tracks and dataframe
-    xml_path_diff = get_path(r"data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s11_all_pixelratio1.xml")
-    bf_video_diff = get_path(r"data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s11_all_pixelratio1.tif")
+    xml_path_diff = get_path(r"../data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s11_all_pixelratio1.xml")
+    bf_video_diff = get_path(
+        r"../data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s11_all_pixelratio1.tif")
     tracks_diff, df = load_tracks_xml(xml_path_diff)
 
     # load control's tracks and dataframe
-    xml_path_con = get_path(r"data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s9_all_pixelratio1.xml")
-    bf_video_con = get_path(r"data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s9_all_pixelratio1.tif")
+    xml_path_con = get_path(r"../data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s9_all_pixelratio1.xml")
+    bf_video_con = get_path(
+        r"../data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s9_all_pixelratio1.tif")
     tracks_con, df = load_tracks_xml(xml_path_con)
 
     # iterate through all combinations of:

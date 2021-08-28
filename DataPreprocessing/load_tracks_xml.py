@@ -27,3 +27,6 @@ def remove_short_tracks(tracks, threshold):
             t += 1
     return tracks
 
+if __name__ == '__main__':
+    path = r"C:\Users\Amit\Desktop\Experiment1_w1Widefield550_s3_all_273.xml"
+    z,x = load_tracks_xml(path)

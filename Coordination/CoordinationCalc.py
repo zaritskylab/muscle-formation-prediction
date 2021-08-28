@@ -8,6 +8,8 @@ Constructing a DataFrame called "coordination_outputs" for a later use.
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
+from Coordination.CoordinationGraphBuilder import CoordGraphBuilder
 from DataPreprocessing.load_tracks_xml import load_tracks_xml
 import pickle
 
@@ -108,14 +110,6 @@ class CoordinationCalc():
         # Load tha tracks XML (TrackMate's output)
         tracks01, df = load_tracks_xml(self.xml_path)
 
-        import matplotlib.pyplot as plt
-
-        # for i in range(100, 130):
-        #     plt.plot(tracks01[i]["x"], tracks01[i]["y"])
-        #     plt.xlim(0, 1714)
-        #     plt.ylim(0, 1243)
-        #     plt.show()
-
         # Iterate over all tracks and calculate their velocity vectors, and angles
         for ind, track in enumerate(tracks01, start=0):
             # In case the cell's path is relatively small, ignore it
@@ -164,6 +158,9 @@ class CoordinationCalc():
         return coefficient[0]
 
 
+
+
+
 if __name__ == '__main__':
     # for i in (2, 3, 5, 6, 7, 8, 11, 13, 14, 15, 16, 17, 18, 21):
     #     coord_control = CoordinationCalc(5, 30,
@@ -173,22 +170,24 @@ if __name__ == '__main__':
     #     coord_control.save_coordinationDF(r"coordination_df_s{}_30_small.pkl".format(i))
 
 
-        coord_diff = CoordinationCalc(5, 30,
-                                         r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\manual tracking\Experiment1_w1Widefield550_s3_all.xml")
-        coord_diff.build_coordination_df(False)
-        coord_diff.save_coordinationDF(r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\manual tracking\coordination_df_s3_30.pkl")
+    # coord_diff = CoordinationCalc(5, 30,
+    #                               r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s3_all_manual_tracking.xml")
+    # coord_diff.build_coordination_df(False)
+    # coord_diff.save_coordinationDF(
+    #     r"coordination_outputs/coordination over time\coordination_df_s3_30_manual_tracking.pkl")
+    #
+    # coord_con = CoordinationCalc(5, 30,
+    #                               r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s1_all_manual_tracking.xml")
+    # coord_con.build_coordination_df(False)
+    # coord_con.save_coordinationDF(
+    #     r"coordination_outputs/coordination over time\coordination_df_s1_30_manual_tracking.pkl")
 
-        # Plot
-        fig = plt.figure(figsize=(6, 4))
-        plt.plot(pd.DataFrame(coord_diff[:920], columns=["permute_diff"]).rolling(window=10).mean(), )
-        # plt.plot(pd.DataFrame(diff[:294], columns=["permute_diff"]).rolling(window=10).mean(), )
-        plt.legend(['Controll', 'differentiation', ])
-        plt.title(r'Cos of $\theta$ measure')
-        plt.xticks(np.arange(0, 554, 60), labels=np.around(np.arange(0, 554, 60) * 1.5 / 60, decimals=1))
-        # plt.yticks(np.arange(0.45, 1, 0.05))
-        plt.ylim(0.6, 1, 0.5)
-        plt.xlabel('Time [h]')
-        plt.ylabel(r'Cos of $\theta$')
-        plt.savefig("name_for_saving")
-        plt.show()
-        plt.close(fig)
+    builder = CoordGraphBuilder(diff_xml_path=r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s3_all_manual_tracking.xml",
+                                coord_diff_path=r"coordination_outputs/coordination_dfs/manual_tracking/coordination_df_s3_30_manual_tracking.pkl",
+                                control_xml_path=r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s1_all_manual_tracking.xml",
+                                coord_control_path=r"coordination_outputs/coordination_dfs/manual_tracking/coordination_df_s1_30_manual_tracking.pkl"
+                                )
+    # builder.plot_coord_over_time("manual_tracking_coordination_over_time 1,3")
+    builder.plot_coor_over_density("manual_tracking_coordination_over_density 1,3")
+
+    # Plot coordination over density

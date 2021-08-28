@@ -38,13 +38,13 @@ class CoordinationValidations():
                 i)
             builder = CoordGraphBuilder(coord_path, coord_path, "", "")
             # Read coordination DFs
-            control, time_c = builder.read_coordinationDF(builder.coord_control)
+            control, time_c = builder.read_coordination_df(builder.coord_control)
             # Plot
             ax1.plot(pd.DataFrame(control[:-7], columns=["permute_diff"]).rolling(window=window).mean(), )
 
         null_path = r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Tracking\costheta\all_random_angles_video_3"
         builder = CoordGraphBuilder(null_path, null_path, "", "")
-        coord, _ = builder.read_coordinationDF(builder.coord_control)
+        coord, _ = builder.read_coordination_df(builder.coord_control)
         ax1.plot(pd.DataFrame(coord[:-7], columns=["permute_diff"]).rolling(window=window).mean(), '--', c="")
 
         colormap = plt.cm.get_cmap('Oranges_r', 512)  # nipy_spectral, Set1,Paired
@@ -73,7 +73,7 @@ class CoordinationValidations():
             coord_path = "coordination_outputs/validation/validation_s3_0.{}.pkl".format(i)
             builder = CoordGraphBuilder(coord_path, coord_path, "", "")
             # Read coordination DFs
-            control, time_c = builder.read_coordinationDF(builder.coord_control)
+            control, time_c = builder.read_coordination_df(builder.coord_control)
             data.append([control[0], i / 10])
 
         df = pd.DataFrame(data, columns=['cos_theta', 'neighboring_distance'])

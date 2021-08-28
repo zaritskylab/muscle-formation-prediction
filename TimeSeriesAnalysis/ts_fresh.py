@@ -19,8 +19,6 @@ import warnings
 import os
 from skimage import io
 
-from ts_interpretation import build_pca, feature_importance, plot_roc, plot_pca
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 import tensorflow as tf
 
@@ -73,12 +71,13 @@ def normalize_tracks(df, motility=False, intensity=False):
     return df
 
 
-def concat_dfs(min_time_diff, lst_videos, crop_start=False, crop_end=False):
+def concat_dfs(min_time_diff, lst_videos, crop_start=False, crop_end=False, time_window=False, diff_t_window=None,
+               con_t_window=None):
     min_time_diff = min_time_diff
     max_val = 0
     total_df = pd.DataFrame()
     for i in lst_videos:
-        xml_path = r"data/tracks_xml/0104/Experiment1_w1Widefield550_s{}_all_0104.xml".format(i)
+        xml_path = r"data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s{}_all_manual_tracking.xml".format(i)
         if not os.path.exists(xml_path):
             xml_path = "../" + xml_path if os.path.exists("../" + xml_path) else "muscle-formation-diff/" + xml_path
         _, df = load_tracks_xml(xml_path)
@@ -89,6 +88,16 @@ def concat_dfs(min_time_diff, lst_videos, crop_start=False, crop_end=False):
         if crop_end:
             # keep only the end of the track
             df = df[df["t"] >= 700]  # 700 time unites = 700*1.5/90 = 17.5 hours
+
+        if time_window:
+            if i in (3, 4, 5, 6, 11, 12):  # ERK video
+                # Cut the needed time window
+                df = df[(df["t_stamp"] >= diff_t_window[0]) & (
+                        df["t_stamp"] <= diff_t_window[1])]
+            else:  # control video
+                # Cut the needed time window
+                df = df[(df["t_stamp"] >= con_t_window[0]) & (
+                        df["t_stamp"] <= con_t_window[1])]
 
         df.label = df.label + max_val
         max_val = df["label"].max() + 1
@@ -114,7 +123,6 @@ def long_extract_features(df):
 
 
 def short_extract_features(df, y):
-    # df = df[df.columns.drop(['target'])]
     features_filtered_direct = extract_relevant_features(df, y, column_id="label", column_sort='t', show_warnings=False,
                                                          n_jobs=8)
     return features_filtered_direct
@@ -163,8 +171,10 @@ def train(X_train, X_test, y_train, y_test):
     return clf, report, auc_score
 
 
-def get_x_y(min_length, max_length, min_time_diff, lst_videos, motility, intensity, crop_start=False, crop_end=False):
-    df = concat_dfs(min_time_diff, lst_videos, crop_start, crop_end)
+def get_x_y(lst_videos, motility, intensity, min_length=0, max_length=950, min_time_diff=0, crop_start=False,
+            crop_end=False,
+            time_window=False, diff_t_window=None, con_t_window=None):
+    df = concat_dfs(min_time_diff, lst_videos, crop_start, crop_end, time_window, diff_t_window, con_t_window)
     df = drop_columns(df, motility=motility, intensity=intensity)
     df = normalize_tracks(df, motility=motility, intensity=intensity)
 
@@ -182,87 +192,13 @@ def get_x_y(min_length, max_length, min_time_diff, lst_videos, motility, intensi
     df = df.drop("target", axis=1)
     return df, y
 
-
-def nested_cross_validation(X, y):
-    '''
-    :param X:
-    :param y:
-    :return:
-    '''
-    k = 5
-    f1_xgb = 0
-    f1_rf = 0
-    xgb_best_prms = dict()
-    rf_best_prms = dict()
-
-    cv_outer = StratifiedKFold(n_splits=k, shuffle=True, random_state=1)
-    for train_idx, val_idx in cv_outer.split(X, y):
-        train_data, val_data = X.iloc[train_idx], X.iloc[val_idx]
-        train_target, val_target = y.iloc[train_idx], y.iloc[val_idx]
-
-        cv_inner = StratifiedKFold(n_splits=k, shuffle=True, random_state=1)
-
-        rf = RandomForestClassifier()
-        space_RF = {'n_estimators': np.arange(10, 100, 5).tolist(), 'max_depth': [2, 4, 8, 16, 32, 64]}
-        gd_search = GridSearchCV(rf, space_RF, scoring='f1', n_jobs=-1, cv=cv_inner, refit=True).fit(train_data,
-                                                                                                     train_target)
-        predictions = gd_search.predict(val_data)
-        rf_best_prms = gd_search.best_params_ if sklearn.metrics.f1_score(val_target,
-                                                                          predictions) > f1_rf else rf_best_prms
-
-        xgb = XGBClassifier(use_label_encoder=False, verbosity=0)
-        space_XGB = {'n_estimators': np.arange(10, 100, 5).tolist(), 'max_depth': [2, 4, 8, 16, 32, 64],
-                     'learning_rate': [0.1, 0.05, 0.01]}
-        gd_search = GridSearchCV(xgb, space_XGB, scoring='f1', n_jobs=-1, cv=cv_inner, refit=True).fit(train_data,
-                                                                                                       train_target)
-        predictions = gd_search.predict(val_data)
-        xgb_best_prms = gd_search.best_params_ if sklearn.metrics.f1_score(val_target,
-                                                                           predictions) > f1_rf else xgb_best_prms
-
-    return rf_best_prms, xgb_best_prms
-
-
-def evaluate(y_test, y_hat, scores):
-    cm = confusion_matrix(y_test, y_hat)
-    scores["accuracy"] = sklearn.metrics.accuracy_score(y_test, y_hat)
-    scores["f1_score"] = sklearn.metrics.f1_score(y_test, y_hat)
-    scores["specificity"] = cm[0, 0] / (cm[0, 0] + cm[0, 1])
-    scores["sensitivity"] = cm[1, 1] / (cm[1, 0] + cm[1, 1])
-    scores["AUROC"] = sklearn.metrics.roc_auc_score(y_test, y_hat)
-
-
-def retrain_model(model, params, X_train, X_test, y_train, y_test):
-    '''
-    :param model:
-    :param params:
-    :param X:
-    :param y:
-    :return:
-    '''
-    scores = {'accuracy': [], 'f1_score': [], 'sensitivity': [], 'specificity': [], 'AUROC': []}
-    avg_scores = {}
-    avg_stds = {}
-    print("Retraining {}".format(model))
-    for i in range(10):
-        model = clone(model)
-        model.set_params(**params)
-        model.fit(X_train, y_train)
-        y_hat = model.predict(X_test)
-        evaluate(y_test, y_hat, scores)
-    for metric, lst in scores.items():
-        avg_scores[metric] = str(np.mean(lst)) + "+-" + str(np.std(lst))
-        avg_stds[metric] = np.std(lst)
-    print(f"Average scores for the model : {avg_scores}")
-    return model
-
-
 def extract_distinct_features(df, feature_list):
     df = extract_features(df, column_id="label", column_sort="t")
     impute(df)
     return df[feature_list]
 
 
-def get_prob_over_track(clf, track, window, features_df):
+def get_prob_over_track(clf, track, window, features_df, moving_window=False, aggregate_windows=False):
     '''
     Returns a list of the probability of being differentiated, for each track portion
     :param clf: classifier
@@ -272,14 +208,33 @@ def get_prob_over_track(clf, track, window, features_df):
     :return: list of probabilities
     '''
     true_prob = []
-    for i in range(0, len(track), window):
-        track_portion = track[i:i + window]
-        X = extract_distinct_features(df=track_portion, feature_list=features_df.columns)
-        probs = clf.predict_proba(X)
-        true_prob.append(probs[0][1])
-        print(f"track portion: [{i}:{i + window}]")
-        print(clf.classes_)
-        print(probs)
+
+    step_size = 1 if moving_window or aggregate_windows else window
+
+    if aggregate_windows:
+        for i in range(1, len(track), step_size):
+            track_portion = track[0:i * window]
+            X = extract_distinct_features(df=track_portion, feature_list=features_df.columns)
+            probs = clf.predict_proba(X)
+            true_prob.append(probs[0][1])
+            print(f"track portion: [{0}:{i * window}]")
+            print(clf.classes_)
+            print(probs)
+            if len(track_portion) >= len(track):
+                return true_prob
+
+    else:
+        for i in range(0, len(track), step_size):
+            if i + window > len(track):
+                break
+            track_portion = track[i:i + window]
+            X = extract_distinct_features(df=track_portion, feature_list=features_df.columns)
+            probs = clf.predict_proba(X)
+            true_prob.append(probs[0][1])
+            print(f"track portion: [{i}:{i + window}]")
+            print(clf.classes_)
+            print(probs)
+
     return true_prob
 
 
@@ -412,9 +367,28 @@ def get_path(path):
     return path if os.path.exists(path) else "muscle-formation-diff/" + path
 
 
+def save_data(dir_name, clf, X_train, X_test, y_train, y_test):
+    # save the model & train set & test set
+    pickle.dump(X_train, open(dir_name + "/" + "X_train", 'wb'))
+    pickle.dump(X_test, open(dir_name + "/" + "X_test", 'wb'))
+    pickle.dump(y_test, open(dir_name + "/" + "y_test", 'wb'))
+    pickle.dump(y_train, open(dir_name + "/" + "y_train", 'wb'))
+    joblib.dump(clf, dir_name + "/" + "clf.joblib")
+
+
+def load_data(dir_name):
+    # load the model & train set & test set
+    clf = joblib.load(dir_name + "/clf.joblib")
+    X_train = pickle.load(open(dir_name + "/" + "X_train", 'rb'))
+    X_test = pickle.load(open(dir_name + "/" + "X_test", 'rb'))
+    y_train = pickle.load(open(dir_name + "/" + "y_train", 'rb'))
+    y_test = pickle.load(open(dir_name + "/" + "y_test", 'rb'))
+    return clf, X_train, X_test, y_train, y_test
+
+
 if __name__ == '__main__':
     print(
-        "Let's go! In this script, we will calculate the average delta of the probability of being differentiated over time")
+        "Let's go! In this script, we will train ")
 
     # params
     motility = True
@@ -434,67 +408,6 @@ if __name__ == '__main__':
     train_video_lists = [list(itertools.chain(exp_1, exp_2)),
                          list(itertools.chain(exp_1, exp_3)), list(itertools.chain(exp_2, exp_3))]
     test_video_lists = [exp_3, exp_2, exp_1]
-
-    # load ERK's tracks and dataframe
-    xml_path_diff = get_path(r"data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s3_all_pixelratio1.xml")
-    bf_video_diff = get_path(
-        r"data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s3_all_pixelratio1.tif")
-    tracks_diff, df = load_tracks_xml(xml_path_diff)
-
-    # load control's tracks and dataframe
-    xml_path_con = get_path(r"data/tracks_xml/pixel_ratio_1/Experiment1_w1Widefield550_s9_all_pixelratio1.xml")
-    bf_video_con = get_path(
-        r"data/videos/BrightField_pixel_ratio_1/Experiment1_w2Brightfield_s9_all_pixelratio1.tif")
-    tracks_con, df = load_tracks_xml(xml_path_con)
-
-    # iterate through all experiments, performing leave one out
-    for (exp_train_lst, exp_test_lst) in zip(train_video_lists, test_video_lists):
-
-        # open a new directory to save the outputs in
-        dir_name = f"shuffle_train_set {exp_train_lst}_ test_set {exp_test_lst}_ motility-{motility}_intensity-{intensity}"
-        print(dir_name)
-
-        clf = joblib.load(dir_name + "/" + "clf.joblib")
-
-        X_test = pickle.load(open(dir_name + "/" + "X_test", 'rb'))
-        # df_prob = pickle.load(open(dir_name + "/" + "df_prob", 'rb'))
-
-        wt_cols = [wt for wt in range(0, 950, window)]
-        df_prob = pd.DataFrame(columns=wt_cols)
-        for ind, t in enumerate(tracks_con):
-            track = tracks_diff[ind]
-            if len(track) < 40:
-                continue
-            # normalize track:
-            track = drop_columns(track, motility=motility, intensity=intensity)
-            track = normalize_tracks(track, motility=motility, intensity=intensity)
-            # calculate list of probabilities per window
-            true_prob = get_prob_over_track(clf, track, window, X_test)
-            delta_prob = [(true_prob[i] - true_prob[i - 1]) for i in range(1, len(true_prob))]
-            time_windows = [(track.iloc[val]['t']) for val in range(0 + window, len(track), window)]
-
-            dic = {}
-            for (wt, prob) in zip(time_windows, delta_prob):
-                dic[int(wt)] = prob
-            data = [dic]
-            df_prob = df_prob.append(data, ignore_index=True, sort=False)
-
-        pickle.dump(df_prob, open(dir_name + "/" + "df_prob", 'wb'))
-        mean_values = [df_prob[col].mean() for col in wt_cols]
-        # Plot
-        fig = plt.figure(figsize=(6, 4))
-        plt.plot(wt_cols, mean_values)
-        plt.legend(['mean delta'])
-        plt.suptitle(r'The AVG change in diff probability')
-        plt.title(f"intensity= {intensity}, motility={motility}, video #{11}")
-        plt.xticks(np.arange(0, 950, 100), labels=np.around(np.arange(0, 950, 100) * 1.5 / 60, decimals=1))
-        plt.yticks(np.arange(-1, 1, 0.25))
-        # plt.ylim(0.6, 1, 0.5)
-        plt.xlabel('Time [h]')
-        plt.ylabel(r'AVG of delta in the probability of differentiation')
-        plt.show()
-        plt.savefig(dir_name + "/" + "avg change of diff probability.png")
-        plt.close(fig)
 
 # rf_best_prms, xgb_best_prms = nested_cross_validation(X_train, y_train)
 # xgb_model = retrain_model(XGBClassifier(), xgb_best_prms, X_train, X_test, y_train, y_test)

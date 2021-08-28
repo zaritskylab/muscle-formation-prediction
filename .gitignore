@@ -7,4 +7,6 @@
 /sbatchs/
 /data/
 /visualFeaturesCalculations/aspect_ratio/
-/TimeSeriesAnalysis/tracks_length_analysis/
+/TimeSeriesAnalysis/outputs/tracks_length_analysis/
+/PIV/video_outputs/
+/TimeSeriesAnalysis/outputs/

@@ -1,17 +1,12 @@
 import itertools
-import os
 import pickle
 
 import joblib
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn import svm, datasets
 from sklearn.metrics import auc
 from sklearn.metrics import plot_roc_curve
-from sklearn.model_selection import StratifiedKFold
-
-from ts_fresh import get_x_y
 
 if __name__ == '__main__':
     print(

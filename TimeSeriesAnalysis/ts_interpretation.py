@@ -52,6 +52,7 @@ def plot_pca(principal_df, path):
     plt.savefig(path + "/PCA.png")
     plt.show()
 
+
 def plot_roc(clf, X_test, y_test, path):
     plt.figure(figsize=(20, 6))
     # roc curve for models
@@ -90,13 +91,15 @@ def plot_features_boxplot(X_extracted, f_list):
         plt.title(col)
         plt.show()
 
+
 def feature_importance(clf, feature_names, path):
     # Figure Size
+    top_n = 30
     fig, ax = plt.subplots(figsize=(16, 9))
 
     sorted_idx = clf.feature_importances_.argsort()
 
-    ax.barh(feature_names[sorted_idx], clf.feature_importances_[sorted_idx])
+    ax.barh(feature_names[sorted_idx[-top_n:]], clf.feature_importances_[sorted_idx[-top_n:]])
     # Add padding between axes and labels
     ax.xaxis.set_tick_params(pad=5)
     ax.yaxis.set_tick_params(pad=50)
@@ -105,6 +108,7 @@ def feature_importance(clf, feature_names, path):
     plt.title('Feature Importance Plot')
     plt.savefig(path + "/feature importance.png")
     plt.show()
+
 
 def plot_pca(principal_df, pca, path):
     '''
@@ -127,6 +131,7 @@ def plot_pca(principal_df, pca, path):
     plt.title("PCA")
     plt.savefig(path + "/pca.png")
     plt.show()
+
 
 def get_shap_explainations(model, data):
     '''
