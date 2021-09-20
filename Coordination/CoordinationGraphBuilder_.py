@@ -16,6 +16,11 @@ import pandas as pd
 class CoordinationGraphBuilder():
 
     def read_coordination_df(self, coord_df):
+        '''
+        The method receives a coordination dataframe and calculates its mean value for each time point.
+        :param coord_df: coordination dataframe
+        :return: mean coordination for each time point
+        '''
         K = coord_df.shape[0]
         ar = np.zeros((K, 927))
         ar[:] = np.nan
@@ -47,7 +52,16 @@ class CoordinationGraphBuilder():
         return total_coord / elements_num, total_time / elements_num
 
     def plot_coord_over_time(self, coordination_dfs, name_for_saving, legend, line_styles,
-                             label_casting_param=0.025):  # label_casting_param - 1.5 / 60
+                             label_casting_param=0.025):
+        '''
+        The method plots average coordination over time, of all of the cells in the given dataframes
+        :param coordination_dfs: list of coordination dataframes to display [coord1, coord2, ... ]
+        :param name_for_saving: wanted file name
+        :param legend: list containing labels of the coordination dataframes ["coord1", "coord2", ... ]
+        :param line_styles: list of line styles ['--', '-', None... ]
+        :param label_casting_param: casting parameter for adjusting xticks to the experiment times in hours. usually * 1.5 / 60
+        :return: -
+        '''
         fig = plt.figure(figsize=(6, 4))
         for (coord_df, style) in zip(coordination_dfs, line_styles):
             coord_to_plot, _ = self.read_coordination_df(coord_df)
@@ -63,6 +77,11 @@ class CoordinationGraphBuilder():
         plt.close(fig)
 
     def get_density(self, tracks_xml):
+        '''
+        Calculates the density in a plate for each time point.
+        :param tracks_xml: path of the tracking XML file
+        :return: numpy array with density values
+        '''
         tracks, df = load_tracks_xml(tracks_xml)
         s01den = np.empty((len(tracks), 926))
         for k, track in enumerate(tracks):
@@ -73,6 +92,12 @@ class CoordinationGraphBuilder():
         return s01out
 
     def get_coord_density_df(self, coord_df, coord_xml_path):
+        '''
+        Calculates density dataframe, with density values and coordination values for each time point
+        :param coord_df: coordination dataframe
+        :param coord_xml_path: matching XML tracking file
+        :return: dataframe
+        '''
         # Read coordination DFs
         coord, time = self.read_coordination_df(coord_df)
         # Get density from xml
@@ -103,8 +128,17 @@ class CoordinationGraphBuilder():
                                'time': pd.DataFrame(time)[0][:920]})
         return den_df
 
-    def plot_coord_over_density(self, coordination_dfs, xml_paths, name_for_saving, colors, labels, cmaps,
-                                label_casting_param=0.025):  # label_casting_param - 1.5 / 60
+    def plot_coord_over_density(self, coordination_dfs, xml_paths, name_for_saving, colors, labels, cmaps):
+        '''
+        The method plots coordination over density of all given coordination dataframes
+        :param coordination_dfs: list of coordination dataframes to display [coord1, coord2, ... ]
+        :param xml_paths: list of xml tracking files [XML_path_1, XML_path_1, ... ]
+        :param name_for_saving: wanted file name
+        :param colors: list of line colors ["blue", "orange", ... ]
+        :param labels: list containing labels of the coordination dataframes ["coord1", "coord2", ... ]
+        :param cmaps: list of color-maps to display change in time [cmap1, cmap2, ... ]
+        :return: -
+        '''
 
         fig = plt.figure(figsize=(8, 4))
         for (coord_df, xml_path, color, label, cmap) in zip(coordination_dfs, xml_paths, colors, labels, cmaps):
@@ -116,8 +150,7 @@ class CoordinationGraphBuilder():
             plt.colorbar(scatter, shrink=0.6)
 
         plt.legend(labels)
-        plt.xticks(np.arange(0, 920, 100), labels=np.around(np.arange(0, 920, 100) *
-                                                            label_casting_param, decimals=1))
+
         plt.ylim(0.6, 1, 0.5)
         plt.title(r'Cos of $\thet'
                   r'a$ measure (Coordination over Density)')
@@ -138,6 +171,7 @@ if __name__ == '__main__':
     xml_con_path = r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s1_all_manual_tracking.xml"
     coord_con = pickle.load(open(coord_con_path, 'rb'))
 
+    # select color maps
     GnBu_rBig = cm.get_cmap('Blues_r', 512)
     GnBu = ListedColormap(GnBu_rBig(np.linspace(0.25, 0.75, 256)))
     RdPu_rBig = cm.get_cmap('Oranges_r', 512)
@@ -148,5 +182,6 @@ if __name__ == '__main__':
                                  name_for_saving="Coordination over time validation",
                                  legend=["control", "ERK"], label_casting_param=0.025, line_styles=['--', None])
     builder.plot_coord_over_density(coordination_dfs=[coord_con, coord_diff], xml_paths=[xml_con_path, xml_diff_path],
-                                    name_for_saving="coordination density delete", colors=["blue", "orange"],
+                                    name_for_saving="manual_tracking_coordination_over_density 1,3",
+                                    colors=["blue", "orange"],
                                     labels=["control", "ERK"], cmaps=[GnBu, RdPu])

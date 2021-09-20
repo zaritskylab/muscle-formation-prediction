@@ -9,27 +9,28 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import seaborn as sns
 
-from DataPreprocessing.load_tracks_xml import load_tracks_xml
+from load_tracks_xml import load_tracks_xml
 from ts_interpretation import build_pca, feature_importance, plot_roc, plot_pca
 
 from ts_fresh import short_extract_features, extract_distinct_features, train, drop_columns, \
     normalize_tracks, get_prob_over_track, save_data, load_data, get_unique_indexes, get_x_y, get_path
 
-from calc_delta import calc_prob_delta, get_df_delta_sums
+
+# from calc_delta import calc_prob_delta, get_df_delta_sums
 
 
-def plot_cls_distribution(diff_video_num, con_video_num, end_of_file_name, diff_t_windows):
+def plot_cls_distribution(dir_to_save, diff_video_num, con_video_num, end_of_file_name, diff_t_windows, w_size):
     # df_sums = get_df_delta_sums(diff_video_num, con_video_num, end_of_file_name)
     df_probs = pd.DataFrame()
 
     for t_window in diff_t_windows:
         time_frame = f"{diff_t_w[0]},{diff_t_w[1]} frames ERK, 1,120 frames con"
-        dir_name = f"manual_tracking_1,3_ motility-{motility}_intensity-{intensity}/{time_frame}"
+        dir_name = f"outputs/manual_tracking_1,3_ motility-{motility}_intensity-{intensity}/{time_frame}"
 
         df_prob_diff = pickle.load(
-            open(dir_name + "/" + f"df_prob_w=999, video_num={diff_video_num}" + end_of_file_name, 'rb'))
+            open(dir_name + "/" + f"df_prob_w={w_size}, video_num={diff_video_num}" + end_of_file_name, 'rb'))
         df_prob_con = pickle.load(
-            open(dir_name + "/" + f"df_prob_w=999, video_num={con_video_num}" + end_of_file_name, 'rb'))
+            open(dir_name + "/" + f"df_prob_w={w_size}, video_num={con_video_num}" + end_of_file_name, 'rb'))
 
         df_probs = pd.concat([df_probs, pd.DataFrame(
             {"prob": df_prob_diff, "time_window": str(t_window), "diff_con": "ERK"})])
@@ -38,11 +39,26 @@ def plot_cls_distribution(diff_video_num, con_video_num, end_of_file_name, diff_
 
     sns.set_theme(style="darkgrid")
     # Plot the responses for different events and regions
-    sns.lineplot(x="time_window", y="prob", hue="diff_con", style="event", data=df_probs)
+    sns.lineplot(x="time_window", y="prob", hue="diff_con", data=df_probs)
     plt.title("Distribution of the probability to be differentiated for each time window classifier")
     plt.ylabel("probability")
     plt.xlabel("time window")
     plt.legend()
+    plt.show()
+    plt.savefig(
+        dir_to_save + "/" + f"line plot distribution of sum of delta of the probability to be differentiated, video #{con_video_num},{diff_video_num}, {end_of_file_name}.png")
+
+    plt.figure(figsize=(10, 6))
+    sns.set_theme(style="whitegrid")
+    sns.violinplot(x="time_window", y="prob", split=True, hue="diff_con", data=df_probs, inner="quartile",
+                   palette="bright")
+    plt.title("Distribution of the probability to be differentiated for each time window classifier")
+    plt.ylabel("sum of delta")
+    plt.xlabel("time window size")
+    plt.legend()
+    plt.show()
+    plt.savefig(
+        dir_to_save + "/" + f"distribution of sum of delta of the probability to be differentiated, video #{con_video_num},{diff_video_num}, {end_of_file_name}.png")
 
 
 if __name__ == '__main__':
@@ -50,18 +66,17 @@ if __name__ == '__main__':
         "Let's go! In this script, we will train random forest + tsfresh,on manual tracked cells (videos 1,3), with short time frames")
 
     # params
-    window = 160
-    wt_cols = [wt * 90 for wt in range(0, 950, window)]
-    video_num = 1
-    motility = False
-    intensity = True
+    # window = 160
+    # wt_cols = [wt * 90 for wt in range(0, 950, window)]
+    # video_num = 3
+    motility = True
+    intensity = False
     lst_videos = [1, 3]
-    con_t_window = [0, 120]
-    diff_t_windows = [[0, 120], [80, 200], [160, 280], [240, 360], [320, 440], [400, 520],
-                      [480, 600], [560, 680], [640, 760], [720, 840], [800, 920], [880, 925]]
+    con_t_windows = [[0, 120], [0, 120], [0, 100]]
+    diff_t_windows = [[550, 650], [550, 640], [550, 650]]
 
-    for diff_t_w in diff_t_windows:
-        time_frame = f"{diff_t_w[0]},{diff_t_w[1]} frames ERK, 1,120 frames con"
+    for diff_t_w, con_t_w in zip(diff_t_windows, con_t_windows):
+        time_frame = f"{diff_t_w[0]},{diff_t_w[1]} frames ERK, {con_t_w[0]},{con_t_w[1]} frames con"
 
         # open a new directory to save the outputs in
 
@@ -70,42 +85,30 @@ if __name__ == '__main__':
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
 
-        # load ERK's tracks and dataframe
-        xml_path = get_path(
-            fr"data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s{video_num}_all_manual_tracking.xml")
-        tracks, df = load_tracks_xml(xml_path)
+        # generate train data & extract features using tsfresh
+        X, y = get_x_y(lst_videos=lst_videos, motility=motility, intensity=intensity, time_window=True,
+                       con_t_window=con_t_w, diff_t_window=diff_t_w, min_time_diff=110)
+        X = short_extract_features(X, y)
 
-        clf, X_train, X_test, y_train, y_test = load_data(dir_name)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
 
-        df_delta_prob = calc_prob_delta(window, tracks, clf, X_test, motility, intensity, wt_cols,
-                                        calc_delta=False)
-        pickle.dump(df_delta_prob,
-                    open(dir_name + "/" + f"df_prob_w={window}, video_num={video_num}", 'wb'))
+        # train the classifier
+        clf, report, auc_score = train(X_train, X_test, y_train, y_test)
 
-        # # generate train data & extract features using tsfresh
-        # X, y = get_x_y(lst_videos=lst_videos, motility=motility, intensity=intensity, time_window=True,
-        #                con_t_window=con_t_window, diff_t_window=diff_t_w)
-        # X = short_extract_features(X, y)
-        #
-        # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
-        #
-        # # train the classifier
-        # clf, report, auc_score = train(X_train, X_test, y_train, y_test)
-        #
-        # # save the model & train set & test set
-        # save_data(dir_name, clf, X_train, X_test, y_train, y_test)
-        #
-        # # plot ROC curve
-        # plot_roc(clf=clf, X_test=X_test, y_test=y_test, path=dir_name)
+        # save the model & train set & test set
+        save_data(dir_name, clf, X_train, X_test, y_train, y_test)
 
-        # # perform PCA analysis
-        # principal_df, pca = build_pca(3, X_test)
-        # plot_pca(principal_df, pca, dir_name)
+        # plot ROC curve
+        plot_roc(clf=clf, X_test=X_test, y_test=y_test, path=dir_name)
 
-        # # calculate feature importance
-        # feature_importance(clf, X_train.columns, dir_name)
+        # perform PCA analysis
+        principal_df, pca = build_pca(3, X_test)
+        plot_pca(principal_df, pca, dir_name)
 
-        # # save classification report & AUC score
-        # txt_file = open(dir_name + '/info.txt', 'a')
-        # txt_file.write(f"classification report: {report}\n auc score: {auc_score}")
-        # txt_file.close()
+        # calculate feature importance
+        feature_importance(clf, X_train.columns, dir_name)
+
+        # save classification report & AUC score
+        txt_file = open(dir_name + '/info.txt', 'a')
+        txt_file.write(f"classification report: {report}\n auc score: {auc_score}")
+        txt_file.close()

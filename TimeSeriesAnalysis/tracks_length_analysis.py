@@ -1,10 +1,10 @@
 import pickle
 import joblib
 from DataPreprocessing.load_tracks_xml import load_tracks_xml
-from TimeSeriesAnalysis.ts_fresh import get_path, get_x_y, short_extract_features, train, build_pca, plot_pca, feature_importance, \
+from TimeSeriesAnalysis.ts_fresh import get_path, get_x_y, short_extract_features, train, build_pca, plot_pca, \
+    feature_importance, \
     extract_distinct_features, plot_roc, plot_sampled_cells
 import os
-
 
 if __name__ == '__main__':
     print("Let's go! In this script we examine how different cell tracks length affect the model's performances. \n"
@@ -80,8 +80,8 @@ if __name__ == '__main__':
 
             # sample cells with relatively long tracks, and plot their probability of being differentiated over time
             # ERK
-            plot_sampled_cells(track_length=600, clf=clf, features_df=X_train, dir_name=dir_name,
+            plot_sampled_cells(window=40, track_length=600, clf=clf, features_df=X_train, dir_name=dir_name,
                                bf_video=bf_video_diff, tracks=tracks_diff, con_diff="diff", n_cells=10)
             # control
-            plot_sampled_cells(track_length=200, clf=clf, features_df=X_train, dir_name=dir_name,
+            plot_sampled_cells(window=40, track_length=200, clf=clf, features_df=X_train, dir_name=dir_name,
                                bf_video=bf_video_con, tracks=tracks_con, con_diff="con", n_cells=10)

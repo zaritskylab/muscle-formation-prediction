@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from Coordination.CoordinationGraphBuilder import CoordGraphBuilder
 from DataPreprocessing.load_tracks_xml import load_tracks_xml
 import pickle
 
@@ -158,36 +157,5 @@ class CoordinationCalc():
         return coefficient[0]
 
 
-
-
-
 if __name__ == '__main__':
-    # for i in (2, 3, 5, 6, 7, 8, 11, 13, 14, 15, 16, 17, 18, 21):
-    #     coord_control = CoordinationCalc(5, 30,
-    #                                      r"muscle-formation-diff/data/tracks_xml/different_densities/small field of view/s{}_all.xml".format(
-    #                                          i))
-    #     coord_control.build_coordination_df(False)
-    #     coord_control.save_coordinationDF(r"coordination_df_s{}_30_small.pkl".format(i))
-
-
-    # coord_diff = CoordinationCalc(5, 30,
-    #                               r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s3_all_manual_tracking.xml")
-    # coord_diff.build_coordination_df(False)
-    # coord_diff.save_coordinationDF(
-    #     r"coordination_outputs/coordination over time\coordination_df_s3_30_manual_tracking.pkl")
-    #
-    # coord_con = CoordinationCalc(5, 30,
-    #                               r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s1_all_manual_tracking.xml")
-    # coord_con.build_coordination_df(False)
-    # coord_con.save_coordinationDF(
-    #     r"coordination_outputs/coordination over time\coordination_df_s1_30_manual_tracking.pkl")
-
-    builder = CoordGraphBuilder(diff_xml_path=r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s3_all_manual_tracking.xml",
-                                coord_diff_path=r"coordination_outputs/coordination_dfs/manual_tracking/coordination_df_s3_30_manual_tracking.pkl",
-                                control_xml_path=r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s1_all_manual_tracking.xml",
-                                coord_control_path=r"coordination_outputs/coordination_dfs/manual_tracking/coordination_df_s1_30_manual_tracking.pkl"
-                                )
-    # builder.plot_coord_over_time("manual_tracking_coordination_over_time 1,3")
-    builder.plot_coor_over_density("manual_tracking_coordination_over_density 1,3")
-
-    # Plot coordination over density
+    print("coordination Calculator")
