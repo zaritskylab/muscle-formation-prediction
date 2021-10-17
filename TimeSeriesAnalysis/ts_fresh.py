@@ -4,7 +4,7 @@ from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 from sklearn import clone
 from sklearn.preprocessing import StandardScaler
 import joblib
-from DataPreprocessing.load_tracks_xml import *
+from load_tracks_xml import *
 from tsfresh import extract_features, extract_relevant_features, select_features
 from tsfresh.utilities.dataframe_functions import impute
 import pandas as pd
@@ -81,13 +81,14 @@ def normalize_tracks(df, motility=False, intensity=False):
 
 
 def concat_dfs(min_time_diff, lst_videos, crop_start=False, crop_end=False, time_window=False, diff_t_window=None,
-               con_t_window=None):
+               con_t_windows=None):
     min_time_diff = min_time_diff
     max_val = 0
     total_df = pd.DataFrame()
     for i in lst_videos:
-        xml_path = r"data/tracks_xml/0104/Experiment1_w1Widefield550_s{}_all_0104.xml".format(i)
+        xml_path = r"data/tracks_xml/260721/S{}_Nuclei.xml".format(i)
         # xml_path = r"data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s{}_all_manual_tracking.xml".format(i)
+        # xml_path = r"data/tracks_xml/0104/Experiment1_w1Widefield550_s{}_all_0104.xml".format(i)
         if not os.path.exists(xml_path):
             xml_path = "../" + xml_path if os.path.exists("../" + xml_path) else "muscle-formation-diff/" + xml_path
         _, df = load_tracks_xml(xml_path)
@@ -102,19 +103,32 @@ def concat_dfs(min_time_diff, lst_videos, crop_start=False, crop_end=False, time
             df = df[df["t"] >= 700]  # 700 time unites = 700*1.5/90 = 17.5 hours
 
         if time_window:
-            if i in (3, 4, 5, 6, 11, 12):  # ERK video #TODO change 7,8 to 5,6
+            # if i in (3, 4, 7, 8, 11, 12):  # ERK video #TODO change 7,8 to 5,6
+            if i in (8, 11):  # ERK video
                 # Cut the needed time window
                 df = df[(df["t_stamp"] >= diff_t_window[0]) & (
                         df["t_stamp"] <= diff_t_window[1])]
-            elif i in (1, 2, 7, 8, 9, 10):  # control video #TODO change 5,6 to 7,8
+            # elif i in (1, 2, 5, 6, 9, 10):  # control video #TODO change 5,6 to 7,8
+            elif i in (3, 4):  # control video
                 # Cut the needed time window
-                df = df[(df["t_stamp"] >= con_t_window[0]) & (
-                        df["t_stamp"] <= con_t_window[1])]
+                keep_indices = []
+                labels = []
+                for window in con_t_windows:
+                    window_indices = df[(df["t_stamp"] >= window[0]) & (df["t_stamp"] <= window[1])].index
+                    for ind in window_indices:
+                        ind_label = df.iloc[ind]["label"]
+                        if ind_label not in labels:
+                            keep_indices.append(ind)
+                            labels.append(ind_label)
+                df = df.iloc[keep_indices]
+                    # df = df[(df["t_stamp"] >= con_t_window[0]) & (
+                    #     df["t_stamp"] <= con_t_window[1])]
 
         df.label = df.label + max_val
         max_val = df["label"].max() + 1
         target = False
-        if i in (3, 4, 5, 6, 11, 12):  # TODO change 7,8 to 5,6
+        # if i in (3, 4, 7, 8, 11, 12):  # TODO change 7,8 to 5,6
+        if i in (8, 11):  # TODO change 7,8 to 5,6
             if df["t_stamp"].max() >= min_time_diff:
                 target = True
         # target = True if i in (3, 4, 5, 6, 11, 12) else False
@@ -185,8 +199,8 @@ def train(X_train, X_test, y_train, y_test):
 
 def get_x_y(lst_videos, motility, intensity, min_length=0, max_length=950, min_time_diff=0, crop_start=False,
             crop_end=False,
-            time_window=False, diff_t_window=None, con_t_window=None, columns_to_drop=None):
-    df = concat_dfs(min_time_diff, lst_videos, crop_start, crop_end, time_window, diff_t_window, con_t_window)
+            time_window=False, diff_t_window=None, con_t_windows=None, columns_to_drop=None):
+    df = concat_dfs(min_time_diff, lst_videos, crop_start, crop_end, time_window, diff_t_window, con_t_windows)
     df = drop_columns(df, motility=motility, intensity=intensity, to_drop=columns_to_drop)
     df = normalize_tracks(df, motility=motility, intensity=intensity)
 

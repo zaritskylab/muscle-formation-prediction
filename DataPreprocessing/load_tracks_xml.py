@@ -29,8 +29,14 @@ def remove_short_tracks(tracks, threshold):
 
 
 if __name__ == '__main__':
-    path = r"C:\Users\Amit\Downloads\newstart.xml"
+
+    w=20
+    wt_c = [wt * 300 for wt in range(0, 350, w)]
+
+    # path = r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Videos\New Folder\ERKi_treatment\S8_Nuclei_2015.xml"
+    # path = r"C:\Users\Amit\Desktop\Experiment1_w1Widefield550_s2_all_2015.xml"
     # path = r"C:\Users\Amit\Downloads\yon29hazan.xml"
+    path = r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Videos\New Folder\DMSO_control/S3_nuclei_2017.xml"
     track_list, tracks_df = load_tracks_xml(path)
     print("ccccc")
     print(tracks_df.head())

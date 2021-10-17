@@ -9,10 +9,10 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 from tsfresh import extract_features, select_features
 from tsfresh.utilities.dataframe_functions import impute
-from DataPreprocessing.load_tracks_xml import load_tracks_xml
-from TimeSeriesAnalysis.ts_interpretation import build_pca, feature_importance, plot_roc, plot_pca
+from load_tracks_xml import load_tracks_xml
+from ts_interpretation import build_pca, feature_importance, plot_roc, plot_pca
 
-from TimeSeriesAnalysis.ts_fresh import get_x_y, short_extract_features, extract_distinct_features, train, drop_columns, \
+from ts_fresh import get_x_y, short_extract_features, extract_distinct_features, train, drop_columns, \
     normalize_tracks, get_prob_over_track, save_data, load_data, get_path
 from multiprocessing import Process
 import math
@@ -20,11 +20,11 @@ import math
 
 def train_and_eval_procedoure(
         lst_videos, motility, intensity, dir_name, min_length=0, max_length=950, min_time_diff=0, crop_start=False,
-        crop_end=False, time_window=False, diff_t_window=None, con_t_window=None, columns_to_drop=None):
+        crop_end=False, time_window=False, diff_t_window=None, con_t_windows=None, columns_to_drop=None):
     # generate train data & extract features using tsfresh
     X, y = get_x_y(min_length=min_length, max_length=max_length, min_time_diff=min_time_diff, lst_videos=lst_videos,
                    motility=motility, intensity=intensity, columns_to_drop=columns_to_drop, crop_start=crop_start,
-                   crop_end=crop_end, time_window=time_window, diff_t_window=diff_t_window, con_t_window=con_t_window)
+                   crop_end=crop_end, time_window=time_window, diff_t_window=diff_t_window, con_t_windows=con_t_windows)
     extracted_features = extract_features(X, column_id="label", column_sort="t")
     impute(extracted_features)
     features_filtered = select_features(extracted_features, y)
@@ -75,7 +75,7 @@ def plot_test_prob_distribution(dir_name, t_window_con, t_window_diff):
 
     # get tracks according to the x_test tracks:
     xml_path = get_path(
-        fr"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s{1}_all_manual_tracking.xml")
+        fr"data/tracks_xml/0104/Experiment1_w1Widefield550_s{7}_all_0104.xml")
     _, df_c = load_tracks_xml(xml_path)
     # df_con = df[df["label"].isin(list(X_test.index))]
 
@@ -84,17 +84,17 @@ def plot_test_prob_distribution(dir_name, t_window_con, t_window_diff):
     # indices = np.asarray(indices) - 2 * max_val
 
     xml_path = get_path(
-        fr"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s{3}_all_manual_tracking.xml")
+        fr"data/tracks_xml/0104/Experiment1_w1Widefield550_s{5}_all_0104.xml")
     _, df_d = load_tracks_xml(xml_path)
     # df_diff = df_d[df_d["label"].isin(list(indices))]
 
     hist_p_c_120 = get_prob_histogram_list(df_c, clf, t_window_con[1] - t_window_con[0], X_test, t_window_con)
     hist_p_d_120 = get_prob_histogram_list(df_d, clf, t_window_con[1] - t_window_con[0], X_test, t_window_con)
-    plot_histogram(hist_p_c_120, hist_p_d_120, "distribution 0-120", dir_name)
+    plot_histogram(hist_p_c_120, hist_p_d_120, "distribution 0-120, videos 5,7", dir_name)
 
     hist_p_c_640 = get_prob_histogram_list(df_c, clf, t_window_diff[1] - t_window_diff[0], X_test, t_window_diff)
     hist_p_d_640 = get_prob_histogram_list(df_d, clf, t_window_diff[1] - t_window_diff[0], X_test, t_window_diff)
-    plot_histogram(hist_p_c_640, hist_p_d_640, "distribution 550-640", dir_name)
+    plot_histogram(hist_p_c_640, hist_p_d_640, "distribution 550-650, videos 5,7", dir_name)
 
 
 def plot_histogram(l_c, l_d, title, dir_name):
@@ -184,14 +184,27 @@ def train_one_feature_at_a_time():
 
 if __name__ == '__main__':
     print(
-        "Let's go! In this script, we will train random forest + tsfresh,on manual tracked cells (videos 1,3), on 1 feature at a time")
+        "Let's go! In this script, we will train random forest + tsfresh, on the 210726 experiment")
 
     # params
-    motility = True
-    intensity = False
-    lst_videos = [1, 3]
-    t_window_con = [0, 120]
-    t_window_diff = [550, 640]
-    time_frame = f"{t_window_diff[0]},{t_window_diff[1]} frames ERK, {t_window_con[0]},{t_window_con[1]} frames con"
-    dir_name = f"outputs/manual_tracking_1,3_ motility-{motility}_intensity-{intensity}/{time_frame}"
-    plot_test_prob_distribution(dir_name, t_window_con=t_window_con, t_window_diff=t_window_diff)
+    motility = False
+    intensity = True
+    lst_videos = [3, 8, ]  # 3,4 - control; 8,11 - ERKi
+    t_windows_con = [[0, 30], [60, 90], [100, 130], [140, 170], [180, 210]]
+    t_window_diff = [140, 170]
+
+    dir_name = f"_210726_ motility-{motility}_intensity-{intensity}"
+    print(dir_name)
+    if not os.path.exists(dir_name):
+        os.mkdir(dir_name)
+
+    time_frame = f"{t_window_diff[0]},{t_window_diff[1]} frames ERK, many frames con" #{t_window_con[0]},{t_window_con[1]}
+
+    print(dir_name + "/" + time_frame)
+    if not os.path.exists(dir_name + "/" + time_frame):
+        os.mkdir(dir_name + "/" + time_frame)
+
+    train_and_eval_procedoure(lst_videos=lst_videos, motility=motility, intensity=intensity,
+                              dir_name=dir_name, time_window=True, diff_t_window=t_window_diff,
+                              con_t_windows=t_windows_con,
+                              )

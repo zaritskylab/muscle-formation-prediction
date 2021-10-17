@@ -4,8 +4,8 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
-from load_tracks_xml import load_tracks_xml
-from ts_fresh import drop_columns, normalize_tracks, get_prob_over_track, get_path, load_data, \
+from DataPreprocessing.load_tracks_xml import load_tracks_xml
+from TimeSeriesAnalysis.ts_fresh import drop_columns, normalize_tracks, get_prob_over_track, get_path, load_data, \
     plot_sampled_cells
 from multiprocessing import Process
 
@@ -54,7 +54,8 @@ def calc_prob_delta(window, tracks, clf, X_test, motility, intensity, wt_cols, m
 
 def plot_avg_diff_prob(diff_video_num, con_video_num, end_of_file_name, dir_name, title):
     # windows = [40, 80, 120, 160]
-    windows = [80, 90, 100]
+    # windows = [80, 90, 100]
+    windows = [30, 30, 30]
     df = pd.DataFrame()
     avg_vals_diff = []
     std_vals_diff = []
@@ -62,34 +63,19 @@ def plot_avg_diff_prob(diff_video_num, con_video_num, end_of_file_name, dir_name
     std_vals_con = []
     window_times = []
     for w in windows:
-        wt_c = [wt * 90 for wt in range(0, 950, w)]
-        window_times.append(np.array(wt_c) / 3600)
+        wt_c = [wt * 1 for wt in range(0, 350, w)]
+        window_times.append(np.array(wt_c) / 3600 * 300)
         df_delta_prob_diff = pickle.load(
             open(dir_name + "/" + f"df_prob_w={w}, video_num={diff_video_num}" + end_of_file_name, 'rb'))
         df_delta_prob_con = pickle.load(
             open(dir_name + "/" + f"df_prob_w={w}, video_num={con_video_num}" + end_of_file_name, 'rb'))
-
-        # df = pd.concat([df, pd.DataFrame(
-        #     {"window_size": w, "mean_val": [df_delta_prob_diff[col].mean() for col in wt_c], "t": window_times[2],
-        #      "diff_con": "ERK"})])
-        # df = pd.concat([df, pd.DataFrame(
-        #     {"window_size": w, "mean_val": [df_delta_prob_con[col].mean() for col in wt_c], "t": window_times[2],
-        #      "diff_con": "control"})])
 
         avg_vals_diff.append([df_delta_prob_diff[col].mean() for col in wt_c])
         std_vals_diff.append([df_delta_prob_diff[col].std() for col in wt_c])
         avg_vals_con.append([df_delta_prob_con[col].mean() for col in wt_c])
         std_vals_con.append([df_delta_prob_con[col].std() for col in wt_c])
 
-    # df_120 = df[df["window_size"] == 120]
-    # fig = plt.figure(figsize=(6, 4))
-    # # Plot the responses for different events and regions
-    # sns.lineplot(x="timepoint", y="signal",
-    #              hue="region", style="event",
-    #              data=df_120)
-    # plt.show()
-
-    # # plot it!
+    # plot it!
     fig, ax = plt.subplots(2, 2, sharex='col', sharey='row', figsize=(8, 4), dpi=140)
 
     def plot_window(ax, window_times, avg_vals_con, avg_vals_diff, ax_0, ax_1, std_vals_con, std_vals_diff, w):
@@ -106,33 +92,33 @@ def plot_avg_diff_prob(diff_video_num, con_video_num, end_of_file_name, dir_name
         ax[ax_0, ax_1].fill_between(window_times, m_std, p_std, alpha=0.5)
         ax[ax_0, ax_1].grid()
 
-    plot_window(ax, window_times[0], avg_vals_con[0], avg_vals_diff[0], 0, 0, std_vals_con[0], std_vals_diff[0], 0)
-    plot_window(ax, window_times[1], avg_vals_con[1], avg_vals_diff[1], 0, 1, std_vals_con[1], std_vals_diff[1], 1)
-    plot_window(ax, window_times[2], avg_vals_con[2], avg_vals_diff[2], 1, 0, std_vals_con[2], std_vals_diff[2], 2)
-
-    plt.suptitle(title, wrap=True)
-    fig.legend(['control', 'ERK'], loc="lower left")
-    for ax in fig.get_axes():
-        ax.set_xlabel('Time [h]')
-        ax.set_ylabel(' Avg p delta')
-        ax.label_outer()
-    plt.show()
-    plt.savefig(
-        dir_name + "/" + f"{title}.png")
-    plt.close(fig)
+    # plot_window(ax, window_times[0], avg_vals_con[0], avg_vals_diff[0], 0, 0, std_vals_con[0], std_vals_diff[0], 0)
+    # plot_window(ax, window_times[1], avg_vals_con[1], avg_vals_diff[1], 0, 1, std_vals_con[1], std_vals_diff[1], 1)
+    # plot_window(ax, window_times[2], avg_vals_con[2], avg_vals_diff[2], 1, 0, std_vals_con[2], std_vals_diff[2], 2)
+    #
+    # plt.suptitle(title, wrap=True)
+    # fig.legend(['control', 'ERK'], loc="lower left")
+    # for ax in fig.get_axes():
+    #     ax.set_xlabel('Time [h]')
+    #     ax.set_ylabel(' Avg p delta')
+    #     ax.label_outer()
+    # plt.show()
+    # plt.savefig(
+    #     dir_name + "/" + f"{title}.png")
+    # plt.close(fig)
 
     fig, ax = plt.subplots(1, 1, sharex='col', sharey='row', figsize=(8, 4), dpi=140)
-    ax.plot(window_times[2], avg_vals_con[2])
-    ax.plot(window_times[2], avg_vals_diff[2])
-    ax.set_title(f"window size={windows[2]}")
+    ax.plot(window_times[1], avg_vals_con[1])
+    ax.plot(window_times[1], avg_vals_diff[1])
+    ax.set_title(f"window size={windows[1]}")
 
-    p_std = np.asarray(avg_vals_con[2]) + np.asarray(std_vals_con[2])
-    m_std = np.asarray(avg_vals_con[2]) - np.asarray(std_vals_con[2])
-    ax.fill_between(window_times[2], m_std, p_std, alpha=0.5)
+    p_std = np.asarray(avg_vals_con[1]) + np.asarray(std_vals_con[1])
+    m_std = np.asarray(avg_vals_con[1]) - np.asarray(std_vals_con[1])
+    ax.fill_between(window_times[1], m_std, p_std, alpha=0.5)
 
-    p_std = np.asarray(avg_vals_diff[2]) + np.asarray(std_vals_diff[2])
-    m_std = np.asarray(avg_vals_diff[2]) - np.asarray(std_vals_diff[2])
-    ax.fill_between(window_times[2], m_std, p_std, alpha=0.5)
+    p_std = np.asarray(avg_vals_diff[1]) + np.asarray(std_vals_diff[1])
+    m_std = np.asarray(avg_vals_diff[1]) - np.asarray(std_vals_diff[1])
+    ax.fill_between(window_times[1], m_std, p_std, alpha=0.5)
     ax.grid()
 
     plt.suptitle(title, wrap=True)
@@ -144,12 +130,14 @@ def plot_avg_diff_prob(diff_video_num, con_video_num, end_of_file_name, dir_name
         ax.label_outer()
     plt.show()
     plt.savefig(
-        dir_name + "/" + f"{title} 100.png")
+        dir_name + "/" + f"{title} 30.png")
     plt.close(fig)
+
 
 def get_df_delta_sums(diff_video_num, con_video_num, end_of_file_name, dir_name, sum):
     # windows = [40, 80, 120, 160]
-    windows = [ 80, 90, 100]
+    # windows = [80, 90, 100]
+    windows = [20, 30, 40]
 
     df_delta_sums = pd.DataFrame()
 
@@ -220,41 +208,45 @@ def run_calc(dir_name, tracks, video_num, wt_cols, motility, intensity):
                         open(dir_name + "/" + f"df_prob_w={window}, video_num={video_num} delta", 'wb'))
 
 
-def run_plot_delta(dir_name, intensity, motility):
-    title = f"Averaged diff probability (intensity= {intensity}, motility={motility}, video #{1},{3})"
-    plot_avg_diff_prob(diff_video_num=3, con_video_num=1, end_of_file_name="",
+def run_plot_delta(dir_name, intensity, motility, diff_vid_num, con_vid_num):
+    title = f"Averaged diff probability (intensity= {intensity}, motility={motility}, video #{con_vid_num},{diff_vid_num})"
+    plot_avg_diff_prob(diff_video_num=diff_vid_num, con_video_num=con_vid_num, end_of_file_name="",
                        dir_name=dir_name, title=title)
 
-    title = f"avg change of diff probability (intensity= {intensity}, motility={motility}, video #{1},{3})"
-    plot_avg_diff_prob(diff_video_num=3, con_video_num=1, end_of_file_name=" delta",
+    title = f"avg change of diff probability (intensity= {intensity}, motility={motility}, video #{con_vid_num},{diff_vid_num})"
+    plot_avg_diff_prob(diff_video_num=diff_vid_num, con_video_num=con_vid_num, end_of_file_name=" delta",
                        dir_name=dir_name, title=title)
 
-    plot_delta_mean_distribution(diff_video_num=3, con_video_num=1, end_of_file_name=" delta", dir_name=dir_name)
-    plot_delta_sum_distribution(diff_video_num=3, con_video_num=1, end_of_file_name=" delta", dir_name=dir_name)
+    plot_delta_mean_distribution(diff_video_num=diff_vid_num, con_video_num=con_vid_num, end_of_file_name=" delta",
+                                 dir_name=dir_name)
+    plot_delta_sum_distribution(diff_video_num=diff_vid_num, con_video_num=con_vid_num, end_of_file_name=" delta",
+                                dir_name=dir_name)
 
 
-def run_delta(diff_t_windows, video_num, window, motility, intensity, wt_cols):
+def run_delta(diff_t_windows, video_num, window, motility, intensity, wt_cols, video_diff_num, video_con_num):
     print(f"processing window #{window}")
     # load tracks and dataframe
-    xml_path = get_path(
-        fr"data/tracks_xml/0104/Experiment1_w1Widefield550_s{video_num}_all_0104.xml")
-    tracks, df = load_tracks_xml(xml_path)
+    # xml_path = get_path(
+    #     fr"../data/tracks_xml/260721/S{video_num}_Nuclei.xml")
+    # tracks, df = load_tracks_xml(xml_path)
 
     for diff_t_w in diff_t_windows:
-        time_frame = f"{diff_t_w[0]},{diff_t_w[1]} frames ERK, {0},{100} frames con"
+        time_frame = f"{diff_t_w[0]},{diff_t_w[1]} frames ERK, {0},{30} frames con"
 
         # open a new directory to save the outputs in
-        dir_name = f"manual_tracking_1,3_ motility-{motility}_intensity-{intensity}/{time_frame}"
+        dir_name = f"outputs/_210726_ motility-{motility}_intensity-{intensity}/{time_frame}"
 
         # p = Process(target=run_calc, args=(dir_name, tracks, video_num, wt_cols, motility, intensity))
         # p.start()
-        run_calc(dir_name, tracks, video_num, wt_cols, motility, intensity)
+        # run_calc(dir_name, tracks, video_num, wt_cols, motility, intensity)
 
         # p = Process(target=run_plot_delta, args=(dir_name, intensity, motility))
         # p.start()
-        run_plot_delta(dir_name, intensity, motility)
+        run_plot_delta(dir_name, intensity, motility, video_diff_num, video_con_num)
+
 
 if __name__ == '__main__':
+
     print(
         "Let's go! In this script, we will calculate the average delta of the probability of being differentiated over time")
 
@@ -262,11 +254,13 @@ if __name__ == '__main__':
 
     motility = False
     intensity = True
-    video_diff_num = 5
-    video_con_num = 7
+    video_diff_num = 8
+    video_con_num = 3
 
-    diff_t_windows = [[550, 650] ]# , [550, 640]
-    for window in [100, 90, 80]:
-        wt_cols = [wt * 90 for wt in range(0, 950, window)]
+    diff_t_windows = [[140, 170]]
+    for window in [20]:
+        wt_cols = [wt * 300 for wt in range(0, 350, window)]
 
-        run_delta(diff_t_windows, video_con_num, window, motility, intensity, wt_cols)
+        run_delta(diff_t_windows, video_con_num, window, motility, intensity, wt_cols, video_diff_num, video_con_num)
+        # run_delta(diff_t_windows, video_diff_num, window, motility, intensity, wt_cols, video_diff_num, video_con_num)
+
