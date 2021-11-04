@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import math
 from scipy import stats
-from PCABuilder import build_pca, plot_pca
+# from PCABuilder import build_pca, plot_pca
 
 
 # region measurements
@@ -375,8 +375,8 @@ def normalize_data(df):
         result[feature_name] = (result[feature_name] - min_value) / (max_value - min_value)
     return result.copy()
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
 
     title = "velocity over time- exp {}"
     xml_path = r"C:\Users\Amit\Desktop\Amit\ISE\3rd Year\Thesis\Analysis\Single cell\Tracks_xml\Experiment1_w1Widefield550_s{}_all.xml"
@@ -402,7 +402,7 @@ if __name__ == '__main__':
         full_title = title.format(i)
         velocity_tracks = velocisty_over_time(xml_path=path)
 
-        plot_avg_speed_plot_bar(("exp1",velocity_tracks))
+        plot_avg_speed_plot_bar(("exp1", velocity_tracks))
 
         for track in velocity_tracks:
 

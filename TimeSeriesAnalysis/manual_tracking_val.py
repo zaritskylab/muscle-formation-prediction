@@ -9,13 +9,17 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 from tsfresh import extract_features, select_features
 from tsfresh.utilities.dataframe_functions import impute
-from load_tracks_xml import load_tracks_xml
-from ts_interpretation import build_pca, feature_importance, plot_roc, plot_pca
+from DataPreprocessing.load_tracks_xml import load_tracks_xml
+from TimeSeriesAnalysis.ts_interpretation import build_pca, feature_importance, plot_roc, plot_pca
 
-from ts_fresh import get_x_y, short_extract_features, extract_distinct_features, train, drop_columns, \
-    normalize_tracks, get_prob_over_track, save_data, load_data, get_path
+from TimeSeriesAnalysis.ts_fresh import get_x_y, short_extract_features, extract_distinct_features, train, drop_columns, \
+    normalize_tracks, get_prob_over_track, save_data, load_data, get_path, evaluate
 from multiprocessing import Process
 import math
+
+from Motility.MotilityMeasurements import get_linearity, get_distance, get_total_distance, get_net_total_proportion, \
+    get_monotonicity, get_msd
+from TimeSeriesAnalysis.interpretation import get_cell_speed
 
 
 def train_and_eval_procedoure(
@@ -34,11 +38,22 @@ def train_and_eval_procedoure(
         X = short_extract_features(X, y)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)  # random_state=42
+
+    # Free ram we dont use anymore
+    del (X)
+    del (y)
+
     # train the classifier
-    clf, report, auc_score = train(X_train, X_test, y_train, y_test)
+    clf = train(X_train, y_train)
+    save_data(dir_name, clf=clf, X_train=X_train, y_train=y_train)
+    del (X_train)
+    del (y_train)
+
+    report, auc_score = evaluate(clf, X_test, y_test)
 
     # save the model & train set & test set
-    save_data(dir_name, clf, X_train, X_test, y_train, y_test)
+    save_data(dir_name, X_test=X_test, y_test=y_test)
+
     # load the model & train set & test set
     clf, X_train, X_test, y_train, y_test = load_data(dir_name)
 
@@ -182,29 +197,90 @@ def train_one_feature_at_a_time():
                                   intensity=intensity, columns_to_drop=cols_to_drop)
 
 
+def calc_motility_measures(video_num):
+    # xml_path = get_path(fr"data/tracks_xml/260721/S{video_num}_Nuclei.xml")
+    xml_path = get_path(fr"../data/tracks_xml/0104/Experiment1_w1Widefield550_s{video_num}_all_0104.xml")
+    clf, X_train, X_test, y_train, y_test = load_data(dir_name)
+    # load tracks and dataframe
+    tracks, _df = load_tracks_xml(xml_path)
+
+    all_data = pd.DataFrame()
+    for track in tracks[:3]:
+        if len(track) > window_size * 2:
+            # speed
+            avg_x, avg_y, avg_total = get_cell_speed(track, window_size)
+
+            linearity = []
+            # linearity = [get_linearity(track[i:i + window_size]) for i in range(0, len(track), window_size)]
+            net_distance = []
+            total_distance = []
+            net_total_distance = []
+            monotonicity = []
+            msd_alpha = []
+            for i in range(0, len(track), window_size):
+                track_portion = track[i:i + window_size]
+                # linearity (to calculate persistence)
+                linearity.append(get_linearity(track_portion))
+                net_distance.append(
+                    get_distance(x1=track_portion[track_portion["t"] == int(np.min(track_portion["t"]))]["x"].values[0],
+                                 y1=track_portion[track_portion["t"] == int(np.min(track_portion["t"]))]["y"].values[0],
+                                 x2=track_portion[track_portion["t"] == int(np.max(track_portion["t"]))]["x"].values[0],
+                                 y2=track_portion[track_portion["t"] == int(np.max(track_portion["t"]))]["y"].values[
+                                     0]))
+                total_distance.append(get_total_distance(track_portion))
+                for net, tot in zip(net_distance, total_distance):
+                    net_total_distance.append(get_net_total_proportion(net, tot))
+                monotonicity.append(get_monotonicity(track_portion))
+                msd_alpha.append(get_msd(track_portion))
+
+            # calculate list of probabilities per window
+            track = drop_columns(track, motility=motility, intensity=intensity)
+            # track = normalize_tracks(track, motility=motility, intensity=intensity)
+            track_diff_confidence = get_prob_over_track(clf=clf, track=track, window=window_size, features_df=X_test)
+            length = len(track_diff_confidence)
+            tmp_df = pd.DataFrame(
+                {"confidence": track_diff_confidence, "avg_x": avg_x[:length], "avg_y": avg_y[:length],
+                 "avg_total": avg_total[:length], "linearity": linearity[:length],
+                 "net_distance": net_distance[:length], "total_distance": total_distance[:length],
+                 "net_total_distance": net_total_distance[:length], "monotonicity": monotonicity[:length],
+                 "msd_alpha": msd_alpha[:length]})
+            all_data = pd.concat([all_data, tmp_df], axis=0)
+    pickle.dump(all_data, open(dir_name + "/" + f"all_data , video {video_num}", 'wb'))
+
+
 if __name__ == '__main__':
+
     print(
         "Let's go! In this script, we will train random forest + tsfresh, on the 210726 experiment")
 
     # params
-    motility = False
-    intensity = True
-    lst_videos = [3, 8, ]  # 3,4 - control; 8,11 - ERKi
-    t_windows_con = [[0, 30], [60, 90], [100, 130], [140, 170], [180, 210]]
+    motility = True
+    intensity = False
+    window_size = 30
+    wt_cols = [wt * 300 for wt in range(0, 350, window_size)]
+    lst_videos = [3, 8, 4, 11]  # 3,4 - control; 8,11 - ERKi
+    t_windows_con = [[0, 30]]  # , [140, 170], [180, 210]
     t_window_diff = [140, 170]
 
-    dir_name = f"_210726_ motility-{motility}_intensity-{intensity}"
-    print(dir_name)
+    dir_name = f"tmp_ motility-{motility}_intensity-{intensity}"
+    time_frame = f"{t_window_diff[0]},{t_window_diff[1]} frames ERK, {t_windows_con} frames con"
+
     if not os.path.exists(dir_name):
         os.mkdir(dir_name)
-
-    time_frame = f"{t_window_diff[0]},{t_window_diff[1]} frames ERK, many frames con" #{t_window_con[0]},{t_window_con[1]}
-
     print(dir_name + "/" + time_frame)
     if not os.path.exists(dir_name + "/" + time_frame):
         os.mkdir(dir_name + "/" + time_frame)
 
-    train_and_eval_procedoure(lst_videos=lst_videos, motility=motility, intensity=intensity,
-                              dir_name=dir_name, time_window=True, diff_t_window=t_window_diff,
-                              con_t_windows=t_windows_con,
-                              )
+    # train_and_eval_procedoure(lst_videos=lst_videos, motility=motility, intensity=intensity,
+    #                           dir_name=dir_name + "/" + time_frame, time_window=True, diff_t_window=t_window_diff,
+    #                           con_t_windows=t_windows_con)
+
+    dir_name = dir_name + "/" + time_frame
+    dir_name = f"tmp_  motility-True_intensity-False/140,170 frames ERK, {t_windows_con} frames con"
+
+    vid_3_pkl = pickle.load(open(dir_name + "/" + "all_data , video 3", 'rb'))
+
+    print("video 3")
+    calc_motility_measures(video_num=3)
+    print("video 8")
+    calc_motility_measures(video_num=8)

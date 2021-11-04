@@ -4,8 +4,8 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
-from DataPreprocessing.load_tracks_xml import load_tracks_xml
-from TimeSeriesAnalysis.ts_fresh import drop_columns, normalize_tracks, get_prob_over_track, get_path, load_data, \
+from load_tracks_xml import load_tracks_xml
+from ts_fresh import drop_columns, normalize_tracks, get_prob_over_track, get_path, load_data, \
     plot_sampled_cells
 from multiprocessing import Process
 
@@ -128,9 +128,9 @@ def plot_avg_diff_prob(diff_video_num, con_video_num, end_of_file_name, dir_name
         ax.set_xlabel('Time [h]')
         ax.set_ylabel(' Avg p delta')
         ax.label_outer()
-    plt.show()
     plt.savefig(
         dir_name + "/" + f"{title} 30.png")
+    plt.show()
     plt.close(fig)
 
 
@@ -227,14 +227,14 @@ def run_delta(diff_t_windows, video_num, window, motility, intensity, wt_cols, v
     print(f"processing window #{window}")
     # load tracks and dataframe
     # xml_path = get_path(
-    #     fr"../data/tracks_xml/260721/S{video_num}_Nuclei.xml")
+    #     fr"data/tracks_xml/260721/S{video_num}_Nuclei.xml")
     # tracks, df = load_tracks_xml(xml_path)
 
     for diff_t_w in diff_t_windows:
-        time_frame = f"{diff_t_w[0]},{diff_t_w[1]} frames ERK, {0},{30} frames con"
+        time_frame = f"{diff_t_w[0]},{diff_t_w[1]} frames ERK, [[0, 30], [140, 170], [180, 210]] frames con"
 
         # open a new directory to save the outputs in
-        dir_name = f"outputs/_210726_ motility-{motility}_intensity-{intensity}/{time_frame}"
+        dir_name = f"tmp_ motility-{motility}_intensity-{intensity}/{time_frame}"
 
         # p = Process(target=run_calc, args=(dir_name, tracks, video_num, wt_cols, motility, intensity))
         # p.start()
@@ -258,7 +258,7 @@ if __name__ == '__main__':
     video_con_num = 3
 
     diff_t_windows = [[140, 170]]
-    for window in [20]:
+    for window in [30]:
         wt_cols = [wt * 300 for wt in range(0, 350, window)]
 
         run_delta(diff_t_windows, video_con_num, window, motility, intensity, wt_cols, video_diff_num, video_con_num)

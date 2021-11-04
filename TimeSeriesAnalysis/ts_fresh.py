@@ -4,7 +4,7 @@ from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 from sklearn import clone
 from sklearn.preprocessing import StandardScaler
 import joblib
-from load_tracks_xml import *
+from DataPreprocessing.load_tracks_xml import *
 from tsfresh import extract_features, extract_relevant_features, select_features
 from tsfresh.utilities.dataframe_functions import impute
 import pandas as pd
@@ -103,31 +103,44 @@ def concat_dfs(min_time_diff, lst_videos, crop_start=False, crop_end=False, time
             df = df[df["t"] >= 700]  # 700 time unites = 700*1.5/90 = 17.5 hours
 
         if time_window:
-            # if i in (3, 4, 7, 8, 11, 12):  # ERK video #TODO change 7,8 to 5,6
+            indices_to_keep = []
+            window_size = con_t_windows[0][1] - con_t_windows[0][0]
+            for label, label_df in df.groupby('label'):
+                indices_to_keep.extend(list(label_df.index) if len(label_df) >= window_size else [])
+            df = df.loc[indices_to_keep]
+
             if i in (8, 11):  # ERK video
                 # Cut the needed time window
                 df = df[(df["t_stamp"] >= diff_t_window[0]) & (
                         df["t_stamp"] <= diff_t_window[1])]
-            # elif i in (1, 2, 5, 6, 9, 10):  # control video #TODO change 5,6 to 7,8
             elif i in (3, 4):  # control video
                 # Cut the needed time window
                 keep_indices = []
+                labels_dic = {}
                 labels = []
-                for window in con_t_windows:
-                    window_indices = df[(df["t_stamp"] >= window[0]) & (df["t_stamp"] <= window[1])].index
+
+                for start, end in con_t_windows:
+                    labels_dic[start] = []
+                    window_indices = df[(df["t_stamp"] >= start) & (df["t_stamp"] <= end)].index
                     for ind in window_indices:
-                        ind_label = df.iloc[ind]["label"]
+                        ind_label = df.loc[ind]["label"]
                         if ind_label not in labels:
-                            keep_indices.append(ind)
+                            keep_indices.extend(
+                                list(set.intersection(set(df[df["label"] == ind_label].index), set(window_indices))))
+                            lst = labels_dic.get(start)
+                            lst.append(ind_label)
                             labels.append(ind_label)
-                df = df.iloc[keep_indices]
-                    # df = df[(df["t_stamp"] >= con_t_window[0]) & (
-                    #     df["t_stamp"] <= con_t_window[1])]
+                min_len = float("inf")
+                for key in labels_dic:
+                    min_len = len(labels_dic[key]) if len(labels_dic[key]) < min_len else min_len
+                to_drop_list = []
+                for key in labels_dic:
+                    to_drop_list.extend(labels_dic[key][:min_len - 1])
+                df = df.loc[list(set(keep_indices) - set(to_drop_list))]
 
         df.label = df.label + max_val
         max_val = df["label"].max() + 1
         target = False
-        # if i in (3, 4, 7, 8, 11, 12):  # TODO change 7,8 to 5,6
         if i in (8, 11):  # TODO change 7,8 to 5,6
             if df["t_stamp"].max() >= min_time_diff:
                 target = True
@@ -186,15 +199,19 @@ def get_single_cells_diff_score_plot(tracks, clf, features_filtered_direct):
         return all_probs
 
 
-def train(X_train, X_test, y_train, y_test):
-    clf = RandomForestClassifier()
-    clf.fit(X_train, y_train)
+def train(X_train, y_train):
+    clf = RandomForestClassifier(max_depth=8)
+    clf.fit(X_train, y_train, )
+    return clf
+
+
+def evaluate(clf, X_test, y_test):
     predicted = cross_val_predict(clf, X_test, y_test, cv=5)
     report = classification_report(y_test, predicted)
     auc_score = roc_auc_score(y_test, clf.predict_proba(X_test)[:, 1])
     print(report)
     print(auc_score)
-    return clf, report, auc_score
+    return report, auc_score
 
 
 def get_x_y(lst_videos, motility, intensity, min_length=0, max_length=950, min_time_diff=0, crop_start=False,
@@ -210,6 +227,7 @@ def get_x_y(lst_videos, motility, intensity, min_length=0, max_length=950, min_t
         if (min_length <= occurrences[label] <= max_length):
             labels.append(label)
     df = df[df["label"].isin(labels)]
+
     df = df.sample(frac=1).reset_index(drop=True)
 
     y = pd.Series(df['target'])
@@ -220,7 +238,7 @@ def get_x_y(lst_videos, motility, intensity, min_length=0, max_length=950, min_t
 
 
 def extract_distinct_features(df, feature_list):
-    df = extract_features(df, column_id="label", column_sort="t")
+    df = extract_features(df, column_id="label", column_sort="t", n_jobs=1)
     impute(df)
     return df[feature_list]
 
@@ -400,13 +418,18 @@ def get_path(path):
     return path if os.path.exists(path) else "muscle-formation-diff/" + path
 
 
-def save_data(dir_name, clf, X_train, X_test, y_train, y_test):
+def save_data(dir_name, clf=None, X_train=None, X_test=None, y_train=None, y_test=None):
     # save the model & train set & test set
-    pickle.dump(X_train, open(dir_name + "/" + "X_train", 'wb'))
-    pickle.dump(X_test, open(dir_name + "/" + "X_test", 'wb'))
-    pickle.dump(y_test, open(dir_name + "/" + "y_test", 'wb'))
-    pickle.dump(y_train, open(dir_name + "/" + "y_train", 'wb'))
-    joblib.dump(clf, dir_name + "/" + "clf.joblib")
+    if X_train is not None:
+        pickle.dump(X_train, open(dir_name + "/" + "X_train", 'wb'))
+    if X_test is not None:
+        pickle.dump(X_test, open(dir_name + "/" + "X_test", 'wb'))
+    if y_test is not None:
+        pickle.dump(y_test, open(dir_name + "/" + "y_test", 'wb'))
+    if y_train is not None:
+        pickle.dump(y_train, open(dir_name + "/" + "y_train", 'wb'))
+    if clf is not None:
+        joblib.dump(clf, dir_name + "/" + "clf.joblib")
 
 
 def load_data(dir_name):
