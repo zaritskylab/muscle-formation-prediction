@@ -12,6 +12,11 @@ import matplotlib.pyplot as plt
 from DataPreprocessing.load_tracks_xml import load_tracks_xml
 import pickle
 
+np.seterr(divide='ignore', invalid='ignore')
+import warnings
+
+warnings.simplefilter('ignore', np.RankWarning)
+
 
 class CoordinationCalc():
 
@@ -66,15 +71,14 @@ class CoordinationCalc():
         return neighbors
 
     def calc_cos_of_angles(self, start_time, end_time, track, tracks01, df, validation, rings):
-        # cos_of_angles = np.zeros(track.shape[0] - self.SMOOTHING_VAR + 1)
         cos_of_angles = []
         # loop over all points in tracks (-SMOOTHING_VAR)
         for i, cur_time in enumerate(range(start_time, end_time - self.SMOOTHING_VAR - 1)):
             # Takes SMOOTHING_VAR points at once to smooth the curve
             x = np.asarray(track[(i <= track.t_stamp) & track.t_stamp < i + self.SMOOTHING_VAR]['x'])
             y = np.asarray(track[(i <= track.t_stamp) & track.t_stamp < i + self.SMOOTHING_VAR]['y'])
-            my_angle = self.calc_angle(x, y)
-            # my_angle = self.get_rand_angle()
+            my_angle = self.calc_angle(x, y)  # regular
+            # my_angle = self.get_rand_angle() # null model
             neighbors = self.get_neighbors(df, x, y, cur_time, validation, rings)
             if neighbors.shape[0] != 0:
                 angles = np.zeros(neighbors.shape[0])
@@ -89,11 +93,12 @@ class CoordinationCalc():
                 if cur_adj_track_on_time.shape[0] < self.SMOOTHING_VAR:
                     angles[k] = float('nan')
                     break
+
                 # Take SMOOTHING_VAR points at once to smooth the curve
                 x_adj = np.asarray(cur_adj_track_on_time.iloc[:self.SMOOTHING_VAR]['x'])
                 y_adj = np.asarray(cur_adj_track_on_time.iloc[:self.SMOOTHING_VAR]['y'])
-                angles[k] = self.calc_angle(x_adj, y_adj)
-                # angles[k] = self.get_rand_angle()
+                angles[k] = self.calc_angle(x_adj, y_adj)  # regular
+                # angles[k] = self.get_rand_angle() # null model
 
             angles = angles[~np.isnan(angles)]
             try:
@@ -159,3 +164,7 @@ class CoordinationCalc():
 
 if __name__ == '__main__':
     print("coordination Calculator")
+    xml_path = r"../data/tracks_xml/0104/Experiment1_w1Widefield550_s7_all_0104.xml"
+    coord = CoordinationCalc(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=30, xml_path=xml_path)
+    coord.build_coordination_df(validation=True)
+    coord.save_coordinationDF(r"coordination_outputs/coordination_dfs/validations/global_coord_s7.pkl")

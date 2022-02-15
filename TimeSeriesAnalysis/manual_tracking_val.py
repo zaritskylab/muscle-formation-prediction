@@ -259,7 +259,7 @@ if __name__ == '__main__':
     window_size = 30
     wt_cols = [wt * 300 for wt in range(0, 350, window_size)]
     lst_videos = [3, 8, 4, 11]  # 3,4 - control; 8,11 - ERKi
-    t_windows_con = [[0, 30]]  # , [140, 170], [180, 210]
+    t_windows_con = [[0, 30], [140, 170], [180, 210]]  # , [140, 170], [180, 210]
     t_window_diff = [140, 170]
 
     dir_name = f"tmp_ motility-{motility}_intensity-{intensity}"
