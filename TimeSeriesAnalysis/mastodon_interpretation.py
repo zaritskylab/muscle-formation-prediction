@@ -27,9 +27,9 @@ def get_cell_speed(track, window_size):
         velocities[i][1] = (ys[i + 1] - ys[i])  # * (10 ^ 4) / 58.4564 * 40  # um/h
         total_velocity.append(np.sqrt(velocities[i][0] ** 2 + velocities[i][1] ** 2))
     # calculate averaged velocity for each time window
-    avg_x = [np.mean(velocities[i:i + window_size, 0]) for i in range(0, len(xs), window_size)]
-    avg_y = [np.mean(velocities[i:i + window_size, 1]) for i in range(0, len(ys), window_size)]
-    avg_total = [np.mean(total_velocity[i:i + window_size]) for i in range(0, len(total_velocity), window_size)]
+    avg_x = [np.mean(velocities[i:i + window_size, 0]) for i in range(0, len(xs), 1)]
+    avg_y = [np.mean(velocities[i:i + window_size, 1]) for i in range(0, len(ys), 1)]
+    avg_total = [np.mean(total_velocity[i:i + window_size]) for i in range(0, len(total_velocity), 1)]
     return avg_x, avg_y, avg_total
 
 
@@ -132,8 +132,10 @@ def calc_motility_measures(tracks, window_size, clf, X_test):
 
     for track in tracks:
         if len(track) > window_size:
+            track = track.sort_values('Spot frame')
             tmp_df = get_measueres(X_test, clf, motility, track, visual, window_size)
-            tmp_df["label"] = track["label"]
+            tmp_df["Spot frame"] = track["Spot frame"].values[1:]
+            tmp_df["Spot track ID"] = track["Spot track ID"].values[1:]
             all_data = pd.concat([all_data, tmp_df], axis=0)
     return all_data
 
@@ -149,7 +151,9 @@ def get_measueres(X_test, clf, motility, track, visual, window_size):
     monotonicity = []
     msd_alpha = []
     avg_x, avg_y, avg_total = get_cell_speed(track, window_size)
-    for i in range(0, len(track), window_size):
+    length = 0
+    for i in range(0, len(track), 1):
+        length += 1
         track_portion = track[i:i + window_size]
         # linearity (to calculate persistence)
         linearity.append(get_linearity(track_portion))
@@ -164,13 +168,16 @@ def get_measueres(X_test, clf, motility, track, visual, window_size):
             net_total_distance.append(get_net_total_proportion(net, tot))
         monotonicity.append(get_monotonicity(track_portion))
         # msd_alpha.append(get_msd(track_portion))
+
     # calculate list of probabilities per window
-    track = drop_columns(track, motility=motility, visual=visual)
-    track = normalize_tracks(track, motility=motility, visual=visual)
-    track_diff_confidence = get_prob_over_track(clf=clf, track=track, window=window_size, features_df=X_test)
-    length = len(track_diff_confidence)
+    # track = drop_columns(track, motility=motility, visual=visual)
+    # track = normalize_tracks(track, motility=motility, visual=visual)
+    # track_diff_confidence = get_prob_over_track(clf=clf, track=track, window=window_size, features_df=X_test)
+    # length = len(track_diff_confidence)
+    # length = len(track)
+    length = length - 1
     tmp_df = pd.DataFrame(
-        {"confidence": track_diff_confidence, "avg_x": avg_x[:length], "avg_y": avg_y[:length],
+        {"avg_x": avg_x[:length], "avg_y": avg_y[:length],  # "confidence": track_diff_confidence
          "avg_total": avg_total[:length], "linearity": linearity[:length],
          "net_distance": net_distance[:length], "total_distance": total_distance[:length],
          "net_total_distance": net_total_distance[:length], "monotonicity": monotonicity[:length]
@@ -223,7 +230,7 @@ if __name__ == '__main__':
 
     csv_path = fr"muscle-formation-diff/data/mastodon/Nuclei_{video_num}-vertices.csv"
     df = pd.read_csv(csv_path, encoding="cp1252")
-    df = df[df["manual"]==1]
+    df = df[df["manual"] == 1]
     all_data = pd.DataFrame()
 
     for label, label_df in df.groupby('Spot track ID'):

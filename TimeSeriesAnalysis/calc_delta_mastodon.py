@@ -4,42 +4,42 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
-from TimeSeriesAnalysis.mastodon import get_prob_over_track, load_data
-# from multiprocessing import Process
-# from mastodon import drop_columns, normalize
-from TimeSeriesAnalysis.mast_intensity import drop_columns, normalize
-
+from mastodon import get_prob_over_track, load_data
+from mastodon import drop_columns, normalize_tracks
+from mast_intensity import drop_columns as drop_col_int
+from mast_intensity import normalize
 pd.options.mode.chained_assignment = None
 
 
-def calc_prob_delta(window, tracks, clf, X_test, motility, intensity, wt_cols, moving_window=False,
+def calc_prob_delta(window, tracks, clf, X_test, motility, visual, wt_cols, moving_window=False,
                     aggregate_windows=False, calc_delta=True):
+    wt_cols = [i for i in range(260)] if moving_window else wt_cols
     df_prob = pd.DataFrame(columns=wt_cols)
+
+    # tracks = tracks[:5] #todo: remove
 
     for ind, t in enumerate(tracks):
         track = tracks[ind]
-        if window == 926:
-            _window = len(track)
-        elif len(track) < window:
+        if len(track) < window:
             continue
         else:
             _window = window
 
         step_size = 1 if moving_window or aggregate_windows else window
 
-        first_frame = track["Spot frame"].min()
-        idx = (np.abs(np.array(wt_cols) - first_frame)).argmin()
-        start = wt_cols[idx+1]
-        time_windows = [start + i * step_size for i in range(len(track) // step_size)]
+        time_windows = [(track.iloc[val]['Spot frame']) for val in range(0 + window, len(track), step_size)]
+        time_windows.sort()
+        track = track.sort_values("Spot frame")
 
-        # track = track[:10]
+        # track = track[:33]
 
         # normalize track:
-        # track = drop_columns(track, motility=motility, visual=visual)
-        # track = normalize_tracks(track, motility=motility, visual=visual)
-
-        track = drop_columns(track)
-        track = normalize(track)
+        if motility:
+            track = drop_columns(track, motility=motility, visual=visual)
+            track = normalize_tracks(track, motility=motility, visual=visual)
+        elif visual:
+            track = drop_col_int(track)
+            track = normalize(track)
         track.dropna(inplace=True)
 
         # calculate list of probabilities per window
@@ -51,11 +51,12 @@ def calc_prob_delta(window, tracks, clf, X_test, motility, intensity, wt_cols, m
         else:
             prob = true_prob
 
-        dic = {}
-        for (wt, prob) in zip(time_windows, prob):
-            dic[int(wt)] = prob
-        data = [dic]
-        df_prob = df_prob.append(data, ignore_index=True, sort=False)
+        # dic = {}
+        # for (wt, prob) in zip(time_windows, prob):
+        #     dic[int(wt)] = prob
+        # data = [dic]
+        # df_prob = df_prob.append(data, ignore_index=True, sort=False)
+        df_prob = df_prob.append(prob, ignore_index=True, sort=False)
 
     return df_prob
 

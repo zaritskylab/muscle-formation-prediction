@@ -118,13 +118,4 @@ if __name__ == '__main__':
             # all_data = pd.concat([all_data, _df], axis=0)
             all_data = pd.concat([all_data, tmp_df], axis=0)
 
-            # plot_measurement(data=all_data, dir_name=dir_name, video_num=video_num, y="net_distance", x="confidence")
-            # plot_measurement(data=all_data, dir_name=dir_name, video_num=video_num, y="linearity", x="confidence")
-            # plot_measurement(data=all_data, dir_name=dir_name, video_num=video_num, y="avg_total", x="confidence")
-            # plot_measurement(data=all_data, dir_name=dir_name, video_num=video_num, y="total_distance", x="confidence")
-            # plot_measurement(data=all_data, dir_name=dir_name, video_num=video_num, y="net_total_distance",
-            #                  x="confidence")
-            # plot_measurement(data=all_data, dir_name=dir_name, video_num=video_num, y="monotonicity", x="confidence")
-            # plot_measurement(data=all_data, dir_name=dir_name, video_num=video_num, y="msd_alpha", x="confidence")
-
     pickle.dump(all_data, open(dir_name + "/" + f"all_data , video {video_num}", 'wb'))

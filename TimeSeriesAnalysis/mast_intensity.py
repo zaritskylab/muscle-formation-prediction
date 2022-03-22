@@ -74,6 +74,7 @@ def get_single_cell_intensity_measures(label, df, im_actin, window_size):
 def get_intensity_measures_df(csv_path, video_actin_path, window_size):
     df = pd.read_csv(csv_path, encoding="cp1252")
     df = df[df["manual"] == 1]
+
     im_actin = io.imread(video_actin_path)
     total_df = pd.DataFrame()
     for label, label_df in df.groupby("Spot track ID"):
@@ -81,6 +82,7 @@ def get_intensity_measures_df(csv_path, video_actin_path, window_size):
                                                          window_size=window_size)
         if not df_measures.empty:
             total_df = pd.concat([total_df, df_measures], axis=0)
+
     return total_df
 
 
@@ -183,7 +185,6 @@ def concat_dfs(diff_df, con_df, diff_t_window=None, con_t_windows=None):
 
     # Erk video
     # Cut the needed time window
-    print(diff_df.columns)
     diff_df = diff_df[(diff_df["Spot frame"] >= diff_start) & (diff_df["Spot frame"] < diff_end)]
 
     # control video
@@ -350,7 +351,7 @@ def load_data(dir_name):
 if __name__ == '__main__':
     cluster_path = "muscle-formation-diff"
     local_path = ".."
-    path = local_path
+    path = cluster_path
     window_size = 40
     n = 10
     l = 200
@@ -359,7 +360,11 @@ if __name__ == '__main__':
         csv_path=path + r"/data/mastodon/train/Nuclei_5-vertices.csv",
         video_actin_path=path + r"/data/videos/train/S5_Actin.tif",
         window_size=window_size)
+
+
     int_measures_s5.to_csv(path + "/data/mastodon/train/int_measures_s5.csv")
+
+
 
     int_measures_s1 = get_intensity_measures_df(
         csv_path=path + r"/data/mastodon/train/Nuclei_1-vertices.csv",
@@ -380,12 +385,17 @@ if __name__ == '__main__':
     int_measures_s3.to_csv(path + "/data/mastodon/test/int_measures_s3.csv")
 
     dif_window = [200, 230]
-    con_windows = [[0, 30], [140, 170], [180, 210], [240, 270], [300, 330]]
+    con_windows = [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]]
 
-    dir_name = f"15-02-2022-manual_mastodon_motility-False_intensity-True"
+    dir_name = f"16-02-2022-manual_mastodon_motility-False_intensity-True"
     second_dir = f"{dif_window[0]},{dif_window[1]} frames ERK, {con_windows} frames con,{window_size} winsize"
     open_dirs(dir_name, second_dir)
     dir_name += "/" + second_dir
+
+    # # save classification report & AUC score
+    # txt_file = open('info.txt', 'a')
+    # txt_file.write(str(int_measures_s5.head()))
+    # txt_file.close()
 
     X_train, y_train = prep_data(diff_df=int_measures_s5, con_df=int_measures_s1, diff_t_window=dif_window,
                                  con_t_windows=con_windows)

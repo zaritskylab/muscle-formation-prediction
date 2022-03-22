@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from DataPreprocessing.load_tracks_xml import load_tracks_xml
+# from DataPreprocessing.load_tracks_xml import load_tracks_xml
 import pickle
 
 np.seterr(divide='ignore', invalid='ignore')
@@ -170,7 +170,7 @@ class CoordinationCalc():
 
 if __name__ == '__main__':
     print("coordination Calculator")
-    csv_path = fr"../data/mastodon/Nuclei_1-vertices.csv"
+    csv_path = fr"../data/mastodon/test/Nuclei_3-vertices.csv"
     coord = CoordinationCalc(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=30, csv_path=csv_path)
     coord.build_coordination_df(validation=False)
-    coord.save_coordinationDF(r"coordination_outputs/coordination_dfs/manual_tracking/coord_mastodon_s1.pkl")
+    coord.save_coordinationDF(r"coordination_outputs/coordination_dfs/manual_tracking/coord_mastodon_s3.pkl")
