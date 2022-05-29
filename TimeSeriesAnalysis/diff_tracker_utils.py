@@ -15,13 +15,124 @@ import pandas as pd
 import os
 from sklearn import metrics
 
+import consts
 from experimentation import get_shifts
+from skimage import io
+
+
+def get_position(ind, df):
+    x = int(df.iloc[ind]["Spot position X (µm)"] / 0.462)
+    y = int(df.iloc[ind]["Spot position Y (µm)"] / 0.462)
+    spot_frame = int(df.iloc[ind]["Spot frame"])
+    return x, y, spot_frame
+
+
+def get_centered_image(ind, df, im_actin, window_size):
+    x, y, spot_frame = get_position(ind, df)
+    cropped = im_actin[spot_frame][x - window_size:x + window_size, y - window_size: y + window_size]
+    return cropped
+
+
+def get_single_cell_intensity_measures(label, df, im_actin, window_size):
+    # try:
+    df_measures = pd.DataFrame(columns=["min", "max", "mean", "sum", "Spot track ID", "Spot frame", "x", "y", ])
+    for i in range(len(df)):  # len(df)
+        img = get_centered_image(i, df, im_actin, window_size)
+        try:
+            min_i, max_i, mean_i, sum_i = img.min(), img.max(), img.mean(), img.sum()
+        except:
+            continue
+        x, y, spot_frame = get_position(i, df)
+        data = {"min": min_i, "max": max_i, "mean": mean_i, "sum": sum_i, "Spot track ID": label,
+                "Spot frame": spot_frame,
+                "x": x, "y": y}
+        df_measures = df_measures.append(data, ignore_index=True)
+    # except:
+    #     return pd.DataFrame()
+    return df_measures
+
+
+def get_intensity_measures_df(df, video_actin_path, window_size, local_density):
+    im_actin = io.imread(video_actin_path)
+    total_df = pd.DataFrame()
+    for label, label_df in df.groupby("Spot track ID"):
+        if len(label_df) >= window_size:
+            df_measures = get_single_cell_intensity_measures(label=label, df=label_df, im_actin=im_actin,
+                                                             window_size=window_size)
+            if not df_measures.empty:
+                if len(df_measures) >= window_size:
+                    if local_density:
+                        df_measures["local density"] = label_df["local density"]
+                    df_measures["manual"] = 1
+                    total_df = pd.concat([total_df, df_measures], axis=0)
+
+    return total_df
+
+
+def get_local_densities_df(df_s, tracks_s, neighboring_distance=100):
+    local_densities = pd.DataFrame(columns=[i for i in range(df_s["Spot frame"].max() + 2)])
+    for track in tracks_s:
+        spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
+        track_local_density = {
+            t: get_local_density(df=df_s,
+                                 x=track[track["Spot frame"] == t]["Spot position X (µm)"].values[0],
+                                 y=track[track["Spot frame"] == t]["Spot position Y (µm)"].values[0],
+                                 t=t,
+                                 neighboring_distance=neighboring_distance)
+            for t in spot_frames}
+        local_densities = local_densities.append(track_local_density, ignore_index=True)
+    return local_densities
+
+
+def load_clean_rows(csv_path):
+    df = pd.read_csv(csv_path, encoding="cp1252")
+    df = df.drop(labels=range(0, 2), axis=0)
+    return df
+
+
+def get_density(df, experiment):
+    densities = pd.DataFrame()
+    for t, t_df in df.groupby("Spot frame"):
+        densities = densities.append({"Spot frame": t, "density": len(t_df)}, ignore_index=True)
+    densities["experiment"] = experiment
+    return densities
+
+
+def get_local_density(df, x, y, t, neighboring_distance):
+    neighbors = df[(np.sqrt(
+        (df["Spot position X (µm)"] - x) ** 2 + (df["Spot position Y (µm)"] - y) ** 2) <= neighboring_distance) &
+                   (df['Spot frame'] == t) &
+                   (0 < np.sqrt((df["Spot position X (µm)"] - x) ** 2 + (df["Spot position Y (µm)"] - y) ** 2))]
+    return len(neighbors)
+
+
+def get_tracks(path, manual_tagged_list, target=1):
+    df_s = load_clean_rows(path)  # .dropna()
+    df_s.rename(columns={"Spot position": "Spot position X (µm)", "Spot position.1": "Spot position Y (µm)",
+                         "Spot center intensity": "Spot center intensity Center ch1 (Counts)",
+                         "Spot intensity": "Spot intensity Mean ch1 (Counts)",
+                         "Spot intensity.1": "Spot intensity Std ch1 (Counts)",
+                         "Spot intensity.2": "Spot intensity Min ch1 (Counts)",
+                         "Spot intensity.3": "Spot intensity Max ch1 (Counts)",
+                         "Spot intensity.4": "Spot intensity Median ch1 (Counts)",
+                         "Spot intensity.5": "Spot intensity Sum ch1 (Counts)",
+                         },
+                inplace=True)
+    df_s["Spot frame"] = df_s["Spot frame"].astype(int)
+    df_s["Spot position X (µm)"] = df_s["Spot position X (µm)"].astype(float)
+    df_s["Spot position Y (µm)"] = df_s["Spot position Y (µm)"].astype(float)
+    df_s["Spot track ID"] = df_s["Spot track ID"].astype(float)
+    # print(manual_tagged_list)
+    data = df_s[df_s["manual"] == 1] if manual_tagged_list else df_s
+    tracks_s = get_tracks_list(data, target=target)
+    return df_s, tracks_s
 
 
 def extract_distinct_features(df, feature_list, column_id="Spot track ID", column_sort="Spot frame"):
     df = extract_features(df, column_id=column_id, column_sort=column_sort)  # , show_warnings=False
     impute(df)
     return df[feature_list]
+
 
 def correct_shifts(df, vid_path):
     shifts = get_shifts(vid_path, df["Spot frame"].max() + 1)
@@ -30,12 +141,130 @@ def correct_shifts(df, vid_path):
     df["Spot position Y (µm)"] = df.apply(lambda x: x["Spot position Y (µm)"] + shifts[int(x["Spot frame"])][0], axis=1)
     return df
 
+
+def drop_columns_nuc_intensity(track, added_features=[]):
+    to_keep = ['Spot center intensity Center ch1 (Counts)',
+               'Spot intensity Mean ch1 (Counts)',
+               'Spot intensity Std ch1 (Counts)',
+               'Spot intensity Min ch1 (Counts)',
+               'Spot intensity Max ch1 (Counts)',
+               'Spot intensity Median ch1 (Counts)',
+               'Spot intensity Sum ch1 (Counts)',
+               'Spot track ID',
+               'Spot frame', 'target']
+    to_keep.extend(added_features)
+    return track[to_keep]
+
+
+def normalize_nuc_intensity(track, added_features=[]):
+    columns = [e for e in list(track.columns) if e not in ('Spot frame', 'Spot track ID', 'target')]
+    columns = [e for e in columns if e not in added_features]
+    scaler = StandardScaler()  # create a scaler
+    track[columns] = scaler.fit_transform(track[columns])  # transform the feature
+    return track
+
+
+def normalize_track(track, motility, visual, nuc_intensity, shift_tracks, vid_path=None):
+    # normalize track:
+    if motility:
+        track = drop_columns_motility(track)
+        track = normalize_motility(track)
+
+    elif visual:
+        track = drop_columns_intensity(track)
+        track = normalize_intensity(track)
+
+    elif nuc_intensity:
+        track = drop_columns_nuc_intensity(track)
+        track = normalize_nuc_intensity(track)
+
+    track.dropna(inplace=True)
+
+    if shift_tracks:
+        track = correct_shifts(track, vid_path)
+    return track
+
+
+def add_features(track, df_s, local_density=True, neighboring_distance=50):
+    if local_density:
+        spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
+        track_local_density = [
+            get_local_density(df=df_s,
+                              x=track[track["Spot frame"] == t]["Spot position X (µm)"].values[0],
+                              y=track[track["Spot frame"] == t]["Spot position Y (µm)"].values[0],
+                              t=t,
+                              neighboring_distance=neighboring_distance)
+            for t in spot_frames]
+        track["local density"] = track_local_density
+    return track
+
+
+def add_features_df(df, df_s, local_density=True):
+    if local_density:
+        new_df = pd.DataFrame()
+        for label, track in df.groupby("Spot track ID"):
+            track = track.sort_values("Spot frame")
+            track = add_features(track, local_density=local_density, df_s=df_s)
+            new_df = new_df.append(track, ignore_index=True)
+        return new_df
+    else:
+        return df
+
+
+def transform_tsfresh_single_cell(track, motility, visual, nuc_intensity, window, shift_tracks=False, vid_path=None):
+    # track = track.sort_values("Spot frame")
+    track = normalize_track(track, motility, visual, nuc_intensity, shift_tracks, vid_path)
+
+    track_transformed = pd.DataFrame()
+    target = track["target"].iloc[0]
+    track = track.drop(columns="target")
+
+    list_of_track_portions = [track.iloc[i:i + window, :] for i in range(0, len(track), 1) if
+                              i < len(track) - window + 1]
+    for track_portion in list_of_track_portions:
+        portion_transformed = extract_features(track_portion, column_id="Spot track ID",
+                                               column_sort="Spot frame")  # , show_warnings=False
+        portion_transformed["Spot frame"] = track_portion["Spot frame"].max()
+        track_transformed = track_transformed.append(portion_transformed, ignore_index=True)
+    track_transformed["Spot track ID"] = track["Spot track ID"].max()
+    track_transformed["target"] = target
+    return track_transformed
+
+
+def trandform_tsfresh_df(df_to_transform, target, motility, nuc_intensity, visual, window, shift_tracks=False,
+                         vid_path=None,
+                         feature_list=None):
+    tracks = get_tracks_list(df_to_transform, target=target)
+    transformed_tracks = pd.DataFrame()
+    for track in tracks:
+        if len(track) >= window:
+            track_transformed = transform_tsfresh_single_cell(track=track, motility=motility, visual=visual,
+                                                              window=window, nuc_intensity=nuc_intensity,
+                                                              shift_tracks=shift_tracks, vid_path=vid_path)
+            impute(track_transformed)
+            transformed_tracks = transformed_tracks.append(track_transformed, ignore_index=True)
+    # impute(transformed_tracks)
+    print(transformed_tracks)
+    return transformed_tracks
+
+
+def calc_prob(transformed_tracks_df, clf, n_frames=260):
+    df_score = pd.DataFrame(columns=[i for i in range(n_frames)])
+    for track_id, track in transformed_tracks_df.groupby("Spot track ID"):
+        spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
+        diff_score = {"Spot track ID": track_id}
+        for t in spot_frames:
+            probs = clf.predict_proba(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1))
+            diff_score[t] = probs[0][1]
+
+        df_score = df_score.append(diff_score, ignore_index=True, sort=False)
+    return df_score
+
+
 def calc_prob_delta(window, tracks, clf, X_test, motility, visual, wt_cols, moving_window=False,
                     aggregate_windows=False, calc_delta=False, add_time=False, shift_tracks=False, vid_path=None):
     wt_cols = [i for i in range(260)] if moving_window else wt_cols
     df_prob = pd.DataFrame(columns=wt_cols)
-
-    # tracks = tracks[:5] #todo: remove
 
     for ind, t in enumerate(tracks):
         track = tracks[ind]
@@ -50,19 +279,7 @@ def calc_prob_delta(window, tracks, clf, X_test, motility, visual, wt_cols, movi
         time_windows.sort()
         track = track.sort_values("Spot frame")
 
-        # track = track[:33]
-
-        # normalize track:
-        if motility:
-            track = drop_columns_motility(track)
-            track = normalize_motility(track)
-        elif visual:
-            track = drop_columns_intensity(track)
-            track = normalize_intensity(track)
-        track.dropna(inplace=True)
-
-        if shift_tracks:
-            track = correct_shifts(track, vid_path)
+        track = normalize_track(track, motility, visual, shift_tracks, vid_path)
 
         if add_time:
             track["time_stamp"] = track["Spot frame"]
@@ -75,11 +292,6 @@ def calc_prob_delta(window, tracks, clf, X_test, motility, visual, wt_cols, movi
         else:
             prob = true_prob
 
-        # dic = {}
-        # for (wt, prob) in zip(time_windows, prob):
-        #     dic[int(wt)] = prob
-        # data = [dic]
-        # df_prob = df_prob.append(data, ignore_index=True, sort=False)
         df_prob = df_prob.append(prob, ignore_index=True, sort=False)
 
     return df_prob
@@ -143,18 +355,17 @@ def get_prob_over_track(clf, track, window, feature_list, moving_window=False):
         X = extract_distinct_features(df=track_portion, feature_list=feature_list)
         probs = clf.predict_proba(X)
         true_p[max_frame] = probs[0][1]
-        # print(f"track portion: [{i}:{i + window}]")
-        # print(clf.classes_)
-        # print(probs)
+
     print(true_p)
     return true_p
 
 
 def evaluate(clf, X_test, y_test):
-    predicted = cross_val_predict(clf, X_test, y_test, cv=5)
-    report = classification_report(y_test, predicted)
+    # predicted = cross_val_predict(clf, X_test, y_test, cv=5)
 
     pred = clf.predict(X_test)
+    report = classification_report(y_test, pred)
+
     fpr, tpr, thresholds = metrics.roc_curve(y_test, pred, pos_label=1)
     auc = metrics.auc(fpr, tpr)
     print(report)
@@ -169,26 +380,25 @@ def get_unique_indexes(y):
     return y_new
 
 
-def drop_columns_intensity(df):
-    return df[['min', 'max', 'mean', 'sum', 'Spot track ID', 'Spot frame', 'target']]
+def drop_columns_intensity(df, added_features=[]):
+    to_keep = ['min', 'max', 'mean', 'sum', 'Spot track ID', 'Spot frame', 'target']
+    to_keep.extend(added_features)
+    # print(df.shape, df.columns)
+    return df[to_keep]
 
 
-def drop_columns_motility(df):  # , motility, visual
+def drop_columns_motility(df, added_features=[]):  # , motility, visual
     to_keep = ['Spot frame', 'Spot track ID', 'target']  # , 'Track N spots'
-    visual_features = ['Spot center intensity (Counts)', 'Detection quality', 'Spot intensity Mean ch1 (Counts)',
-                       'Spot intensity Std ch1 (Counts)', 'Spot intensity Min ch1 (Counts)',
-                       'Spot intensity Max ch1 (Counts)', 'Spot intensity Median ch1 (Counts)',
-                       'Spot intensity Sum ch1 (Counts)', 'Spot quick mean (Counts)', 'Spot radius (µm)', ]
     motility_features = ['Spot position X (µm)', 'Spot position Y (µm)', ]
-
-    # to_keep.extend(visual_features) if visual else to_keep.extend([])
+    to_keep.extend(added_features)
     to_keep.extend(motility_features)  # if motility else to_keep.extend([])
     to_keep = [value for value in to_keep if value in df.columns]
     return df[to_keep]
 
 
-def normalize_intensity(df):
+def normalize_intensity(df, added_features=[]):
     columns = [e for e in list(df.columns) if e not in ('Spot frame', 'Spot track ID', 'target')]
+    columns = [e for e in columns if e not in added_features]
     scaler = StandardScaler()  # create a scaler
     df[columns] = scaler.fit_transform(df[columns])  # transform the feature
     return df
@@ -258,9 +468,6 @@ def open_dirs(main_dir, inner_dir):
 
 def train(X_train, y_train):
     clf = RandomForestClassifier(max_depth=8)
-
-    # import xgboost as xgb
-    # clf = xgb.XGBClassifier()
     clf.fit(X_train, y_train, )
     return clf
 
@@ -355,8 +562,8 @@ def plot_avg_conf(path):
         plt.plot([i * 5 / 60 for i in range(len(avg_vals_diff))], avg_vals_diff, color=color1)
         plt.fill_between([i * 5 / 60 for i in range(len(avg_vals_diff))], m_std, p_std, alpha=0.5, color=color2)
 
-    fuse_df = pickle.load(open(path + f"/df_prob_w={30}, video_num={3}", 'rb'))
-    not_fuse_df = pickle.load(open(path + f"/df_prob_w={30}, video_num={2}", 'rb'))
+    fuse_df = pickle.load(open(path + f"/df_prob_w={30}, video_num={5}", 'rb'))
+    not_fuse_df = pickle.load(open(path + f"/df_prob_w={30}, video_num={1}", 'rb'))
 
     plot(fuse_df, "DarkOrange", "Orange")
     plot(not_fuse_df, "blue", "blue")
@@ -365,41 +572,104 @@ def plot_avg_conf(path):
     plt.ylabel("avg confidence")
     plt.title("avg differentiation confidence over time (motility)")
     plt.plot([i * 5 / 60 for i in range(260)], [0.5 for i in range(260)], color="black", linestyle="--")
-    plt.savefig(path + "/avg conf s3, s2.png")
+    plt.savefig(path + "/avg conf s5, s1.png")
     plt.show()
     plt.clf()
 
 
-if __name__ == '__main__':
-    cluster_path = "muscle-formation-diff"
-    local_path = ".."
-    path = cluster_path
+def get_tracks_list(int_df, target):
+    int_df['target'] = target
+    tracks = list()
+    for label, labeld_df in int_df.groupby('Spot track ID'):
+        tracks.append(labeld_df)
+    return tracks
 
+
+def run_tsfresh_preprocess(df, s_run, motility, intensity, nuc_intensity, tracks_len, local_density, winsize):
+    if intensity:
+        print(df.shape)
+        df = get_intensity_measures_df(df=df,
+                                       video_actin_path=path + s_run["nuc_path"],
+                                       window_size=winsize, local_density=local_density)
+    print(df.shape)
+    trans_df = trandform_tsfresh_df(df_to_transform=df, target=s_run["target"], motility=motility,
+                                    visual=intensity, nuc_intensity=nuc_intensity,
+                                    window=tracks_len,
+                                    shift_tracks=False, vid_path=None)
+
+    return trans_df
+
+
+if __name__ == '__main__':
     diff_window = [140, 170]
     tracks_len = 30
+    con_window = [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]]
 
-    con_windows = [
+    motility = False
+    intensity = True
+    nuc_intensity = False
+    local_density = False
+    s_run = consts.s1
+    winsize = 7
 
-        [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]],
-        [[10, 40], [40, 70], [70, 100], [100, 130], [130, 160], [160, 190], [190, 220], [220, 250]]
+    rest_name = f"_transformed_full_features_local_den_{local_density} win size {winsize}"
+    if intensity:
+        to_run = "intensity_nuc"
+    elif motility:
+        to_run = "motility"
+    elif nuc_intensity:
+        to_run = "nuc_intensity"
 
-        # [[0, 50], [50, 100], [100, 150], [150, 200], [200, 250]],
-        # [[0, 50], [60, 110], [110, 160], [160, 210], [210, 260]],
-        # [[10, 60], [60, 110], [110, 160], [160, 210], [210, 260], [150, 180], [180, 210], [210, 240]],
-    ]
+    print("running", to_run)
 
-    for w in con_windows:
-        dir_path = f"20-03-2022-manual_mastodon_motility shifted tracks"
-        second_dir = f"{diff_window} frames ERK, {w} frames con track len {tracks_len}"
-        dir_path += "/" + second_dir
-        plot_avg_conf(dir_path)
+    path = consts.cluster_path
+    dir_path = f"20-03-2022-manual_mastodon_{to_run} local density"
+    second_dir = f"{diff_window} frames ERK, {con_window} frames con track len {tracks_len}"
+    dir_path += "/" + second_dir
 
-        clf, X_train, X_test, y_train, y_test = load_data(dir_path)
-        pred = clf.predict(X_test)
-        fpr, tpr, thresholds = metrics.roc_curve(y_test, pred, pos_label=1)
-        auc = metrics.auc(fpr, tpr)
+    print(f"\n\nrunning {s_run}, {motility}, {intensity},{nuc_intensity} ,  {local_density}\n\n")
 
-        txt_file = open(dir_path + '/info.txt', 'a')
-        txt_file.write(f"\n\n new auc: {auc}")
+    df_all, tracks_s = get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)  # df_s
+    if "manual" in df_all.columns:
+        df_tagged = df_all[df_all["manual"] == 1]
+    else:
+        df_tagged = df_all
+        df_tagged["manual"] = 1
 
-        txt_file.close()
+    df_tagged = add_features_df(df_tagged, df_all, local_density=local_density)
+    del (df_all)
+
+    # perform
+    ids_list = df_tagged["Spot track ID"].unique()
+    n = 100
+    ids_chunks = [ids_list[i:i + n] for i in range(0, len(ids_list), n)]
+    for chunk_id, chunk in enumerate(ids_chunks):
+        if chunk_id > 3:
+            print(f"chunk #{chunk_id}")
+            df_chunk = df_tagged[df_tagged["Spot track ID"].isin(chunk)]
+            trans_df = run_tsfresh_preprocess(df_chunk, s_run, motility, intensity, nuc_intensity, tracks_len,
+                                              local_density, winsize)
+            pickle.dump(trans_df,
+                        open(path + f"/data/mastodon/ts_transformed_new/{to_run}/{chunk_id}_impute_single" + s_run[
+                            "name"] + rest_name, 'wb'))
+            del (df_chunk)
+
+    del (df_tagged)
+
+    # df_all_chunks = pd.DataFrame()
+    # for chunk_id, chunk in enumerate(range(5)):
+    #     try:
+    #         chunk_df = pickle.load(open(
+    #             path + f"/data/mastodon/ts_transformed_new/{to_run}/{chunk_id}_impute_single" + s_run["name"] + rest_name,
+    #             'rb'))
+    #         df_all_chunks = pd.concat([df_all_chunks, chunk_df], ignore_index=True)
+    #         del(chunk_df)
+    #     except:
+    #         continue
+    #
+    # pickle.dump(df_all_chunks,
+    #             open(
+    #                 path + f"/data/mastodon/ts_transformed_new/{to_run}/05_01_S{s_run['name']}_transformed_local_den_{local_density}",
+    #                 'wb'))
+    #
+    # print("saved")

@@ -42,15 +42,26 @@ class DiffTracker():
         return X_train, X_test
 
     def prep_data(self, diff_df, con_df, diff_t_window, con_t_windows, dif_vid_path, con_vid_path,
+                  added_features=[],
                   add_time=False):
-        print("correct shifts")
+        # print("correct shifts")
         # diff_df = correct_shifts(diff_df, dif_vid_path)
         # con_df = correct_shifts(con_df, con_vid_path)
 
+        # con_df = con_df.sample(frac=0.9)  # TODO
+        # diff_df = diff_df[diff_df["Spot frame"] > 139]  # TODO
+        # diff_df = diff_df[diff_df["Spot frame"] < 171]  # TODO
+
         print("concatenating control data & ERKi data")
-        df = self.concat_dfs(diff_df, con_df, diff_t_window, con_t_windows)
+        df = self.concat_dfs(diff_df[diff_df["manual"] == 1], con_df[con_df["manual"] == 1], diff_t_window,
+                             con_t_windows)
+
+        print(len(df[df["target"] == True]), len(df[df["target"] == False]))
+
         print("dropping irrelevant columns")
-        df = self.drop_columns(df)
+        # print(df.columns)
+        df = self.drop_columns(df, added_features=added_features)
+
         print("normalizing data")
         df = self.normalize(df)
 
@@ -58,6 +69,8 @@ class DiffTracker():
             df["time_stamp"] = df["Spot track ID"]
 
         df = df.sample(frac=1).reset_index(drop=True)
+
+        print(len(df[df["target"] == True]), len(df[df["target"] == False]))
 
         y = pd.Series(df['target'])
         y.index = df['Spot track ID']
@@ -67,30 +80,23 @@ class DiffTracker():
 
     def train(self, diff_df_train, con_df_train, diff_df_test, con_df_test,
               vid_path_dif_train, vid_path_con_train,
-              vid_path_dif_test, vid_path_con_test,
+              vid_path_dif_test, vid_path_con_test, local_density,
               add_time=False):
         X_train, y_train = self.prep_data(diff_df=diff_df_train, con_df=con_df_train, diff_t_window=self.diff_window,
                                           con_t_windows=self.con_windows, add_time=add_time,
                                           dif_vid_path=vid_path_dif_train,
-                                          con_vid_path=vid_path_con_train)
+                                          con_vid_path=vid_path_con_train,
+                                          added_features=['local density'])
         X_test, y_test = self.prep_data(diff_df=diff_df_test, con_df=con_df_test, diff_t_window=self.diff_window,
                                         con_t_windows=self.con_windows, add_time=add_time,
                                         dif_vid_path=vid_path_dif_test,
-                                        con_vid_path=vid_path_con_test)
+                                        con_vid_path=vid_path_con_test,
+                                        added_features=['local density'])
         print("fit into ts-fresh dataframe")
         X_train, X_test = self.fit_transform_tsfresh(X_train, y_train, X_test)
 
-        # # define oversampling strategy
-        # oversample = RandomOverSampler(sampling_strategy='minority')
-        #
-        # print("before oversampling", Counter(y_train))
-        #
-        # # fit and apply the transform
-        # X_over, y_over = oversample.fit_resample(X_train, y_train)
-        #
-        # print("after oversampling", Counter(y_over))
-
         print("training")
+        print(X_train.shape)
         clf = utils.train(X_train, y_train)
         utils.save_data(self.dir_path, X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, clf=clf)
         self.clf = clf

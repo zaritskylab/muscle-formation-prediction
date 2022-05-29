@@ -15,6 +15,7 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.preprocessing import StandardScaler
 from tsfresh import extract_features, select_features, extract_relevant_features
 from tsfresh.utilities.dataframe_functions import impute
+import diff_tracker_utils as utils
 
 
 def get_position(ind, df):
@@ -59,7 +60,6 @@ def get_single_cell_intensity_measures(label, df, im_actin, window_size):
         df_measures = pd.DataFrame(columns=["min", "max", "mean", "sum", "Spot track ID", "Spot frame", "x", "y", ])
         for i in range(len(df)):  # len(df)
             img = get_centered_image(i, df, im_actin, window_size)
-            # min_i, max_i, mean_i, sum_i = get_intensity_measures_roi(img)
             min_i, max_i, mean_i, sum_i = img.min(), img.max(), img.mean(), img.sum()
             x, y, spot_frame = get_position(i, df)
             data = {"min": min_i, "max": max_i, "mean": mean_i, "sum": sum_i, "Spot track ID": label,
@@ -70,18 +70,24 @@ def get_single_cell_intensity_measures(label, df, im_actin, window_size):
         return pd.DataFrame()
     return df_measures
 
-
-def get_intensity_measures_df(csv_path, video_actin_path, window_size):
-    df = pd.read_csv(csv_path, encoding="cp1252")
-    df = df[df["manual"] == 1]
-
-    im_actin = io.imread(video_actin_path)
-    total_df = pd.DataFrame()
-    for label, label_df in df.groupby("Spot track ID"):
-        df_measures = get_single_cell_intensity_measures(label=label, df=label_df, im_actin=im_actin,
-                                                         window_size=window_size)
-        if not df_measures.empty:
-            total_df = pd.concat([total_df, df_measures], axis=0)
+   # df_s, _ = utils.get_tracks(csv_path, target=target)
+   #  df_tagged = pd.read_csv(csv_path_tagged, encoding="cp1252")
+   #  df_tagged = df_tagged[df_tagged["manual"] == 1]
+   #
+   #  im_actin = io.imread(video_actin_path)
+   #  total_df = pd.DataFrame()
+   #  for label, label_df in df_tagged.groupby("Spot track ID"):
+   #      df_measures = get_single_cell_intensity_measures(label=label, df=label_df, im_actin=im_actin,
+   #                                                       window_size=window_size)
+   #      df_measures["Spot position X (µm)"] = label_df["Spot position X (µm)"]
+   #      df_measures["Spot position Y (µm)"] = label_df["Spot position Y (µm)"]
+   #      df_measures["manual"] = label_df["manual"]
+   #      df_s = df_s.drop(df_s[df_s["Spot track ID"] == label].index)
+   #      if not df_measures.empty:
+   #          total_df = pd.concat([total_df, df_measures], axis=0)
+   #
+   #  df_s = df_s[["Spot position X (µm)", "Spot position Y (µm)", "Spot frame", "Spot track ID"]]
+   #  total_df = pd.concat([total_df, df_s], axis=0)
 
     return total_df
 
@@ -361,10 +367,7 @@ if __name__ == '__main__':
         video_actin_path=path + r"/data/videos/train/S5_Actin.tif",
         window_size=window_size)
 
-
     int_measures_s5.to_csv(path + "/data/mastodon/train/int_measures_s5.csv")
-
-
 
     int_measures_s1 = get_intensity_measures_df(
         csv_path=path + r"/data/mastodon/train/Nuclei_1-vertices.csv",

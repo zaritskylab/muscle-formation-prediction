@@ -5,7 +5,7 @@ import sys
 from diff_tracker_utils import calc_prob_delta
 from calc_delta_mastodon import  plot_avg_diff_prob
 from mast_intensity import plot_intensity_over_time, \
-    get_intensity_measures_df, load_data, open_dirs, get_intensity_measures_df_df
+     load_data, open_dirs, get_intensity_measures_df_df
 
 
 def get_fusion_time(fusion_times, label):

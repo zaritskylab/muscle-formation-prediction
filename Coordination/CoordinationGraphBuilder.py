@@ -9,7 +9,7 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import pickle
 import numpy as np
-from DataPreprocessing.load_tracks_xml import load_tracks_xml
+# from DataPreprocessing.load_tracks_xml import load_tracks_xml
 import pandas as pd
 
 
@@ -163,11 +163,11 @@ class CoordinationGraphBuilder():
 
 if __name__ == '__main__':
     print()
-    coord_diff_path = r"coordination_outputs/coordination_dfs/manual_tracking/coordination_df_s3_30_manual_tracking.pkl"
+    coord_diff_path = r"coordination_outputs/coordination_dfs/manual_tracking - only tagged tracks/coordination_df_s3_30_manual_tracking.pkl"
     xml_diff_path = r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s3_all_manual_tracking.xml"
     coord_diff = pickle.load(open(coord_diff_path, 'rb'))
 
-    coord_con_path = r"coordination_outputs/coordination_dfs/manual_tracking/coordination_df_s1_30_manual_tracking.pkl"
+    coord_con_path = r"coordination_outputs/coordination_dfs/manual_tracking - only tagged tracks/coordination_df_s1_30_manual_tracking.pkl"
     xml_con_path = r"../data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s1_all_manual_tracking.xml"
     coord_con = pickle.load(open(coord_con_path, 'rb'))
 

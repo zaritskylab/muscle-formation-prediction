@@ -87,7 +87,7 @@ def concat_dfs(min_time_diff, lst_videos, crop_start=False, crop_end=False, time
     total_df = pd.DataFrame()
     for i in lst_videos:
         xml_path = r"data/tracks_xml/260721/S{}_Nuclei.xml".format(i)
-        # xml_path = r"data/tracks_xml/manual_tracking/Experiment1_w1Widefield550_s{}_all_manual_tracking.xml".format(i)
+        # xml_path = r"data/tracks_xml/manual_tracking - only tagged tracks/Experiment1_w1Widefield550_s{}_all_manual_tracking.xml".format(i)
         # xml_path = r"data/tracks_xml/0104/Experiment1_w1Widefield550_s{}_all_0104.xml".format(i)
         if not os.path.exists(xml_path):
             xml_path = "../" + xml_path if os.path.exists("../" + xml_path) else "muscle-formation-diff/" + xml_path
