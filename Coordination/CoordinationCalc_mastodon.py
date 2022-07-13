@@ -6,11 +6,11 @@ Constructing a DataFrame called "coordination_outputs" for a later use.
 @author: Oron (Amit)
 """
 import pickle
-
+import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import sys
 import diff_tracker_utils as utils
 import consts
 # from TimeSeriesAnalysis import consts
@@ -121,9 +121,9 @@ class CoordinationCalc():
                 continue
         return cos_of_angles #np.asarray(cos_of_angles)
 
-    def build_coordination_df(self, validation, rings=False):
+    def build_coordination_df(self, validation, rings=False, only_tagged=False):
         # Load the tracks csv (Mastodon's output)
-        all_tracks_df, tagged_tracks = utils.get_tracks(self.csv_path, target=1, manual_tagged_list=True)
+        all_tracks_df, tracks_list = utils.get_tracks(self.csv_path, target=1, manual_tagged_list=only_tagged)
         # df = pd.read_csv(csv_path, encoding="cp1252")
         # tracks01 = list()
         # for label, labeled_df in df.groupby('Spot track ID'):
@@ -131,15 +131,15 @@ class CoordinationCalc():
         #     tracks01.append(labeled_df)
 
         # Iterate over all tracks and calculate their velocity vectors, and angles
-        for ind, track in enumerate(tagged_tracks, start=0):
+        for ind, track in enumerate(tracks_list, start=0):
             # In case the cell's path is relatively small, ignore it
             if track.shape[0] < 7:
                 continue
-            print('Track #{}/{}'.format(str(ind), len(tagged_tracks)))
+            print('Track #{}/{}'.format(str(ind), len(tracks_list)))
             t_stamp_array = np.asarray(track['Spot frame'])
             start_time = int(np.min(t_stamp_array))
             end_time = int(np.max(t_stamp_array))
-            cos_of_angles = self.calc_cos_of_angles(start_time, end_time, track, tagged_tracks, all_tracks_df,
+            cos_of_angles = self.calc_cos_of_angles(start_time, end_time, track, tracks_list, all_tracks_df,
                                                     validation, rings)
 
             tmp_df = pd.DataFrame(
@@ -187,10 +187,14 @@ class CoordinationCalc():
 if __name__ == '__main__':
     print("coordination Calculator")
     path = consts.cluster_path
-    vid_num = 5
+    print(sys.argv)
+    vid_num = sys.argv[1]
     csv_path = path + fr"/data/mastodon/all_detections_s{vid_num}-vertices.csv"
+
+    neighboring_dist = int(os.getenv('SLURM_ARRAY_TASK_ID'))
+
     print(csv_path)
-    coord = CoordinationCalc(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=30, csv_path=csv_path)
-    coord.build_coordination_df(validation=False)
+    coord = CoordinationCalc(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=neighboring_dist, csv_path=csv_path)
+    coord.build_coordination_df(validation=False, only_tagged=False)
     coord.save_coordinationDF(
-        path + fr"/Coordination/coordination_outputs/coordination_dfs/manual_tracking - only tagged tracks/coord_mastodon_s{vid_num}.pkl")
+        path + fr"/Coordination/coordination_outputs/coordination_dfs/manual_tracking - only tagged tracks/coord_mastodon_s{vid_num}_dist{neighboring_dist}.pkl")

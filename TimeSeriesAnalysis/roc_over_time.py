@@ -5,29 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import metrics
 import pandas as pd
-from build_models_on_transformed_tracks import get_to_run
-
-
-def plot_avg_conf(df_con, df_diff, mot_int, path=""):
-    def plot(df, color1, color2):
-        avg_vals_diff = ([df[col].mean() for col in df.columns])
-        std_vals_diff = ([df[col].std() for col in df.columns])
-        p_std = np.asarray(avg_vals_diff) + np.asarray(std_vals_diff)
-        m_std = np.asarray(avg_vals_diff) - np.asarray(std_vals_diff)
-
-        plt.plot([i * 5 / 60 for i in range(len(avg_vals_diff))], avg_vals_diff, color=color1)
-        plt.fill_between([i * 5 / 60 for i in range(len(avg_vals_diff))], m_std, p_std, alpha=0.5, color=color2)
-
-    plot(df_diff, "DarkOrange", "Orange")
-    plot(df_con, "blue", "blue")
-    plt.legend(["Erk avg", "Erk std", "Control avg", "Control std"])
-    plt.xlabel("time (h)")
-    plt.ylabel("avg confidence")
-    plt.title(f"avg differentiation confidence over time ({mot_int})")
-    plt.plot([i * 5 / 60 for i in range(260)], [0.5 for i in range(260)], color="black", linestyle="--")
-    plt.savefig(path)
-    plt.show()
-    plt.clf()
+from build_models_on_transformed_tracks import get_to_run, plot_avg_conf
 
 
 def auc_over_time(df_con, df_diff, clf):
@@ -78,12 +56,12 @@ if __name__ == '__main__':
     con_windows = [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]]
 
     path = consts.cluster_path
-    to_run = "nuc_intensity"
+    to_run = "intensity"
     local_density = False
 
     for con_train_n, diff_train_n, con_test_n, diff_test_n in [
-        (1, 5, 2, 3), (2, 3, 1, 5),
-        (2, 3, 2, 3), (1, 5, 1, 5),
+        (1, 5, 6, 8), (2, 3, 6, 8),
+
     ]:
         diff_df_train, con_df_train, con_df_test, diff_df_test = get_to_run(path=path, to_run=to_run,
                                                                             con_train_num=con_train_n,
@@ -91,6 +69,8 @@ if __name__ == '__main__':
                                                                             diff_train_num=diff_train_n,
                                                                             diff_test_num=diff_test_n,
                                                                             local_density=local_density)
+
+        print(f"con_train_n {con_train_n}, diff_train_n {diff_train_n}, con_test_n {con_test_n}, diff_test_n {diff_test_n}")
 
         dir_path = f"30-03-2022-manual_mastodon_{to_run} local density-{local_density}, s{con_train_n}, s{diff_train_n} are train"
         second_dir = f"{diff_window} frames ERK, {con_windows} frames con track len {tracks_len}"
@@ -102,11 +82,12 @@ if __name__ == '__main__':
         cols.extend(["Spot track ID", "Spot frame"])
 
         con_df_test = con_df_test[cols]
+        print(diff_df_test.columns)
         diff_df_test = diff_df_test[cols]
 
-        print("calc AUC")
-        aucs = auc_over_time(con_df_test, diff_df_test, clf)
-        plot_auc_over_time(aucs, dir_path + f"/auc over time s{diff_test_n}, s{con_test_n}.png")
+        # print("calc AUC")
+        # aucs = auc_over_time(con_df_test, diff_df_test, clf)
+        # plot_auc_over_time(aucs, dir_path + f"/auc over time s{diff_test_n}, s{con_test_n}.png")
 
         print("calc avg prob")
         df_score_con = utils.calc_prob(con_df_test, clf, n_frames=260)

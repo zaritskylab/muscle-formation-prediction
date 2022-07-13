@@ -27,7 +27,7 @@ def load_correlations_data(s_run, dir_path_score):
 
     # calculate local density
     df_all_tracks, _ = utils.get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)
-    df = pd.read_csv(path + s_run["csv_tagged_path"], encoding="ISO-8859-1")
+    # df = pd.read_csv(path + s_run["csv_tagged_path"], encoding="ISO-8859-1")
     df_tagged = df_all_tracks[df_all_tracks["manual"] == 1]  # todo change
 
     # local_density_df = utils.add_features_df(df_tagged, df_all_tracks, local_density=local_density)
@@ -189,6 +189,56 @@ def plot_pearson_dist_time_division(save_dir, title, pearson_data_list, color, x
     plt.close()
 
 
+def global_correlation_mean_plots(save_dir, df_merge_mot_con, df_merge_int_con, df_merge_mot_diff,
+                                  df_merge_int_diff, srun_con_n, srun_diff_n, pct_change, binned_score,
+                                  time_division=False):
+    time_slots = [(0, 72), (72, 170), (170, 260)]
+
+    if binned_score:
+        df_merge_mot_con = bin_score_values(df_merge_mot_con)
+        df_merge_int_con = bin_score_values(df_merge_int_con)
+
+        df_merge_mot_diff = bin_score_values(df_merge_mot_diff)
+        df_merge_int_diff = bin_score_values(df_merge_int_diff)
+
+    df_merge_mot_con = df_merge_mot_con[
+        df_merge_mot_con["Spot track ID"].isin(df_merge_int_con["Spot track ID"].unique())]
+
+    df_merge_mot_diff = df_merge_mot_diff[
+        df_merge_mot_diff["Spot track ID"].isin(df_merge_int_diff["Spot track ID"].unique())]
+
+    df_merge_mot_con.index = df_merge_mot_con["Spot track ID"]
+    df_merge_int_con.index = df_merge_int_con["Spot track ID"]
+
+    df_merge_mot_diff.index = df_merge_mot_diff["Spot track ID"]
+    df_merge_int_diff.index = df_merge_int_diff["Spot track ID"]
+
+    df_mot_con = df_merge_mot_con.drop(columns=["cos_theta", "t0", "Spot track ID"])
+    df_int_con = df_merge_int_con.drop(columns=["cos_theta", "t0", "Spot track ID"])
+
+    df_mot_diff = df_merge_mot_diff.drop(columns=["cos_theta", "t0", "Spot track ID"])
+    df_int_diff = df_merge_int_diff.drop(columns=["cos_theta", "t0", "Spot track ID"])
+
+    fig = plt.Figure(figsize=(16, 4), facecolor='w', edgecolor='k')
+    scatter1 = plt.scatter(df_mot_con.mean(), df_int_con.mean(), cmap="Blues", c=df_mot_con.T.index * 5 / 60,
+                           norm=mpl.colors.Normalize(vmin=0, vmax=22), label="control")
+    scatter2 = plt.scatter(df_mot_diff.mean(), df_int_diff.mean(), cmap="Oranges", c=df_mot_diff.T.index * 5 / 60,
+                           norm=mpl.colors.Normalize(vmin=0, vmax=22), label="ERK")
+    title = f"global correlation- mean differentiation score per time point, {srun_con_n}, {srun_diff_n}"
+    plt.title(title)
+    plt.xlabel("avg motility differentiation score")
+    plt.ylabel("avg intensity differentiation score")
+    plt.ylim(0, 0.9)
+    plt.xlim(0, 0.9)
+    plt.colorbar(scatter1)
+    plt.colorbar(scatter2)
+    plt.legend()
+    plt.savefig(save_dir + title + f".png")
+    plt.show()
+    plt.clf()
+    plt.close()
+
+
 def global_correlation(df_merge_col_mot, df_merge_col_int, s_run, save_dir, pct_change, binned_score,
                        time_division=False, pearson=False):
     color = "Orange" if s_run["name"] in ["S3", "S5"] else "Blue"
@@ -237,12 +287,13 @@ def global_correlation(df_merge_col_mot, df_merge_col_int, s_run, save_dir, pct_
                 df_time_list.append((df_mot_t, df_int_t))
                 df_time_list_pop_mean.append((df_mot_t.T.mean(), df_int_t.T.mean()))
             # plot mean population
-            # plot_correlation_of_population_time_division(save_dir,
-            #                                              f"global correlation- mean differentiation score per time point, {s_run['name']}",
-            #                                              df_time_list_pop_mean, pallete, color,
-            #                                              "avg motility differentiation score",
-            #                                              "avg intensity differentiation score", time_slots,
-            #                                              population_mean=True)
+            plot_correlation_of_population_time_division(save_dir,
+                                                         f"global correlation- mean differentiation score per time point, {s_run['name']}",
+                                                         df_time_list_pop_mean, pallete, color,
+                                                         "avg motility differentiation score",
+                                                         "avg intensity differentiation score", time_slots,
+                                                         population_mean=True)
+
             # plot cell-wise correlation
             plot_correlation_of_population_time_division(save_dir,
                                                          f"global correlation- differentiation score per time point, {s_run['name']}",
@@ -255,22 +306,30 @@ if __name__ == '__main__':
     diff_window = [140, 170]
     tracks_len = 30
     con_windows = [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]]
-
+    sruns_dict = {1: consts.s1, 2: consts.s2, 3: consts.s3, 5: consts.s5}
     s_runs = [consts.s3, consts.s2, consts.s5, consts.s1]
     path = consts.local_path
 
     local_density = False
     to_run = "intensity"
     for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3), (2, 3, 1, 5), ]:  # (1, 5, 2, 3),
-        dir_path_score = get_dir_path(to_run)
+        # dir_path_score = get_dir_path(to_run)
+        # for s_run in s_runs:
+        #     print(s_run)
+        dir_path_score = get_dir_path("motility")
+        df_mot_con, _, _ = load_correlations_data(sruns_dict[con_test_n], dir_path_score)
+        df_mot_diff, _, _ = load_correlations_data(sruns_dict[diff_test_n], dir_path_score)
 
-        for s_run in s_runs:
-            print(s_run)
-            dir_path_score = get_dir_path("motility")
-            df_merge_col_mot, df_tagged_mot, df_all_tracks_mot = load_correlations_data(s_run, dir_path_score)
-            dir_path_score = get_dir_path("intensity")
-            df_merge_col_int, df_tagged_int, df_all_tracks_int = load_correlations_data(s_run, dir_path_score)
+        dir_path_score = get_dir_path("intensity")
+        df_merge_col_int_con, _, _ = load_correlations_data(sruns_dict[con_test_n], dir_path_score)
+        df_merge_col_int_diff, _, _ = load_correlations_data(sruns_dict[diff_test_n], dir_path_score)
 
-            global_correlation(df_merge_col_mot, df_merge_col_int, s_run,
-                               f"mot_int_correlations/train- {con_train_n},{diff_train_n} ", False, False,
-                               time_division=True, pearson=False)
+        global_correlation_mean_plots(
+            f"mot_int_correlations/train- {con_train_n},{diff_train_n}, test- {con_test_n}, {diff_test_n} ",
+            df_mot_con, df_merge_col_int_con, df_mot_diff,
+            df_merge_col_int_diff, con_test_n, diff_test_n, pct_change=False, binned_score=False,
+            time_division=False)
+
+        # global_correlation(df_merge_col_mot, df_merge_col_int, s_run,
+        #                    f"mot_int_correlations/train- {con_train_n},{diff_train_n} ", False, False,
+        #                    time_division=True, pearson=False)

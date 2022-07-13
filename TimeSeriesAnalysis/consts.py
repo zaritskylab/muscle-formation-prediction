@@ -1,7 +1,7 @@
-vid_path_s3_nuc = r"/data/videos/test/s3.tif"
-vid_path_s2_nuc = r"/data/videos/test/s2.tif"
-vid_path_s5_nuc = r"/data/videos/train/s5.tif"
-vid_path_s1_nuc = r"/data/videos/train/s1.tif"
+vid_path_s3_nuc = r"/data/videos/test/S3_nuclei.tif"
+vid_path_s2_nuc = r"/data/videos/test/S2_nuclei.tif"
+vid_path_s5_nuc = r"/data/videos/train/S5_nuclei.tif"
+vid_path_s1_nuc = r"/data/videos/train/S1_nuclei.tif"
 vid_path_s6_nuc = r"/data/videos/train/s6.tif"
 vid_path_s7_nuc = r"/data/videos/train/s7.tif"
 vid_path_s8_nuc = r"/data/videos/train/s8.tif"
@@ -25,6 +25,11 @@ csv_all_s10 = r"/data/mastodon/all_detections_s10-vertices.csv"
 csv_all_s6 = r"/data/mastodon/all_detections_s6-vertices.csv"
 csv_all_s8 = r"/data/mastodon/all_detections_s8-vertices.csv"
 
+pkl_all_s3_registrated = r"/data/mastodon/reg_S3 all detections.csv"
+pkl_all_s1_registrated = r"/data/mastodon/reg_S1 all detections.csv"
+pkl_all_s2_registrated = r"/data/mastodon/reg_S2 all detections.csv"
+pkl_all_s5_registrated = r"/data/mastodon/reg_S5 all detections.csv"
+
 csv_path_s3 = fr"/data/mastodon/test/Nuclei_3-vertices.csv"
 csv_path_s2 = fr"/data/mastodon/test/Nuclei_2-vertices.csv"
 csv_path_s5 = fr"/data/mastodon/train/Nuclei_5-vertices.csv"
@@ -38,13 +43,15 @@ cluster_path = "muscle-formation-diff"
 local_path = ".."
 
 # intensity
-window_size = 15
+window_size = 16
+tracks_len = 30
 
 diff_window = [140, 170]
 # con_window = [[10, 40], [40, 70], [70, 100], [100, 130], [130, 160], [160, 190], [190, 220], [220, 250]]
 con_window = [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]]
-tracks_len = 30
+
 to_run = "motility"
+local_density = False
 
 wt_cols = [wt for wt in range(0, 260, tracks_len)]
 
@@ -53,28 +60,39 @@ s1 = {"name": "S1",
       "csv_all_path": csv_all_s1,
       "csv_tagged_path": csv_path_s1,
       "actin_path": vid_path_s1_actin,
-      "nuc_path": vid_path_s1_nuc}
+      "nuc_path": vid_path_s1_nuc,
+      "pkl_all_reg_path": pkl_all_s1_registrated}
 
 s2 = {"name": "S2",
       "target": 0,
       "csv_all_path": csv_all_s2,
       "csv_tagged_path": csv_path_s2,
       "actin_path": vid_path_s2_actin,
-      "nuc_path": vid_path_s2_nuc}
+      "nuc_path": vid_path_s2_nuc,
+      "pkl_all_reg_path": pkl_all_s2_registrated}
 
 s3 = {"name": "S3",
       "target": 1,
       "csv_all_path": csv_all_s3,
       "csv_tagged_path": csv_path_s3,
       "actin_path": vid_path_s3_actin,
-      "nuc_path": vid_path_s3_nuc}
+      "nuc_path": vid_path_s3_nuc,
+      "pkl_all_reg_path": pkl_all_s3_registrated}
 
 s5 = {"name": "S5",
       "target": 1,
       "csv_all_path": csv_all_s5,
       "csv_tagged_path": csv_path_s5,
       "actin_path": vid_path_s5_actin,
-      "nuc_path": vid_path_s5_nuc}
+      "nuc_path": vid_path_s5_nuc,
+      "pkl_all_reg_path": pkl_all_s5_registrated}
+
+s6 = {"name": "S6",
+      "target": 1,
+      "csv_all_path": csv_all_s6,
+      "csv_tagged_path": csv_path_s6,
+      "actin_path": vid_path_s6_actin,
+      "nuc_path": vid_path_s6_nuc}
 
 s7 = {"name": "S7",
       "target": 1,
@@ -88,19 +106,19 @@ s10 = {"name": "S10",
        "csv_all_path": csv_all_s10,
        "csv_tagged_path": csv_path_s10,
        "actin_path": vid_path_s10_actin,
-      "nuc_path": vid_path_s10_nuc}
-
-s6 = {"name": "S6",
-       "target": 1,
-       "csv_all_path": csv_all_s6,
-       "csv_tagged_path": csv_path_s6,
-       "actin_path": vid_path_s6_actin,
-      "nuc_path": vid_path_s6_nuc}
+       "nuc_path": vid_path_s10_nuc}
 
 s8 = {"name": "S8",
-       "target": 1,
-       "csv_all_path": csv_all_s8,
-       "csv_tagged_path": csv_path_s8,
-       "actin_path": vid_path_s8_actin,
+      "target": 1,
+      "csv_all_path": csv_all_s8,
+      "csv_tagged_path": csv_path_s8,
+      "actin_path": vid_path_s8_actin,
       "nuc_path": vid_path_s8_nuc}
 
+s_runs = {"1": s1,
+          "2": s2,
+          "3": s3,
+          "5": s5,
+          "6": s6,
+          "8": s8,
+          }

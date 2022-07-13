@@ -309,12 +309,6 @@ def plot_coor_coeff(df, s_num, pal, split, hue):
         corr_coord_local_den.append(coordination_ret.corr(local_density_ret))
         targets.append(track["target"].max())
 
-        # corr_score_coord.append(distance.correlation(track["score"], track["coordination"]))
-        # corr_score_speed.append(distance.correlation(track["score"], track["Speed"]))
-        # corr_score_local_den.append(distance.correlation(track["coordination"], track["local density"]))
-        # corr_coord_speed.append(distance.correlation(track["coordination"], track["Speed"]))
-        # corr_coord_local_den.append(distance.correlation(track["coordination"], track["local density"]))
-
     sns.set_theme(style="whitegrid")
     iris = pd.concat([pd.DataFrame({"value": corr_score_coord, "measurement": "score_coord", "target": targets}),
                       # pd.DataFrame({"value": corr_score_speed, "measurement": "score_speed", "target": targets}),
@@ -599,12 +593,12 @@ if __name__ == '__main__':
     tracks_len = 30
     con_windows = [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]]
 
-    s_runs = [consts.s3, consts.s2, consts.s5, consts.s1]
+    s_runs = [consts.s5, consts.s1, consts.s3, consts.s2]
     path = consts.local_path
 
     local_density = False
     to_run = "intensity"
-    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(2, 3, 1, 5), ]:  # (1, 5, 2, 3),
+    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3),(2, 3, 1, 5), ]:  # (1, 5, 2, 3),
         dir_path_score = get_dir_path(to_run)
 
         for s_run in s_runs:
@@ -615,8 +609,8 @@ if __name__ == '__main__':
             df_merge_col_int, df_tagged_int, df_all_tracks_int = load_correlations_data(s_run, dir_path_score)
             # plot_models_correlations(df_merge_col_mot, df_merge_col_int, s_run, pct_change=False, binned_score=False,
             #                          save_dir="mot_int_correlations/single cell correlations/train- {con_train_n},{diff_train_n} ")
-            global_correlation(df_merge_col_mot, df_merge_col_int, s_run, f"mot_int_correlations/binned_score/train- {con_train_n},{diff_train_n} ", False, False,
-                               time_devision=False, pearson=False)
+            # global_correlation(df_merge_col_mot, df_merge_col_int, s_run, f"mot_int_correlations/binned_score/train- {con_train_n},{diff_train_n} ", False, False,
+            #                    time_devision=False, pearson=False)
             # pearson_lag_models_correlation(df_merge_col_mot, df_merge_col_int, s_run,
             #                                f"mot_int_correlations/binned_score/train- {con_train_n},{diff_train_n} ",
             #                                pct_change=False, binned_score=False)

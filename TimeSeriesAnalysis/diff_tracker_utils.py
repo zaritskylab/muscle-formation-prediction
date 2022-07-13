@@ -5,19 +5,25 @@ import joblib
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve
-from sklearn.model_selection import cross_val_predict
 from sklearn.preprocessing import StandardScaler
+from tqdm import tqdm
 from tsfresh import extract_features
-from tsfresh.utilities.dataframe_functions import impute
+from tsfresh.utilities.dataframe_functions import impute, impute_dataframe_zero
 import numpy as np
-import numpy as np
-import pandas as pd
 import os
 from sklearn import metrics
-
+import more_itertools as mit
 import consts
 from experimentation import get_shifts
 from skimage import io
+import pandas as pd
+import glob
+import skimage
+import nuc_segmentor
+import sys
+import cv2
+
+pd.options.mode.chained_assignment = None  # default='warn'
 
 
 def get_position(ind, df):
@@ -118,6 +124,10 @@ def get_tracks(path, manual_tagged_list, target=1):
                          "Spot intensity.5": "Spot intensity Sum ch1 (Counts)",
                          },
                 inplace=True)
+
+    df_s.rename(columns=lambda c: 'Spot position X (µm)' if c.startswith('Spot position X') else c, inplace=True)
+    df_s.rename(columns=lambda c: 'Spot position Y (µm)' if c.startswith('Spot position Y') else c, inplace=True)
+
     df_s["Spot frame"] = df_s["Spot frame"].astype(int)
     df_s["Spot position X (µm)"] = df_s["Spot position X (µm)"].astype(float)
     df_s["Spot position Y (µm)"] = df_s["Spot position Y (µm)"].astype(float)
@@ -143,13 +153,14 @@ def correct_shifts(df, vid_path):
 
 
 def drop_columns_nuc_intensity(track, added_features=[]):
-    to_keep = ['Spot center intensity Center ch1 (Counts)',
-               'Spot intensity Mean ch1 (Counts)',
-               'Spot intensity Std ch1 (Counts)',
-               'Spot intensity Min ch1 (Counts)',
-               'Spot intensity Max ch1 (Counts)',
-               'Spot intensity Median ch1 (Counts)',
-               'Spot intensity Sum ch1 (Counts)',
+    to_keep = ['x',
+               'y',
+               'max_nuc',
+               'mean_nuc',
+               'min_nuc',
+               'nuc_size',
+               'std_nuc',
+               'sum_nuc',
                'Spot track ID',
                'Spot frame', 'target']
     to_keep.extend(added_features)
@@ -222,8 +233,12 @@ def transform_tsfresh_single_cell(track, motility, visual, nuc_intensity, window
     list_of_track_portions = [track.iloc[i:i + window, :] for i in range(0, len(track), 1) if
                               i < len(track) - window + 1]
     for track_portion in list_of_track_portions:
-        portion_transformed = extract_features(track_portion, column_id="Spot track ID",
-                                               column_sort="Spot frame")  # , show_warnings=False
+        portion_transformed = extract_features(track_portion,
+                                               column_id="Spot track ID",
+                                               column_sort="Spot frame",
+                                               show_warnings=False,
+                                               disable_progressbar=True,
+                                               n_jobs=8)  # 12
         portion_transformed["Spot frame"] = track_portion["Spot frame"].max()
         track_transformed = track_transformed.append(portion_transformed, ignore_index=True)
     track_transformed["Spot track ID"] = track["Spot track ID"].max()
@@ -231,20 +246,71 @@ def transform_tsfresh_single_cell(track, motility, visual, nuc_intensity, window
     return track_transformed
 
 
-def trandform_tsfresh_df(df_to_transform, target, motility, nuc_intensity, visual, window, shift_tracks=False,
-                         vid_path=None,
-                         feature_list=None):
-    tracks = get_tracks_list(df_to_transform, target=target)
+def split_track_to_portions(track, window):
+    track_portions_lst = [track.iloc[i:i + window, :] for i in range(0, len(track), 1) if i < len(track) - window + 1]
+    return pd.concat(track_portions_lst, axis=0, ignore_index=True)
+
+
+def split_data_to_time_portions(data, window):
+    data = data.drop_duplicates(subset=["Spot track ID", "Spot frame"])  # remove duplicates
+    time_windows = data.sort_values("Spot frame")['Spot frame'].unique()
+    time_windows_strides = list(mit.windowed(time_windows, n=window, step=1))
+    t_portion_lst = [data[data["Spot frame"].isin(time_windows_strides[i])] for i in range(len(time_windows_strides))]
+
+    return t_portion_lst
+
+
+def remove_short_tracks(df_to_transform, len_threshold):
+    counts = df_to_transform.groupby("Spot track ID")["Spot track ID"].transform(len)
+    mask = (counts >= len_threshold)
+    return df_to_transform[mask]
+
+
+def trandform_tsfresh_df_time(df_to_transform, target, motility, nuc_intensity, visual, window, shift_tracks=False,
+                              vid_path=None, feature_list=None):
+    df_to_transform["target"] = target
+    df_to_transform = remove_short_tracks(df_to_transform, window)
+    df_time_window_split_list = split_data_to_time_portions(df_to_transform, window)
+
+    transformed_data = pd.DataFrame()
+    for time_portion in tqdm(df_time_window_split_list):
+        time_portion = remove_short_tracks(time_portion, window)
+        if not time_portion.empty:
+            time_portion = normalize_track(time_portion, motility, visual, nuc_intensity, shift_tracks, vid_path)
+            portion_transformed = extract_features(time_portion,
+                                                   column_id="Spot track ID",
+                                                   column_sort="Spot frame",
+                                                   show_warnings=False,
+                                                   disable_progressbar=True,
+                                                   n_jobs=8)  # 12
+            impute(portion_transformed)
+            # impute_dataframe_zero(portion_transformed)
+            portion_transformed["Spot track ID"] = portion_transformed.index
+            portion_transformed["Spot frame"] = time_portion["Spot frame"].max()
+            portion_transformed["target"] = target
+            transformed_data = transformed_data.append(portion_transformed, ignore_index=True)
+
+    return transformed_data
+
+
+# todo: this is the former version of my code.
+def trandform_tsfresh_df_track(df_to_transform, target, motility, nuc_intensity, visual, window, shift_tracks=False,
+                               vid_path=None, feature_list=None):
     transformed_tracks = pd.DataFrame()
-    for track in tracks:
+    if len(df_to_transform) == 0:
+        return transformed_tracks
+
+    tracks = get_tracks_list(df_to_transform, target=target)
+
+    for track in tqdm(tracks):
         if len(track) >= window:
             track_transformed = transform_tsfresh_single_cell(track=track, motility=motility, visual=visual,
                                                               window=window, nuc_intensity=nuc_intensity,
                                                               shift_tracks=shift_tracks, vid_path=vid_path)
             impute(track_transformed)
             transformed_tracks = transformed_tracks.append(track_transformed, ignore_index=True)
-    # impute(transformed_tracks)
-    print(transformed_tracks)
+            print()
+
     return transformed_tracks
 
 
@@ -311,22 +377,33 @@ def concat_dfs(diff_df, con_df, diff_t_window=None, con_t_windows=None):
     # Erk video
     # Cut the needed time window
     new_diff_df = pd.DataFrame()
-    diff_df = diff_df[(diff_df["Spot frame"] >= diff_start) & (diff_df["Spot frame"] < diff_end)]
+    # Todo I might have a bug in here. Each record holds a transformation of the former 30 frames,
+    #  so in this way i take too many time frames, with duplicates
+    # diff_df = diff_df[(diff_df["Spot frame"] >= diff_start) & (diff_df["Spot frame"] < diff_end)]
+    # todo: the correction:
+    diff_df = diff_df[diff_df["Spot frame"] == diff_end]
+
     for label, label_df in diff_df.groupby('Spot track ID'):
-        if len(label_df) == window_size:
-            new_diff_df = new_diff_df.append(label_df)
+        # if len(
+        # label_df) == window_size:  # todo: i removed that row, since I already know that each record holds the transformation of the last 30 frames
+        new_diff_df = new_diff_df.append(label_df)
 
     # control video
     # Cut the needed time window
     control_df = pd.DataFrame()
     new_label = max(con_df['Spot track ID'].unique()) + 1
     for start, end in con_t_windows:
-        tmp_df = con_df[(con_df["Spot frame"] >= start) & (con_df["Spot frame"] < end)]
+        # Todo I might have a bug in here. Each record holds a transformation of the former 30 frames,
+        #  so in this way i take too many time frames, with duplicates
+        # tmp_df = con_df[(con_df["Spot frame"] >= start) & (con_df["Spot frame"] < end)]
+        # todo: the correction:
+        tmp_df = con_df[con_df["Spot frame"] == end]
         for label, label_df in tmp_df.groupby('Spot track ID'):
-            if len(label_df) == window_size:
-                new_label += 1
-                label_df["Spot track ID"] = new_label
-                control_df = control_df.append(label_df)
+            # if len(
+            #         label_df) == window_size:  # todo: i removed that row, since I already know that each record holds the transformation of the last 30 frames
+            new_label += 1
+            label_df["Spot track ID"] = new_label
+            control_df = control_df.append(label_df)
     con_df = control_df.copy()
 
     new_diff_df, max_val = set_indexes(new_diff_df, target=True, max_val=max_val)
@@ -383,7 +460,6 @@ def get_unique_indexes(y):
 def drop_columns_intensity(df, added_features=[]):
     to_keep = ['min', 'max', 'mean', 'sum', 'Spot track ID', 'Spot frame', 'target']
     to_keep.extend(added_features)
-    # print(df.shape, df.columns)
     return df[to_keep]
 
 
@@ -437,13 +513,17 @@ def normalize_motility(df):
 def save_data(dir_name, clf=None, X_train=None, X_test=None, y_train=None, y_test=None):
     # save the model & train set & test set
     if X_train is not None:
-        pickle.dump(X_train, open(dir_name + "/" + "X_train", 'wb'))
+        X_train.to_csv(dir_name + "/" + "X_train")
+        # pickle.dump(X_train, open(dir_name + "/" + "X_train", 'wb'))
     if X_test is not None:
-        pickle.dump(X_test, open(dir_name + "/" + "X_test", 'wb'))
+        X_test.to_csv(dir_name + "/" + "X_test")
+        # pickle.dump(X_test, open(dir_name + "/" + "X_test", 'wb'))
     if y_test is not None:
-        pickle.dump(y_test, open(dir_name + "/" + "y_test", 'wb'))
+        y_test.to_csv(dir_name + "/" + "y_test")
+        # pickle.dump(y_test, open(dir_name + "/" + "y_test", 'wb'))
     if y_train is not None:
-        pickle.dump(y_train, open(dir_name + "/" + "y_train", 'wb'))
+        y_train.to_csv(dir_name + "/" + "y_train")
+        # pickle.dump(y_train, open(dir_name + "/" + "y_train", 'wb'))
     if clf is not None:
         joblib.dump(clf, dir_name + "/" + "clf.joblib")
 
@@ -451,10 +531,15 @@ def save_data(dir_name, clf=None, X_train=None, X_test=None, y_train=None, y_tes
 def load_data(dir_name):
     # load the model & train set & test set
     clf = joblib.load(dir_name + "/clf.joblib")
-    X_train = pickle.load(open(dir_name + "/" + "X_train", 'rb'))
-    X_test = pickle.load(open(dir_name + "/" + "X_test", 'rb'))
-    y_train = pickle.load(open(dir_name + "/" + "y_train", 'rb'))
-    y_test = pickle.load(open(dir_name + "/" + "y_test", 'rb'))
+    # X_train = pickle.load(open(dir_name + "/" + "X_train", 'rb'))
+    # X_test = pickle.load(open(dir_name + "/" + "X_test", 'rb'))
+    # y_train = pickle.load(open(dir_name + "/" + "y_train", 'rb'))
+    # y_test = pickle.load(open(dir_name + "/" + "y_test", 'rb'))
+    X_train = pd.read_csv(dir_name + "/" + "X_train", encoding="cp1252")
+    X_test = pd.read_csv(dir_name + "/" + "X_test", encoding="cp1252")
+    y_train = pd.read_csv(dir_name + "/" + "y_train", encoding="cp1252")
+    y_test = pd.read_csv(dir_name + "/" + "y_test", encoding="cp1252")
+
     return clf, X_train, X_test, y_train, y_test
 
 
@@ -495,6 +580,8 @@ def plot_roc(clf, X_test, y_test, path):
     plt.legend(loc='best')
     plt.savefig(path + "/" + 'ROC', dpi=300)
     plt.show()
+    plt.close()
+    plt.clf()
 
 
 def build_pca(num_of_components, df):
@@ -532,6 +619,8 @@ def plot_pca(principal_df, pca, path):
     plt.title("PCA")
     plt.savefig(path + "/pca.png")
     plt.show()
+    plt.close()
+    plt.clf()
 
 
 def feature_importance(clf, feature_names, path):
@@ -550,6 +639,8 @@ def feature_importance(clf, feature_names, path):
     plt.title('Feature Importance Plot')
     plt.savefig(path + "/feature importance.png")
     plt.show()
+    plt.close()
+    plt.clf()
 
 
 def plot_avg_conf(path):
@@ -574,102 +665,218 @@ def plot_avg_conf(path):
     plt.plot([i * 5 / 60 for i in range(260)], [0.5 for i in range(260)], color="black", linestyle="--")
     plt.savefig(path + "/avg conf s5, s1.png")
     plt.show()
+    plt.close()
     plt.clf()
 
 
 def get_tracks_list(int_df, target):
-    int_df['target'] = target
+    if target:
+        int_df['target'] = target
     tracks = list()
     for label, labeld_df in int_df.groupby('Spot track ID'):
         tracks.append(labeld_df)
     return tracks
 
 
-def run_tsfresh_preprocess(df, s_run, motility, intensity, nuc_intensity, tracks_len, local_density, winsize):
+def single_nuc_crop(x, y, win_size, spot_frame, video):
+    """
+    The method returns a cropped image of the given nuclei's information
+    :param x: nuclei's center x coordination
+    :param y: nuclei's center y coordination
+    :param win_size: diameter of the cropped image (image size is win_size X win_size)
+    :param spot_frame: frame number to crop an image from
+    :param video: nuclei channel video
+    :return: single_nuc_crop: np.array of shape (win_size, win_size, 1) of the cropped image
+    """
+    # Crop the needed nuclear
+    single_nuc_crop = video[spot_frame, int(y - (win_size / 2)):int(y + (win_size / 2)),
+                      int(x - (win_size / 2)):int(x + (win_size / 2))]
+    return single_nuc_crop
+
+
+def get_nuclei_measures(segmentor, label, df, vid_nuc, window_size):
+    df_measures = pd.DataFrame(columns=["min", "max", "mean", "sum", "Spot track ID", "Spot frame", "x", "y", ])
+    missed_segmentation_counter = 0
+    for i in range(len(df)):  # len(df)
+        x = df.iloc[i]["Spot position X (µm)"] / 0.462
+        y = df.iloc[i]["Spot position Y (µm)"] / 0.462
+        t = df.iloc[i]["Spot frame"]
+        crop = single_nuc_crop(x, y, window_size, t, vid_nuc)
+        try:
+            _, threshold = cv2.threshold(crop, 0, np.max(crop), cv2.THRESH_TRIANGLE)
+            pre_seg = segmentor.preprocess_image(threshold)
+            segmented_crop = segmentor.segment_image(pre_seg)
+            segmented_crop = segmentor.segment_postprocess(segmented_crop)
+            nuc_size = nuc_segmentor.NucleiFeatureCalculator.size(segmented_crop)
+
+            min_nuc, max_nuc, mean_nuc, std_nuc, sum_nuc = nuc_segmentor.NucleiFeatureCalculator.intensity(
+                segmented_crop, crop)
+        except:  # raised if image crop is empty.
+            print(crop.shape)
+            missed_segmentation_counter += 1
+            continue
+        data = {"nuc_size": nuc_size, "min_nuc": min_nuc, "max_nuc": max_nuc, "mean_nuc": mean_nuc, "sum_nuc": sum_nuc,
+                "std_nuc": std_nuc, "Spot track ID": label, "Spot frame": t, "x": x, "y": y}
+        df_measures = df_measures.append(data, ignore_index=True)
+    print(f"cell #{label}, missed spots: {missed_segmentation_counter}/{len(df)}")
+    return df_measures
+
+
+def get_nuc_intensity_measures_df(df, nuclei_vid_path, window_size, local_density):
+    vid_nuc = io.imread(nuclei_vid_path)
+    total_df = pd.DataFrame()
+    segmentor = nuc_segmentor.NucSegmentor()
+    window_size = 2 * window_size
+    for label, label_df in df.groupby("Spot track ID"):
+        if len(label_df) >= window_size:
+            df_measures = get_nuclei_measures(segmentor, label, label_df, vid_nuc, window_size)
+            if not df_measures.empty:
+                if len(df_measures) >= window_size:
+                    if local_density:
+                        df_measures["local density"] = label_df["local density"]
+                    df_measures["manual"] = 1
+                    total_df = pd.concat([total_df, df_measures], axis=0)
+    return total_df
+
+
+def run_tsfresh_preprocess(df, s_run, motility, intensity, nuc_intensity, tracks_len, local_density, winsize, split_by):
     if intensity:
         print(df.shape)
         df = get_intensity_measures_df(df=df,
-                                       video_actin_path=path + s_run["nuc_path"],
+                                       video_actin_path=path + s_run["actin_path"],
                                        window_size=winsize, local_density=local_density)
-    print(df.shape)
-    trans_df = trandform_tsfresh_df(df_to_transform=df, target=s_run["target"], motility=motility,
-                                    visual=intensity, nuc_intensity=nuc_intensity,
-                                    window=tracks_len,
-                                    shift_tracks=False, vid_path=None)
+        print(df.shape)
+    if nuc_intensity:
+        df = get_nuc_intensity_measures_df(df=df, nuclei_vid_path=path + s_run["nuc_path"], window_size=winsize,
+                                           local_density=local_density)
 
+    if split_by == "time":
+        trans_df = trandform_tsfresh_df_time(df_to_transform=df, target=s_run["target"], motility=motility,
+                                             visual=intensity, nuc_intensity=nuc_intensity,
+                                             window=tracks_len,
+                                             shift_tracks=False, vid_path=None)
+    elif split_by == "track_id":
+
+        trans_df = trandform_tsfresh_df_track(df_to_transform=df, target=s_run["target"], motility=motility,
+                                              visual=intensity, nuc_intensity=nuc_intensity,
+                                              window=tracks_len,
+                                              shift_tracks=False, vid_path=None)
     return trans_df
 
 
-if __name__ == '__main__':
-    diff_window = [140, 170]
-    tracks_len = 30
-    con_window = [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]]
-
-    motility = False
-    intensity = True
-    nuc_intensity = False
-    local_density = False
-    s_run = consts.s1
-    winsize = 7
-
-    rest_name = f"_transformed_full_features_local_den_{local_density} win size {winsize}"
-    if intensity:
-        to_run = "intensity_nuc"
-    elif motility:
-        to_run = "motility"
-    elif nuc_intensity:
-        to_run = "nuc_intensity"
-
-    print("running", to_run)
-
-    path = consts.cluster_path
-    dir_path = f"20-03-2022-manual_mastodon_{to_run} local density"
-    second_dir = f"{diff_window} frames ERK, {con_window} frames con track len {tracks_len}"
-    dir_path += "/" + second_dir
-
-    print(f"\n\nrunning {s_run}, {motility}, {intensity},{nuc_intensity} ,  {local_density}\n\n")
-
-    df_all, tracks_s = get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)  # df_s
-    if "manual" in df_all.columns:
-        df_tagged = df_all[df_all["manual"] == 1]
-    else:
-        df_tagged = df_all
-        df_tagged["manual"] = 1
-
-    df_tagged = add_features_df(df_tagged, df_all, local_density=local_density)
-    del (df_all)
-
-    # perform
-    ids_list = df_tagged["Spot track ID"].unique()
-    n = 100
+def split_data_by_tracks(data, n_tasks):
+    ids_list = data["Spot track ID"].unique()
+    n = len(ids_list) // n_tasks
     ids_chunks = [ids_list[i:i + n] for i in range(0, len(ids_list), n)]
-    for chunk_id, chunk in enumerate(ids_chunks):
-        if chunk_id > 3:
+    return ids_chunks
+
+
+def set_params(to_run_p, registration_p):
+    motility = True if to_run_p == "motility" else False
+    intensity = True if to_run_p == "intensity" else False
+    nuc_intensity = True if to_run_p == "nuc_intensity" else False
+    csv_path = s_run["pkl_all_reg_path"] if registration_p else s_run["csv_all_path"]
+
+    return motility, intensity, nuc_intensity, csv_path
+
+
+if __name__ == '__main__':
+    path = consts.cluster_path
+    to_run = sys.argv[1]  # "motility"  # "intensity" "nuc_intensity" motility
+    # s_run = consts.s_runs[os.getenv('SLURM_ARRAY_TASK_ID')[0]]
+    s_run = consts.s_runs[sys.argv[3]]
+    registration = sys.argv[2] == 'True'
+    # jobid = int(os.getenv('SLURM_ARRAY_TASK_ID'))
+
+    # path = consts.local_path
+    jobid = 100
+    # to_run="nuc_intensity"
+    # s_run = consts.s_runs["1"]
+    # registration = False
+
+    motility, intensity, nuc_intensity, csv_path = set_params(to_run, registration)
+
+    split_by = "track_id"
+    n_tasks = 15
+
+    srun_files_dir_path = path + f"/data/mastodon/ts_transformed_new/{to_run}/{s_run['name']}"
+    os.makedirs(srun_files_dir_path, exist_ok=True)
+
+    file_save_path = srun_files_dir_path + f"/{s_run['name']}_imputed reg={registration}, " \
+                                           f"local_den={consts.local_density}" + \
+                     (f"win size {consts.window_size}" if intensity else "")
+
+    print(f"running: to_run={to_run}, "
+          f"video={s_run['name']}, "
+          f"local density={consts.local_density}, "
+          f"reg={registration}")
+
+    df_all, _ = get_tracks(path + csv_path, manual_tagged_list=True)
+    df_tagged = df_all[df_all["manual"] == 1]
+    df_tagged = add_features_df(df_tagged, df_all, local_density=consts.local_density)
+    del df_all
+
+    # ======================================================================
+
+    if split_by == "time":
+        df_time_window_split_list = split_data_to_time_portions(df_tagged, consts.tracks_len)
+        run_splits = [list(c) for c in mit.divide(n_tasks, df_time_window_split_list)]
+        curr_split = run_splits[jobid]
+        print(f"split #{jobid}")
+        print(f"total chunks in the current split:{len(curr_split)}")
+
+        for i, df_chunk in enumerate(curr_split):
+            print(f"chunk #{i}")
+            trans_df = run_tsfresh_preprocess(df_chunk, s_run, motility, intensity, nuc_intensity, consts.tracks_len,
+                                              consts.local_density, consts.window_size, split_by)
+            if not trans_df.empty:
+                trans_df.to_csv(file_save_path + f"{jobid}_{i}")
+
+                csv = pd.read_csv(file_save_path + f"{jobid}_{i}", encoding="cp1252")
+                print(csv.head())
+
+    if split_by == "track_id":
+        df_all_trans = pd.DataFrame()
+        ids_chunks = split_data_by_tracks(df_tagged, n_tasks)
+        print(f"split #{jobid}")
+        print(f"total chunks in the current split:{len(ids_chunks)}")
+        for chunk_id, chunk in enumerate(ids_chunks):
             print(f"chunk #{chunk_id}")
             df_chunk = df_tagged[df_tagged["Spot track ID"].isin(chunk)]
-            trans_df = run_tsfresh_preprocess(df_chunk, s_run, motility, intensity, nuc_intensity, tracks_len,
-                                              local_density, winsize)
-            pickle.dump(trans_df,
-                        open(path + f"/data/mastodon/ts_transformed_new/{to_run}/{chunk_id}_impute_single" + s_run[
-                            "name"] + rest_name, 'wb'))
-            del (df_chunk)
+            trans_df = run_tsfresh_preprocess(df_chunk, s_run, motility, intensity, nuc_intensity, consts.tracks_len,
+                                              consts.local_density, consts.window_size, split_by)
+            if not trans_df.empty:
+                df_all_trans = df_all_trans.append(trans_df)
+                print(df_all_trans.head())
+        df_all_trans.to_csv(file_save_path + f"{jobid}")
 
-    del (df_tagged)
+    # ======================================================================
 
-    # df_all_chunks = pd.DataFrame()
-    # for chunk_id, chunk in enumerate(range(5)):
-    #     try:
-    #         chunk_df = pickle.load(open(
-    #             path + f"/data/mastodon/ts_transformed_new/{to_run}/{chunk_id}_impute_single" + s_run["name"] + rest_name,
-    #             'rb'))
-    #         df_all_chunks = pd.concat([df_all_chunks, chunk_df], ignore_index=True)
-    #         del(chunk_df)
-    #     except:
-    #         continue
-    #
-    # pickle.dump(df_all_chunks,
-    #             open(
-    #                 path + f"/data/mastodon/ts_transformed_new/{to_run}/05_01_S{s_run['name']}_transformed_local_den_{local_density}",
-    #                 'wb'))
-    #
-    # print("saved")
+    df_all_chunks = pd.DataFrame()
+    for file in os.listdir(srun_files_dir_path):
+        if f"reg={registration}, local_den={consts.local_density}" in file:
+            if intensity:
+                if f"win size {consts.window_size}" not in file:
+                    continue
+            try:
+                chunk_df = pd.read_csv(os.path.join(srun_files_dir_path, file), encoding="cp1252")
+                print(chunk_df.shape)
+                if chunk_df.shape[0] > 0:
+                    df_all_chunks = pd.concat([df_all_chunks, chunk_df], ignore_index=True)
+            except:
+                continue
+    df_all_chunks.to_csv(path + f"/data/mastodon/ts_transformed_new/{to_run}/"
+                                f"{s_run['name']}_imputed reg={registration}, local_den={consts.local_density}, "
+                                f"win size {consts.window_size}")
+
+    print(df_all_chunks.shape)
+    print("saved")
+
+    # delete files
+    for file in os.listdir(srun_files_dir_path):
+        if f"reg={registration}, local_den={consts.local_density}" in file:
+            if intensity:
+                if f"win size {consts.window_size}" not in file:
+                    continue
+
+            os.remove(os.path.join(srun_files_dir_path, file))
