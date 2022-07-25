@@ -1,18 +1,17 @@
 import pickle
 import consts
-import diff_tracker_utils as utils
+from utils.diff_tracker_utils import *
+from utils.data_load_save import *
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from build_models_on_transformed_tracks import get_to_run
-from scipy.spatial import distance
 import scipy
 
 
 def calc_correlation_score(df, tagged_df, all_tracks, dir_path, s_name):
     second_dir = s_name + "total correlations"
-    utils.open_dirs(dir_path, second_dir)
+    open_dirs(dir_path, second_dir)
     save_dir = dir_path + "/" + second_dir
 
     for label, track in df.groupby("Spot track ID"):
@@ -24,11 +23,10 @@ def calc_correlation_score(df, tagged_df, all_tracks, dir_path, s_name):
         ax4 = plt.subplot(2, 1, 2)
         axes = [ax1, ax2, ax3, ax4]
 
-        # conf = track.drop(columns=["Spot track ID", "t0", "cos_theta", "Track #"]).values.tolist()
         conf = track.copy().iloc[0, :].drop(columns=["Spot track ID", "Track #", "t0", "cos_theta"])
         coord = list(track["cos_theta"].values)
-        local_den_df = utils.add_features(tagged_df[tagged_df["Spot track ID"] == label], local_density=True,
-                                          df_s=all_tracks)
+        local_den_df = add_features(tagged_df[tagged_df["Spot track ID"] == label], local_density=True,
+                                    df_s=all_tracks)
         local_den_df = local_den_df.sort_values("Spot frame")
         local_density = local_den_df["local density"].values.tolist()
 
@@ -79,8 +77,8 @@ def get_correlations_df(track, tagged_df, label, all_tracks):
     except:
         return pd.DataFrame()
 
-    local_den_df = utils.add_features(tagged_df[tagged_df["Spot track ID"] == label], local_density=True,
-                                      df_s=all_tracks)
+    local_den_df = add_features(tagged_df[tagged_df["Spot track ID"] == label], local_density=True,
+                                df_s=all_tracks)
     local_den_df = local_den_df.sort_values("Spot frame")
     local_density = [np.nan for i in range(int(track["t0"].max()))]
     local_density.extend(local_den_df["local density"].values.tolist())
@@ -153,8 +151,7 @@ def correlations_percentage(df, tagged_df, all_tracks, dir_path, s_name):
 
 def correlations_single_cell(df, tagged_df, all_tracks, dir_path, s_name):
     second_dir = s_name
-    utils.open_dirs(dir_path, second_dir)
-    save_dir = dir_path + "/" + second_dir
+    open_dirs(dir_path, second_dir)
     for label, track in df.groupby("Spot track ID"):
         if len(track.iloc[0]) < 60:
             continue
@@ -377,7 +374,7 @@ def plot_correlations_percentage(dir_path_score, s_num1, s_num2):
     correlation_p_df_diff["target"] = True
     correlation_p_df_con["target"] = False
 
-    utils.open_dirs(dir_path_score, "correlations_percentage")
+    open_dirs(dir_path_score, "correlations_percentage")
 
     con_pal = sns.cubehelix_palette(22, rot=-.25, light=.7)
     diff_pal = sns.color_palette("Oranges", n_colors=22, )
@@ -417,7 +414,7 @@ def load_correlations_data(s_run, dir_path_score):
     print(df_score.shape)
 
     # calculate local density
-    df_all_tracks, _ = utils.get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)
+    df_all_tracks, _ = get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)
     df = pd.read_csv(path + s_run["csv_tagged_path"], encoding="ISO-8859-1")
     df_tagged = df_all_tracks[df_all_tracks["manual"] == 1]  # todo change
 
@@ -438,7 +435,7 @@ def load_correlations_data(s_run, dir_path_score):
 def get_dir_path(to_run):
     dir_path_score = f"30-03-2022-manual_mastodon_{to_run} local density-{local_density}, s{con_train_n}, s{diff_train_n} are train"
     second_dir = f"{diff_window} frames ERK, {con_windows} frames con track len {tracks_len}"
-    utils.open_dirs(dir_path_score, second_dir)
+    open_dirs(dir_path_score, second_dir)
     dir_path_score += "/" + second_dir
     return dir_path_score
 
@@ -488,7 +485,6 @@ def global_correlation(df_merge_col_mot, df_merge_col_int, s_run, save_dir, pct_
             axs[i].set_ylabel("avg intensity differentiation score")
         plt.suptitle(f"global correlation- mean differentiation score per time point, {s_run['name']}")
         plt.show()
-
 
 
 def pearson_lag_models_correlation(df_merge_col_mot, df_merge_col_int, s_run, save_dir, pct_change, binned_score):
@@ -598,7 +594,7 @@ if __name__ == '__main__':
 
     local_density = False
     to_run = "intensity"
-    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3),(2, 3, 1, 5), ]:  # (1, 5, 2, 3),
+    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3), (2, 3, 1, 5), ]:  # (1, 5, 2, 3),
         dir_path_score = get_dir_path(to_run)
 
         for s_run in s_runs:

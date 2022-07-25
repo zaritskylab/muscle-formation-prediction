@@ -1,12 +1,11 @@
 import pickle
 import consts
-import diff_tracker_utils as utils
+from utils.diff_tracker_utils import *
+from utils.data_load_save import *
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from build_models_on_transformed_tracks import get_to_run
-from scipy.spatial import distance
 import scipy
 import matplotlib as mpl
 
@@ -26,7 +25,7 @@ def load_correlations_data(s_run, dir_path_score):
     print(df_score.shape)
 
     # calculate local density
-    df_all_tracks, _ = utils.get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)
+    df_all_tracks, _ = get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)
     # df = pd.read_csv(path + s_run["csv_tagged_path"], encoding="ISO-8859-1")
     df_tagged = df_all_tracks[df_all_tracks["manual"] == 1]  # todo change
 
@@ -47,7 +46,7 @@ def load_correlations_data(s_run, dir_path_score):
 def get_dir_path(to_run):
     dir_path_score = f"30-03-2022-manual_mastodon_{to_run} local density-{local_density}, s{con_train_n}, s{diff_train_n} are train"
     second_dir = f"{diff_window} frames ERK, {con_windows} frames con track len {tracks_len}"
-    utils.open_dirs(dir_path_score, second_dir)
+    open_dirs(dir_path_score, second_dir)
     dir_path_score += "/" + second_dir
     return dir_path_score
 

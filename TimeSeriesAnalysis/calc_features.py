@@ -1,19 +1,18 @@
 from abc import ABCMeta, abstractmethod, ABC
 from skimage import io
 import pandas as pd
-import diff_tracker_utils as utils
+from utils.diff_tracker_utils import *
 import cv2
 import numpy as np
-from TimeSeriesAnalysis import nuc_segmentor as segmentor
-from TimeSeriesAnalysis.diff_tracker_utils import get_nuclei_measures
+import nuc_segmentor as segmentor
 
 
 class CalcFeaturesStrategy(object):
-    '''
+    """
     An abstract base class for defining models. The interface,
     to be implemented by subclasses, define standard model
     operations
-    '''
+    """
     __metaclass__ = ABCMeta
 
     def __init__(self, name):
@@ -33,7 +32,7 @@ class CalcFeaturesStrategy(object):
     def calc_features(self, data, actin_vid_path, window_size, local_density):
         im = io.imread(actin_vid_path)
         features_df = pd.DataFrame()
-        data = utils.remove_short_tracks(data, window_size)
+        data = remove_short_tracks(data, window_size)
 
         for label, cell_df in data.groupby("Spot track ID"):
             cell_features_df = self.get_single_cell_measures(label, cell_df, im, window_size)
@@ -52,9 +51,9 @@ class CalcFeaturesStrategy(object):
 
 
 class ActinIntensityCalcFeatures(CalcFeaturesStrategy, ABC):
-    '''
+    """
     An ordinary least squares (OLS) linear regression model
-    '''
+    """
 
     def __init__(self):
         name = 'actin_intensity'
@@ -78,9 +77,9 @@ class ActinIntensityCalcFeatures(CalcFeaturesStrategy, ABC):
 
 
 class NucleiIntensityCalcFeatures(CalcFeaturesStrategy, ABC):
-    '''
+    """
     An ordinary least squares (OLS) linear regression model
-    '''
+    """
 
     def __init__(self):
         name = 'nuclei_intensity'
@@ -118,3 +117,16 @@ class NucleiIntensityCalcFeatures(CalcFeaturesStrategy, ABC):
         print(f"cell #{label}, missed spots: {missed_segmentation_counter}/{len(df)}")
 
         return df_measures
+
+
+class MotilityCalcFeatures(CalcFeaturesStrategy, ABC):
+    """
+    An ordinary least squares (OLS) linear regression model
+    """
+
+    def __init__(self):
+        name = 'motility'
+        super(MotilityCalcFeatures, self).__init__(name)
+
+    def get_single_cell_measures(self, label, df, im_actin, window_size):
+        return df

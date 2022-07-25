@@ -5,16 +5,16 @@ Calculating cos of theta- the angle between the velocity vectors of each cell an
 Constructing a DataFrame called "coordination_outputs" for a later use.
 @author: Oron (Amit)
 """
-import pickle
+import sys
 import os
+
+sys.path.append('/sise/home/shakarch/muscle-formation-diff')
+sys.path.append(os.path.abspath('..'))
+import pickle
+
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import sys
-import diff_tracker_utils as utils
-import consts
-# from TimeSeriesAnalysis import consts
-# from TimeSeriesAnalysis import diff_tracker_utils as utils
+from utils import diff_tracker_utils as utils
 
 np.seterr(divide='ignore', invalid='ignore')
 import warnings
@@ -60,18 +60,18 @@ class CoordinationCalc():
             if rings == True:
                 # Get all neighbors - different distances
                 neighbors = df[(np.sqrt((df['Spot position X (µm)'] - x[0]) ** 2 + (
-                            df['Spot position Y (µm)'] - y[0]) ** 2) <= self.NEIGHBORING_DISTANCE) &
+                        df['Spot position Y (µm)'] - y[0]) ** 2) <= self.NEIGHBORING_DISTANCE) &
                                (df['Spot frame'] == cur_time) &
                                (self.NEIGHBORING_DISTANCE - 70 < np.sqrt(
                                    (df['Spot position X (µm)'] - x[0]) ** 2 + (
-                                               df['Spot position Y (µm)'] - y[0]) ** 2))]
+                                           df['Spot position Y (µm)'] - y[0]) ** 2))]
             else:
                 # Get all neighbors - regular calculation
                 neighbors = df[(np.sqrt((df['Spot position X (µm)'] - x[0]) ** 2 + (
-                            df['Spot position Y (µm)'] - y[0]) ** 2) <= self.NEIGHBORING_DISTANCE) &
+                        df['Spot position Y (µm)'] - y[0]) ** 2) <= self.NEIGHBORING_DISTANCE) &
                                (df['Spot frame'] == cur_time) &
                                (0 < np.sqrt((df['Spot position X (µm)'] - x[0]) ** 2 + (
-                                           df['Spot position Y (µm)'] - y[0]) ** 2))]
+                                       df['Spot position Y (µm)'] - y[0]) ** 2))]
 
         # Find unique tracks in the relevant radius
         neighbors = neighbors['Spot track ID'].unique()
@@ -119,7 +119,7 @@ class CoordinationCalc():
                 cos_of_angles[cur_time] = np.mean(np.abs(np.cos(angles - my_angle)))
             except:
                 continue
-        return cos_of_angles #np.asarray(cos_of_angles)
+        return cos_of_angles  # np.asarray(cos_of_angles)
 
     def build_coordination_df(self, validation, rings=False, only_tagged=False):
         # Load the tracks csv (Mastodon's output)
@@ -186,15 +186,16 @@ class CoordinationCalc():
 
 if __name__ == '__main__':
     print("coordination Calculator")
-    path = consts.cluster_path
-    print(sys.argv)
-    vid_num = sys.argv[1]
-    csv_path = path + fr"/data/mastodon/all_detections_s{vid_num}-vertices.csv"
+    # path = consts.cluster_path
+    os.chdir(os.getcwd() + r'/muscle-formation-diff')
+    print("current working directory: ", os.getcwd())
 
-    neighboring_dist = int(os.getenv('SLURM_ARRAY_TASK_ID'))
+    path = ""
+    vid_num = sys.argv[1]
+    csv_path = path + fr"data/mastodon/no_reg_S{vid_num} all detections.csv"
 
     print(csv_path)
-    coord = CoordinationCalc(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=neighboring_dist, csv_path=csv_path)
+    coord = CoordinationCalc(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=30, csv_path=csv_path)
     coord.build_coordination_df(validation=False, only_tagged=False)
     coord.save_coordinationDF(
-        path + fr"/Coordination/coordination_outputs/coordination_dfs/manual_tracking - only tagged tracks/coord_mastodon_s{vid_num}_dist{neighboring_dist}.pkl")
+        path + fr"/Coordination/coordination_outputs/coordination_dfs/manual_tracking/coord_mastodon_s{vid_num}_dist{30}.pkl")

@@ -2,14 +2,10 @@ import pickle
 from functools import reduce
 
 import consts
-import diff_tracker_utils as utils
+from utils.diff_tracker_utils import *
+from utils.data_load_save import *
 import numpy as np
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-from build_models_on_transformed_tracks import get_to_run
-from scipy.spatial import distance
-import scipy
 from skimage import io
 
 ROLLING_VAL = 30
@@ -47,7 +43,7 @@ def load_correlations_data(s_run, dir_path_score):
     print(df_score.shape)
 
     # calculate local density
-    df_all_tracks, _ = utils.get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)
+    df_all_tracks, _ = get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)
     # df = pd.read_csv(path + s_run["csv_tagged_path"], encoding="ISO-8859-1")
     df_tagged = df_all_tracks[df_all_tracks["manual"] == 1]  # todo change
 
@@ -68,7 +64,7 @@ def load_correlations_data(s_run, dir_path_score):
 def get_dir_path(to_run):
     dir_path_score = f"30-03-2022-manual_mastodon_{to_run} local density-{local_density}, s{con_train_n}, s{diff_train_n} are train"
     second_dir = f"{diff_window} frames ERK, {con_windows} frames con track len {tracks_len}"
-    utils.open_dirs(dir_path_score, second_dir)
+    open_dirs(dir_path_score, second_dir)
     dir_path_score += "/" + second_dir
     return dir_path_score
 
@@ -97,7 +93,7 @@ def get_coordination_data(track_coord_data):
 
 
 def get_local_density(label_track, all_tracks, track_coord_data):
-    local_den_df = utils.add_features(label_track, local_density=True, df_s=all_tracks)
+    local_den_df = add_features(label_track, local_density=True, df_s=all_tracks)
     local_den_df = local_den_df.sort_values("Spot frame")
     local_density = [np.nan for i in range(int(track_coord_data["t0"].max()))]
     local_density.extend(local_den_df["local density"].values.tolist())
@@ -201,7 +197,7 @@ def get_single_cell_properties(track_coord_data_mot_score, track_score_int, trac
     })
 
     speed_df = get_speed(track)
-    actin_df = utils.get_single_cell_intensity_measures(label=spot_track_id[0], df=track,
+    actin_df = get_single_cell_intensity_measures(label=spot_track_id[0], df=track,
                                                         im_actin=io.imread(actin_vid_path), window_size=actin_win_size)
     directionality_df = get_directionality(track, speed_df, ROLLING_VAL)
 

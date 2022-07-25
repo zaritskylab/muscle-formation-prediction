@@ -1,9 +1,13 @@
+from abc import ABCMeta, abstractmethod, ABC
+import sys
+import os
+import image_registration
 import numpy as np
-from skimage.registration import optical_flow_tvl1, optical_flow_ilk
+from pystackreg import StackReg
 from skimage import io
 from skimage import registration
-from skimage.transform import warp
-import diff_tracker_utils as utils
+from utils.diff_tracker_utils import *
+from utils.data_load_save import *
 from skimage.transform import warp
 import cv2
 
@@ -11,21 +15,83 @@ import consts
 from tqdm import tqdm
 
 
-def calc_shifts(im_nuc, srun, method):
-    # im_nuc_new = np.zeros((im_nuc.shape))
-    flows = []
+class RegistrationStrategy(object):
+    '''
+    An abstract base class for defining models. The interface,
+    to be implemented by subclasses, define standard model
+    operations
+    '''
+    __metaclass__ = ABCMeta
 
-    for i in tqdm(range(len(im_nuc) - 2)):
-        image0, image1 = im_nuc[i], im_nuc[i + 1]
+    def __init__(self, name):
+        self.name = name
 
-        if method == "optical_flow":
+    @abstractmethod
+    def calc_shifts(self, *args) -> np.array:
+        pass
+
+    @abstractmethod
+    def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix) -> (float, float):
+        pass
+
+    def register_tracks(self, flows, data_to_registrate):
+        to_reg_data = data_to_registrate.copy()
+        for label, label_df in tqdm(to_reg_data.groupby("Spot track ID")):
+
+            label_df = label_df.sort_values("Spot frame")
+            for i in range(0, len(label_df) - 1):
+
+                spot_frame = label_df.iloc[i]["Spot frame"] - 1  # todo check the -1 thing
+                x_pix = int(label_df.iloc[i]["Spot position X (µm)"] / 0.462)
+                y_pix = int(label_df.iloc[i]["Spot position Y (µm)"] / 0.462)
+                try:
+                    x_flow, y_flow = self.get_reg_coordinates(flows, spot_frame, x_pix, y_pix)
+                    # flow_x, flow_y = flows[spot_frame][..., 0], flows[spot_frame][..., 1]
+                except:
+                    print(spot_frame)
+                    print(len(flows))
+                    break
+                x_reg = (x_pix + x_flow) * 0.462
+                y_reg = (y_pix + y_flow) * 0.462
+
+                to_reg_data.loc[to_reg_data["Spot track ID"] == label, "Spot position X (µm)"].iloc[i] = x_reg
+                to_reg_data.loc[to_reg_data["Spot track ID"] == label, "Spot position Y (µm)"].iloc[i] = y_reg
+
+        return to_reg_data
+
+
+class OpticalFlowRegistration(RegistrationStrategy, ABC):
+    '''
+    An ordinary least squares (OLS) linear regression model
+    '''
+
+    def __init__(self):
+        name = 'OpticalFlowRegistration'
+        super(OpticalFlowRegistration, self).__init__(name)
+
+    def calc_shifts(self, nuclei_vid):
+        flows = []
+        for i in tqdm(range(len(nuclei_vid) - 2)):
+            image0, image1 = nuclei_vid[i], nuclei_vid[i + 1]
             flow = cv2.calcOpticalFlowFarneback(image0, image1, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+            flows.append(flow)
 
+        return flows
+
+    def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix):
+        flow_x, flow_y = flows[spot_frame][..., 0], flows[spot_frame][..., 1]
+
+        return flow_x[x_pix, y_pix], flow_y[x_pix, y_pix]
+
+    def calc_shifts_video(selfself, nuclei_vid):
+        im_nuc_new = np.zeros(nuclei_vid.shape)
+        for i in tqdm(range(len(im_nuc) - 2)):
+            image0, image1 = im_nuc[i], im_nuc[i + 1]
+            flow = cv2.calcOpticalFlowFarneback(image0, image1, None, 0.5, 3, 15, 3, 5, 1.2, 0)
             # --- Compute the optical flow
             # flow = optical_flow_tvl1(image0, image1)
-            flows.append(flow)
             flow_x, flow_y = flow[..., 0], flow[..., 1]
-            # Example 2: Applying flow vectors to each pixel
+            # Applying flow vectors to each pixel
             height, width = image1.shape
             # Use meshgrid to Return coordinate matrices from coordinate vectors.
             # Extract row and column coordinates to which flow vector values will be added.
@@ -34,62 +100,125 @@ def calc_shifts(im_nuc, srun, method):
             # For each pixel coordinate add respective flow vector to transform
             image1_warp = warp(image1, np.array([(row_coords + flow_y), (col_coords + flow_x)]),
                                mode='edge')
-
-        # elif method == "chi2_shift":
-        #
-        #     dx, dy, edx, edy = image_registration.chi2_shift(image0, image1, upsample_factor='auto')  # shift by -1*dx
-
-        # elif method == "translation":
-        #     sr = StackReg(StackReg.TRANSLATION)
-        #     image1_warp = sr.register_transform(image0, image1)
-        #     plt.imshow(image1_warp, cmap="gray")
-
-        # im_nuc_new[i] = image1_warp
-
-    # io.imsave(path + f"/data/videos/{srun['name']}_Nuclei_aligned.tif", im_nuc_new)
-    np.save(f"flows{srun['name']}.npy", flows, allow_pickle=True)
-    return flows
+            im_nuc_new[i] = image1_warp
+        io.imsave(path + f"/data/videos/{s_run['name']}_Nuclei_aligned.tif", im_nuc_new)
 
 
-def register_tracks(srun, path):
-    flows = np.load(f"flows{srun['name']}.npy")  # , allow_pickle=True
-    diff_df_train, tracks_s = utils.get_tracks(path + srun["csv_all_path"], manual_tagged_list=False)
-    for label, label_df in tqdm(diff_df_train.groupby("Spot track ID")):
+class StackRegRegistration(RegistrationStrategy, ABC):
+    '''
+    An ordinary least squares (OLS) linear regression model
+    '''
 
-        label_df = label_df.sort_values("Spot frame")
-        for i in range(0, len(label_df) - 1):
-            x = label_df.iloc[i]["Spot position X (µm)"]
-            y = label_df.iloc[i]["Spot position Y (µm)"]
+    def __init__(self):
+        name = 'StackRegRegistration'
+        self.sr = StackReg(StackReg.TRANSLATION)
+        super(StackRegRegistration, self).__init__(name)
 
-            x_pix = int(x / 0.462)
-            y_pix = int(y / 0.462)
+    def calc_shifts(self, nuclei_vid):
+        transition_mats = []
+        for i in tqdm(range(len(nuclei_vid) - 2)):
+            image0, image1 = nuclei_vid[i], nuclei_vid[i + 1]
+            transition_mat = self.sr.register(ref=image0, mov=image1)
+            transition_mats.append(transition_mat)
 
-            spot_frame = label_df.iloc[i]["Spot frame"] - 1
-            try:
-                flow_x, flow_y = flows[spot_frame][..., 0], flows[spot_frame][..., 1]
-            except:
-                print(spot_frame)
-                print(len(flows))
-                break
-            x_reg = (x_pix + flow_x[y_pix][x_pix]) * 0.462
-            y_reg = (y_pix + flow_y[y_pix][x_pix]) * 0.462
+        return transition_mats
 
-            diff_df_train.loc[diff_df_train["Spot track ID"] == label, "Spot position X (µm)"].iloc[i] = x_reg
-            diff_df_train.loc[diff_df_train["Spot track ID"] == label, "Spot position Y (µm)"].iloc[i] = y_reg
+    def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix) -> (float, float):
+        flow_x, flow_y = flows[spot_frame][..., 2][0], flows[spot_frame][..., 2][1]
+        return flow_x, flow_y
 
-    diff_df_train.to_csv(path + f"/data/mastodon/reg_{srun['name']} all detections.csv")
+
+class CrossCorrelationRegistration(RegistrationStrategy, ABC):
+    '''
+    An ordinary least squares (OLS) linear regression model
+    '''
+
+    def __init__(self):
+        name = 'CrossCorrelationRegistration'
+        super(CrossCorrelationRegistration, self).__init__(name)
+
+    def calc_shifts(self, *args):
+        shifts = []
+        for i in tqdm(range(len(im_nuc) - 2)):
+            image0, image1 = im_nuc[i], im_nuc[i + 1]
+            shift, err, phasediff = registration.phase_cross_correlation(reference_image=image0, moving_image=image1)
+            shifts.append(shift * (-1))
+        return shifts
+
+    def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix) -> (float, float):
+        flow_x, flow_y = flows[spot_frame][0], flows[spot_frame][1]
+        return flow_x, flow_y
+
+
+class OpticalFlowTvl1Registration(RegistrationStrategy, ABC):
+    '''
+    An ordinary least squares (OLS) linear regression model
+    '''
+
+    def __init__(self):
+        name = 'OpticalFlowTvl1Registration'
+        super(OpticalFlowTvl1Registration, self).__init__(name)
+
+    def calc_shifts(self, *args):
+        shifts = []
+        for i in tqdm(range(len(im_nuc) - 2)):
+            image0, image1 = im_nuc[i], im_nuc[i + 1]
+            shift = registration.optical_flow_tvl1(reference_image=image0, moving_image=image1)
+            shifts.append(shift)
+        return shifts
+
+    def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix) -> (float, float):
+        flow_x, flow_y = flows[spot_frame][0], flows[spot_frame][1]
+        return flow_x, flow_y
+
+
+class Chi2ShiftRegistration(RegistrationStrategy, ABC):  # not working
+    '''
+    An ordinary least squares (OLS) linear regression model
+    '''
+
+    def __init__(self):
+        name = 'Chi2ShiftRegistration'
+        super(Chi2ShiftRegistration, self).__init__(name)
+
+    def calc_shifts(self, *args):
+        flows = []
+        for i in tqdm(range(len(im_nuc) - 2)):
+            image0, image1 = im_nuc[i], im_nuc[i + 1]
+            dx, dy, edx, edy = image_registration.chi2_shift(image0, image1, upsample_factor='auto')  # shift by -1*dx
+            flows.append((dx, dy))
+        return flows
+
+    def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix) -> (float, float):
+        flow_x, flow_y = flows[spot_frame][0], flows[spot_frame][1]
+        return flow_x, flow_y
+
+
+def video_registration_factory(registrator_name):
+    """Factory Method"""
+    registrators = {
+        "OpticalFlowRegistration": OpticalFlowRegistration(),
+        # "Chi2ShiftRegistration": Chi2ShiftRegistration(),
+        "StackRegRegistration": StackRegRegistration(),
+        "OpticalFlowTvl1Registration": OpticalFlowTvl1Registration(),
+        "CrossCorrelationRegistration": CrossCorrelationRegistration()
+    }
+
+    return registrators[registrator_name]
 
 
 if __name__ == '__main__':
-    srun = consts.s5
-
     path = consts.cluster_path
+    s_run = consts.s_runs[os.getenv('SLURM_ARRAY_TASK_ID')[0]]
+    reg_name = sys.argv[1]
 
-    vid_path = path + srun["nuc_path"]
-    im_nuc = io.imread(vid_path)
-    method = "optical_flow"
+    print(f"s_run name: {s_run['name']},"
+          f"registrator name: {reg_name}")
 
-    print(srun["name"])
+    im_nuc = io.imread(path + s_run["nuc_path"])
+    data_to_reg, _ = get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)
 
-    calc_shifts(im_nuc, srun, method)
-    register_tracks(srun, path)
+    registrator = video_registration_factory(reg_name)
+    corrections = registrator.calc_shifts(im_nuc)
+    reg_data = registrator.register_tracks(data_to_registrate=data_to_reg, flows=corrections)
+    reg_data.to_csv(path + f"/data/mastodon/reg_{registrator.name}_{s_run['name']} all detections.csv")

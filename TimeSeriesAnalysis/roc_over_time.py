@@ -1,10 +1,9 @@
 import pickle
 import consts
-import diff_tracker_utils as utils
+from utils.diff_tracker_utils import *
+from utils.data_load_save import *
 import matplotlib.pyplot as plt
-import numpy as np
 from sklearn import metrics
-import pandas as pd
 from build_models_on_transformed_tracks import get_to_run, plot_avg_conf
 
 
@@ -74,9 +73,9 @@ if __name__ == '__main__':
 
         dir_path = f"30-03-2022-manual_mastodon_{to_run} local density-{local_density}, s{con_train_n}, s{diff_train_n} are train"
         second_dir = f"{diff_window} frames ERK, {con_windows} frames con track len {tracks_len}"
-        utils.open_dirs(dir_path, second_dir)
+        open_dirs(dir_path, second_dir)
         dir_path += "/" + second_dir
-        clf, X_train, X_test, y_train, y_test = utils.load_data(dir_path)
+        clf, X_train, X_test, y_train, y_test = load_data(dir_path)
 
         cols = list(X_train.columns)
         cols.extend(["Spot track ID", "Spot frame"])
@@ -90,8 +89,8 @@ if __name__ == '__main__':
         # plot_auc_over_time(aucs, dir_path + f"/auc over time s{diff_test_n}, s{con_test_n}.png")
 
         print("calc avg prob")
-        df_score_con = utils.calc_prob(con_df_test, clf, n_frames=260)
-        df_score_dif = utils.calc_prob(diff_df_test, clf, n_frames=260)
+        df_score_con = calc_prob(con_df_test, clf, n_frames=260)
+        df_score_dif = calc_prob(diff_df_test, clf, n_frames=260)
 
         pickle.dump(df_score_con, open(dir_path + f"/df_prob_w=30, video_num={con_test_n}", 'wb'))
         pickle.dump(df_score_dif, open(dir_path + f"/df_prob_w=30, video_num={diff_test_n}", 'wb'))

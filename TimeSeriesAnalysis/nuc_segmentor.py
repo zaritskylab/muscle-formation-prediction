@@ -1,4 +1,3 @@
-import numpy as np
 from deepcell.applications import NuclearSegmentation
 
 
