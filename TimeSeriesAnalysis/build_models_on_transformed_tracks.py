@@ -1,18 +1,20 @@
-import pickle
 from collections import Counter
-from utils.diff_tracker_utils import *
-from utils.data_load_save import *
-from utils.plots_functions_utils import *
-from utils import data_load_save as load_save_utils
+import os, sys
+
+sys.path.append('/sise/home/shakarch/muscle-formation-diff')
+sys.path.append(os.path.abspath('..'))
+
+from TimeSeriesAnalysis.params import PARAMS_DICT, impute_methodology, impute_func, registration_method, get_tine_windows
+from TimeSeriesAnalysis.utils.diff_tracker_utils import *
+from TimeSeriesAnalysis.utils.data_load_save import *
+from TimeSeriesAnalysis.utils.plots_functions_utils import *
+from TimeSeriesAnalysis.utils import data_load_save as load_save_utils
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import consts
 import numpy as np
 from tsfresh import select_features
-import sys
 import datetime
-import os
 
 
 def clean_redundant_columns(df):
@@ -26,50 +28,71 @@ def clean_redundant_columns(df):
     return df
 
 
-def get_to_run(path, to_run, con_train_num=None, con_test_num=None, diff_train_num=None,
-               diff_test_num=None, registration="no_reg_", local_density=False, impute_func="impute",
-               impute_methodology="ImputeSingleCell"):
-    path_prefix = path + f"/data/mastodon/ts_transformed_new/{to_run}/{impute_methodology}_{impute_func}/"
-    end = f"_imputed reg={registration}, local_den={local_density}, win size 16"
+def load_tsfresh_csv(path, modality, vid_num, registration="no_reg_", local_density=False, impute_func="impute",
+                     impute_methodology="ImputeAllData"):
+    path_prefix = path + f"/data/mastodon/ts_transformed_new/{modality}/{impute_methodology}_{impute_func}/"
+    end = f"_imputed reg={registration}, local_den={local_density}, win size {consts.window_size}"
 
+    print("reading csv - load_tsfresh_csv function")
+    df = pd.read_csv(path_prefix + f"S{vid_num}" + end, encoding="cp1252", index_col=[0])
+    # print(df.info(memory_usage='deep'), flush=True)
+    df = downcast_df(df, fillna=False)  # todo check
+    df = clean_redundant_columns(df)
+
+    print(df.info(memory_usage='deep'), flush=True)
+    return df
+
+
+def get_to_run(path, modality, con_train_num=None, con_test_num=None, diff_train_num=None,
+               diff_test_num=None, local_density=False):
     diff_df_train, con_df_train, con_df_test, diff_df_test = None, None, None, None
 
     if diff_train_num:
-        diff_df_train = pd.read_csv(path_prefix + f"S{diff_train_num}" + end, encoding="cp1252", index_col=[0])
+        diff_df_train = load_tsfresh_csv(path, modality, diff_train_num, registration_method,
+                                         local_density, impute_func, impute_methodology)
         print("diff train len", len(diff_df_train))
 
     if con_train_num:
-        con_df_train = pd.read_csv(path_prefix + f"S{con_train_num}" + end, encoding="cp1252", index_col=[0])
+        con_df_train = load_tsfresh_csv(path, modality, con_train_num, registration_method,
+                                        local_density, impute_func, impute_methodology)
         print("con_df_train len", len(con_df_train))
 
     if con_test_num:
-        con_df_test = pd.read_csv(path_prefix + f"S{con_test_num}" + end, encoding="cp1252", index_col=[0])
+        con_df_test = load_tsfresh_csv(path, modality, con_test_num, registration_method,
+                                       local_density, impute_func, impute_methodology)
 
     if diff_test_num:
-        diff_df_test = pd.read_csv(path_prefix + f"S{diff_test_num}" + end, encoding="cp1252", index_col=[0])
+        diff_df_test = load_tsfresh_csv(path, modality, diff_test_num, registration_method,
+                                        local_density, impute_func, impute_methodology)
 
     return diff_df_train, con_df_train, con_df_test, diff_df_test
 
 
 def prep_data(diff_df, con_df, diff_t_window, con_t_windows):
-    print("concatenating control data & ERKi data")
+    print("\n preparing data")
+    print("\nconcatenating control data & ERKi data")
     df = concat_dfs(diff_df, con_df, diff_t_window,
-                          con_t_windows)
+                    con_t_windows)
     df = df.sample(frac=1).reset_index(drop=True)
-    print("shape after concat_dfs", df.shape)
+    print("\nshape after concat_dfs", df.shape)
     print(df.isna().sum())
 
+    df = df.replace([np.inf], np.nan)
     df = df.dropna(axis=1)
-    print("shape after dropna", df.shape)
+    print("\nshape after dropna", df.shape)
+
+    # df = df.sample(frac=0.95)
+    # print("\nshape after sampling", df.shape)
 
     df.index = df['Spot track ID']
     y = pd.Series(df['target'])
     y.index = df['Spot track ID']
     df = df.drop(["target", "Spot frame", "Spot track ID"], axis=1)
+    print(df.info(memory_usage='deep'))
     return df, y
 
 
-def evaluate_clf(dir_path, clf, X_test, y_test, y_train):
+def evaluate_clf(dir_path, clf, X_test, y_test, y_train, diff_window, con_window):
     report, auc_score = evaluate(clf, X_test, y_test)
 
     # load the model & train set & test set
@@ -79,15 +102,18 @@ def evaluate_clf(dir_path, clf, X_test, y_test, y_train):
     plot_roc(clf=clf, X_test=X_test, y_test=y_test, path=dir_path)
 
     # perform PCA analysis
-    principal_df, pca = build_pca(3, X_test)
-    plot_pca(principal_df, pca, dir_path)
+    # principal_df, pca = build_pca(3, X_test)
+    # plot_pca(principal_df, pca, dir_path)
 
     # calculate feature importance
     # utils.feature_importance(clf, X_train.columns, dir_path)
 
     # save classification report & AUC score
     txt_file = open(dir_path + '/info.txt', 'a')
-    txt_file.write(f"classification report: {report}\n auc score: {auc_score}\n train samples:{Counter(y_train)}")
+    txt_file.write(f"classification report: {report}"
+                   f"\n auc score: {auc_score}"
+                   f"\n train samples:{Counter(y_train)}"
+                   f"\n {diff_window} ERK, {con_window} con frames")
 
     txt_file.close()
 
@@ -104,13 +130,14 @@ def remove_target_cols(df):
     return df
 
 
-def get_confidence_interval(con_df_test, diff_df_test, dir_path, X_train, y_train, X_test, y_test, cols, n_runs=10):
+def get_confidence_interval(con_df_test, diff_df_test, dir_path, X_train, y_train, X_test, y_test, cols, con_test_n,
+                            diff_test_n, diff_window, con_window, n_runs=10):
     print(f"training- {n_runs} runs")
 
     auc_lst = []
     for i in range(n_runs):
         clf = train_model(X_train, y_train)
-        auc = evaluate_clf(dir_path, clf, X_test, y_test, y_train)
+        auc = evaluate_clf(dir_path, clf, X_test, y_test, y_train, diff_window, con_window)
         auc_lst.append(auc)
 
         print("calc avg prob")
@@ -155,76 +182,77 @@ def plot_avg_conf(df_con, df_diff, mot_int, path=""):
     plt.clf()
 
 
-if __name__ == '__main__':
-    path = consts.cluster_path
-    modality = sys.argv[1]
-    registration_method = sys.argv[2]
-    impute_func = sys.argv[3]
-    impute_methodology = sys.argv[4]
+def build_model_trans_tracks(local_density, window_size, tracks_len, con_window, diff_window):
+    print(f"\nrunning: build_models_on_transformed_tracks"
+          f"\nmodality={modality}, local density={local_density}, reg={registration_method}, "
+          f"impute func= {impute_func},impute_methodology= {impute_methodology}")
 
-    print(f"running: modality={modality}, "
-          f"local density={consts.local_density}, "
-          f"reg={registration_method}, "
-          f"impute func= {impute_func},"
-          f"impute_methodology= {impute_methodology}")
+    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3), (2, 3, 1, 5), ]:
+        print(f"\n train: con_n-{con_train_n},dif_n-{diff_train_n}; test: con_n-{con_test_n},dif_n-{diff_test_n}")
 
-    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 1, 3), (2, 3, 1, 5)]:
-        diff_df_train, con_df_train, _, _ = get_to_run(path=path, to_run=modality,
-                                                       con_train_num=con_train_n,
-                                                       diff_train_num=diff_train_n,
-                                                       con_test_num=None,
-                                                       diff_test_num=None,
-                                                       local_density=consts.local_density,
-                                                       registration=registration_method,
-                                                       impute_func=impute_func,
-                                                       impute_methodology=impute_methodology)
-
+        diff_df_train, con_df_train, _, _ = get_to_run(path=path, modality=modality, local_density=local_density,
+                                                       con_train_num=con_train_n, diff_train_num=diff_train_n,
+                                                       con_test_num=None, diff_test_num=None)
         today = datetime.datetime.now()
-        dir_path = f"{today.strftime('%d-%m-%Y')}-{modality} local dens-{consts.local_density}, s{con_train_n}, s{diff_train_n} train, reg {registration_method}"
-        second_dir = f"{consts.diff_window} ERK, {consts.con_window} con track len {consts.tracks_len}, impute_func-{impute_methodology}_{impute_func}"
+        dir_path = f"{today.strftime('%d-%m-%Y')}-{modality} local dens-{local_density}, s{con_train_n}, s{diff_train_n} train" + (
+            f" win size {window_size}" if modality != "motility" else "")
+        second_dir = f"track len {tracks_len}, impute_func-{impute_methodology}_{impute_func} reg {registration_method}"
         os.makedirs(dir_path, exist_ok=True)
         os.makedirs(os.path.join(dir_path, second_dir), exist_ok=True)
         dir_path += "/" + second_dir
 
-        print("preparing data")
-        X_train, y_train = prep_data(diff_df=diff_df_train, con_df=con_df_train, diff_t_window=consts.diff_window,
-                                     con_t_windows=consts.con_window)
+        X_train, y_train = prep_data(diff_df=diff_df_train, con_df=con_df_train, diff_t_window=diff_window,
+                                     con_t_windows=con_window)
+        X_train = downcast_df(X_train)
+
         del diff_df_train
         del con_df_train
+        print("\ndeleted diff_df_train, con_df_train")
 
-        print("deleted diff_df_train, con_df_train")
-        X_train = select_features(X_train, y_train)
+        X_train = select_features(X_train, y_train, n_jobs=10)
+        print("\nDone feature selection")
 
         clf = train_model(X_train, y_train)
         cols = list(X_train.columns)
         load_save_utils.save_data(dir_path, X_train=X_train)
         del X_train
-        _, _, con_df_test, diff_df_test = get_to_run(path=path, to_run=modality,
-                                                     con_train_num=None,
-                                                     con_test_num=con_test_n,
-                                                     diff_train_num=None,
-                                                     diff_test_num=diff_test_n,
-                                                     local_density=consts.local_density,
-                                                     registration=registration_method,
-                                                     impute_func=impute_func,
-                                                     impute_methodology=impute_methodology)
+        _, _, con_df_test, diff_df_test = get_to_run(path=path, modality=modality, local_density=local_density,
+                                                     con_train_num=None, diff_train_num=None,
+                                                     con_test_num=con_test_n, diff_test_num=diff_test_n, )
 
-        X_test, y_test = prep_data(diff_df=diff_df_test, con_df=con_df_test, diff_t_window=consts.diff_window,
-                                   con_t_windows=consts.con_window)
-
+        X_test, y_test = prep_data(diff_df=diff_df_test, con_df=con_df_test, diff_t_window=diff_window,
+                                   con_t_windows=con_window)
         X_test = X_test[cols]
-
         cols.extend(["Spot track ID", "Spot frame"])
 
         load_save_utils.save_data(dir_path, y_train=y_train, X_test=X_test, y_test=y_test, clf=clf)
-        auc = evaluate_clf(dir_path, clf, X_test, y_test, y_train)
+        auc = evaluate_clf(dir_path, clf, X_test, y_test, y_train, diff_window, con_window)
         del X_test
         del y_test
 
         print("calc avg prob")
-        df_score_con = calc_prob(con_df_test[cols], clf, n_frames=260)
-        df_score_dif = calc_prob(diff_df_test[cols], clf, n_frames=260)
+        df_score_con = calc_prob(con_df_test[cols].dropna(axis=1), clf, n_frames=260)
+        df_score_dif = calc_prob(diff_df_test[cols].dropna(axis=1), clf, n_frames=260)
 
         plot_avg_conf(df_score_con.drop("Spot track ID", axis=1), df_score_dif.drop("Spot track ID", axis=1),
-                      mot_int=modality,
-                      path=dir_path + f"/avg conf s{con_test_n}, s{diff_test_n}.png")
+                      mot_int=modality, path=dir_path + f"/avg conf s{con_test_n}, s{diff_test_n}.png")
+
+
+if __name__ == '__main__':
+    path = consts.cluster_path
+    modality = sys.argv[1]
+    param_explore = sys.argv[2]
+
+    PARAMS = PARAMS_DICT[param_explore]
+    for exp_param in PARAMS[param_explore]:
+        print(f"{param_explore} : {exp_param}")
+        params_copy = PARAMS.copy()
+        params_copy.update({param_explore: exp_param})
+
+        if param_explore == "tracks_len":
+            diff_window, con_window = get_tine_windows(params_copy["start"], params_copy["tracks_len"])
+            params_copy["diff_window"] = diff_window
+            params_copy["con_window"] = con_window
+
+        build_model_trans_tracks(params_copy['local_density'], params_copy['window_size'], params_copy['track_len'],
+                                 params_copy['con_window'], params_copy['diff_window'])

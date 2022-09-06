@@ -164,7 +164,8 @@ class CoordinationCalc():
 
 if __name__ == '__main__':
     print("coordination Calculator")
-    xml_path = r"../data/tracks_xml/0104/Experiment1_w1Widefield550_s7_all_0104.xml"
+    vid_num = 5
+    xml_path = fr"../data/tracks_xml/0104/Experiment1_w1Widefield550_s{vid_num}_all_0104.xml"
     coord = CoordinationCalc(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=30, xml_path=xml_path)
     coord.build_coordination_df(validation=True)
-    coord.save_coordinationDF(r"coordination_outputs/coordination_dfs/validations/global_coord_s7.pkl")
+    coord.save_coordinationDF(fr"coordination_outputs/coordination_dfs/validations/global_coord_s{vid_num}.pkl")

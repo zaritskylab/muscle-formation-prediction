@@ -16,8 +16,9 @@ class DataNormalizerStrategy(object):
 
     def preprocess_data(self, data):
         # todo add features option
-        data = self.drop_columns(data)
-        data = self.normalize_data(data)
+        if not data.empty:
+            data = self.drop_columns(data)
+            data = self.normalize_data(data)
         return data
 
     @abstractmethod
@@ -63,7 +64,7 @@ class MotilityDataNormalizer(DataNormalizerStrategy, ABC):
         super(MotilityDataNormalizer, self).__init__(name)
 
     def drop_columns(self, data, added_features=None):
-        keep_features = ['Spot frame', 'Spot track ID', 'target', 'Spot position X (µm)', 'Spot position Y (µm)']
+        keep_features = ['Spot frame', 'Spot track ID', 'target', 'Spot position X', 'Spot position Y']
         if added_features:
             keep_features.extend(added_features)
         keep_features = [value for value in keep_features if value in data.columns]
@@ -73,22 +74,22 @@ class MotilityDataNormalizer(DataNormalizerStrategy, ABC):
     def normalize_data(self, data):
         data = data.sort_values(by=['Spot frame'])
         for label, label_df in data.groupby('Spot track ID'):
-            to_reduce_x = label_df.iloc[0]['Spot position X (µm)']
-            to_reduce_y = label_df.iloc[0]["Spot position Y (µm)"]
+            to_reduce_x = label_df.iloc[0]['Spot position X']
+            to_reduce_y = label_df.iloc[0]["Spot position Y"]
 
-            data.loc[data['Spot track ID'] == label, 'Spot position X (µm)'] = label_df['Spot position X (µm)'].apply(
+            data.loc[data['Spot track ID'] == label, 'Spot position X'] = label_df['Spot position X'].apply(
                 lambda num: num - to_reduce_x)
 
-            data.loc[data['Spot track ID'] == label, 'Spot position Y (µm)'] = label_df['Spot position Y (µm)'].apply(
+            data.loc[data['Spot track ID'] == label, 'Spot position Y'] = label_df['Spot position Y'].apply(
                 lambda num: num - to_reduce_y)
 
         #########################
 
-        # if 'delta Spot position X (µm)' in df.columns:
-        #     df['Spot position X (µm)'] = df['Spot position X (µm)'].diff()
+        # if 'delta Spot position X' in df.columns:
+        #     df['Spot position X'] = df['Spot position X'].diff()
         #
-        # if 'delta Spot position Y (µm)' in df.columns:
-        #     df['Spot position Y (µm)'] = df['Spot position Y (µm)'].diff()
+        # if 'delta Spot position Y' in df.columns:
+        #     df['Spot position Y'] = df['Spot position Y'].diff()
         #
         # df.fillna(0, inplace=True)
         return data
@@ -104,10 +105,10 @@ class NucleiIntensityDataNormalizer(DataNormalizerStrategy, ABC):
         super(NucleiIntensityDataNormalizer, self).__init__(name)
 
     def drop_columns(self, data, added_features=None):
-        to_keep = ['x', 'y', 'max_nuc', 'mean_nuc', 'min_nuc', 'nuc_size',
-                   'std_nuc', 'sum_nuc', 'Spot track ID', 'Spot frame', 'target']
+        to_keep = ['aspect_ratio', 'nuc_size', 'Spot track ID', 'Spot frame']  # 'x', 'y',, 'target'
         if added_features:
             to_keep.extend(added_features)
+        return data[to_keep]
 
     def normalize_data(self, data):
         columns = [e for e in list(data.columns) if e not in ('Spot frame', 'Spot track ID', 'target')]

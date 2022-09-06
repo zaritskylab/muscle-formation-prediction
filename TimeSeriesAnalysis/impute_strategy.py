@@ -2,7 +2,10 @@ from abc import ABCMeta, abstractmethod, ABC
 
 from tsfresh.utilities.dataframe_functions import impute
 import pandas as pd
-from utils.diff_tracker_utils import *
+import sys, os
+sys.path.append('/sise/home/shakarch/muscle-formation-diff')
+sys.path.append(os.path.abspath('..'))
+from TimeSeriesAnalysis.utils.diff_tracker_utils import *
 import consts
 
 class ImputeStrategy(object):

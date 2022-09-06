@@ -1,6 +1,5 @@
 from deepcell.applications import NuclearSegmentation
 
-
 import numpy as np
 from scipy.spatial import distance as dist
 from imutils import contours, perspective
@@ -21,15 +20,11 @@ class NucleiFeatureCalculator:
         :param seg_img: segmented image
         :return: aspect_ratio
         """
-        aspect_ratio = None
-        # TODO: your code here...
-        # lenght/width
 
-        gray = cv2.cvtColor(seg_img, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (7, 7), 0)
         # perform edge detection, then perform a dilation + erosion to
         # close gaps in between object edges
-        edged = cv2.Canny(gray, 40, 40)
+        seg_img = np.uint8(seg_img)
+        edged = cv2.Canny(seg_img, 0, 1)
         edged = cv2.dilate(edged, None, iterations=1)
         edged = cv2.erode(edged, None, iterations=1)
 
@@ -44,21 +39,12 @@ class NucleiFeatureCalculator:
         box = None
         # loop over the contours individually
         for c in cnts:
-            # if the contour is not sufficiently large, ignore it
-            if cv2.contourArea(c) < 100:
-                continue
-
             # compute the rotated bounding box of the contour
-            orig = seg_img.copy()
             box = cv2.minAreaRect(c)
             box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
             box = np.array(box, dtype="int")
 
             box = perspective.order_points(box)
-            cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
-            # loop over the original points and draw them
-            for (x, y) in box:
-                cv2.circle(orig, (int(x), int(y)), 5, (0, 0, 255), -1)
 
         # unpack the ordered bounding box, then compute the midpoint
         # between the top-left and top-right coordinates, followed by
@@ -83,14 +69,14 @@ class NucleiFeatureCalculator:
         return aspect_ratio
 
     @staticmethod
-    def size(seg_img):
+    def size(seg_img, val_location_ind):
         """
         calculates the size of a single nuclei
         :param seg_img: segmented image
         :return: size
         """
-
-        size = np.sum(seg_img == 1)
+        value = seg_img[val_location_ind, val_location_ind]
+        size = np.sum(seg_img == value)
 
         return size
 

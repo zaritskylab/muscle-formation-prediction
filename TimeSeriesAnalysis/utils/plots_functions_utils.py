@@ -3,9 +3,10 @@ import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.metrics import roc_curve
 import pandas as pd
+import numpy as np
 
 
-def plot_roc(clf, X_test, y_test, path):
+def plot_roc(clf, X_test, y_test, path=None):
     # plt.figure(figsize=(20, 6))
     # roc curve for models
     fpr1, tpr1, thresh1 = roc_curve(y_test, clf.predict_proba(X_test)[:, 1], pos_label=1)
@@ -26,7 +27,8 @@ def plot_roc(clf, X_test, y_test, path):
     plt.ylabel('True Positive rate')
 
     plt.legend(loc='best')
-    plt.savefig(path + "/" + 'ROC', dpi=300)
+    if path:
+        plt.savefig(path + "/" + 'ROC', dpi=300)
     plt.show()
     plt.close()
     plt.clf()
@@ -90,4 +92,39 @@ def plot_feature_importance(clf, feature_names, path):
     plt.savefig(path + "/feature importance.png")
     plt.show()
     plt.close()
+    plt.clf()
+
+def plot_avg_conf(conf_data, modality, path=None, plot_std=True):
+    """
+    :param conf_data:   [(df_score_dif.drop("Spot track ID", axis=1), "ERK", "DarkOrange","Orange"),(df_score_con.drop("Spot track ID", axis=1), "Control", "blue", "blue")]
+    :param mot_int: modality name
+    :param path:
+    :param plot_std:
+    :return:
+    """
+    fig = plt.figure(figsize=(12, 9))
+
+    def plot(df, color1, color2, label):
+        avg_vals_diff = ([df[col].mean() for col in df.columns])
+        std_vals_diff = ([df[col].std() for col in df.columns])
+        p_std = np.asarray(avg_vals_diff) + np.asarray(std_vals_diff)
+        m_std = np.asarray(avg_vals_diff) - np.asarray(std_vals_diff)
+        plt.plot([i * 5 / 60 for i in range(len(avg_vals_diff))], avg_vals_diff, color=color1, label=label + " avg")
+        if plot_std:
+            plt.fill_between([i * 5 / 60 for i in range(len(avg_vals_diff))], m_std, p_std, alpha=0.4, color=color2,
+                             label=label + " std")
+
+    for (df, label, avg_color, std_color) in conf_data:
+        plot(df, avg_color, std_color, label)
+
+    plt.legend()
+    plt.grid()
+    plt.xlabel("time (h)")
+    plt.ylabel("avg score")
+    plt.title(f"avg differentiation score over time ({modality})")
+    plt.plot([i * 5 / 60 for i in range(260)], [0.5 for i in range(260)], color="black", linestyle="--")
+    if path:
+        if path:
+            plt.savefig(path + "/" + 'avg differentiation score over time ({modality})', dpi=300)
+    plt.show()
     plt.clf()

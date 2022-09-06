@@ -31,28 +31,26 @@ class CoordinationValidations():
             self.coord.build_coordination_df(validation=False, rings=True)
             self.coord.save_coordinationDF("validation_s{}_rings_{}_mikro.pkl".format(video, i))
 
-    def plot_validate_distances(self, name_for_saving):
+    def plot_validate_distances(self, name_for_saving, vid_num, ):
         builder = CoordinationGraphBuilder()
         window = 25
         fig = plt.figure(figsize=(8, 4))
         ax1 = fig.add_subplot(111)
 
         for i in (30, 100, 310, 590):
-            coord_path = "coordination_outputs/validations/pickled coordination dfs/0104_rings/range_70/validation_s7_rings_{}_mikro.pkl".format(
-                i)
+            coord_path = f"coordination_outputs/validations/pickled coordination dfs/0104_rings/range_70/validation_s{vid_num}_rings_{i}_mikro.pkl "
             coord_df = pickle.load(open(coord_path, 'rb'))
             # Read coordination DFs
-            control, time_c = builder.read_coordination_df(coord_df)
+            std_cos_theta, mean_cos_theta = builder.read_coordination_df(coord_df, pkl=True)
             # Plot
-            ax1.plot(pd.DataFrame(control[:-7], columns=["permute_diff"]).rolling(window=window).mean(), )
-
+            ax1.plot(pd.DataFrame(mean_cos_theta[:-7], columns=["permute_diff"]).rolling(window=window).mean(), )
 
         null_path = r"coordination_outputs/coordination_dfs/validations/null_model_s5.pkl"
         coord_df = pickle.load(open(null_path, 'rb'))
-        coord, _ = builder.read_coordination_df(coord_df)
-        ax1.plot(pd.DataFrame(coord[:-7], columns=["permute_diff"]).rolling(window=window).mean(), '--', c="")
+        std_cos_theta, mean_cos_theta = builder.read_coordination_df(coord_df, pkl=True)
+        ax1.plot(pd.DataFrame(mean_cos_theta[:-7], columns=["permute_diff"]).rolling(window=window).mean(), '--', c="orange")
 
-        colormap = plt.cm.get_cmap('Blues_r', 512)  # nipy_spectral, Set1,Paired
+        colormap = plt.cm.get_cmap('Oranges_r', 512)
         colormap = ListedColormap(colormap(np.linspace(0, 0.65, 256)))
         colors = [colormap(i) for i in np.linspace(0, 1, len(ax1.lines))]
         for i, j in enumerate(ax1.lines):
@@ -60,21 +58,21 @@ class CoordinationValidations():
 
         global_path = r"coordination_outputs/coordination_dfs/validations/global_coord_s7.pkl"
         coord_df = pickle.load(open(global_path, 'rb'))
-        coord, _ = builder.read_coordination_df(coord_df)
-        ax1.plot(pd.DataFrame(coord[:-7], columns=["permute_diff"]).rolling(window=window).mean(), '--', color="green")
+        std_cos_theta, mean_cos_theta = builder.read_coordination_df(coord_df, pkl=True)
+        ax1.plot(pd.DataFrame(mean_cos_theta[:-7], columns=["permute_diff"]).rolling(window=window).mean(), '--', color="green")
 
-
-        plt.legend(['0-30', '30-100', '240-310', '520-590', 'Randomized null model','Global sampling'], title="neighboring distance (um)",
+        plt.legend(['0-30', '30-100', '240-310', '520-590', 'Randomized null model', 'Global sampling'],
+                   title="neighboring distance (um)",
                    loc=2, fontsize='small', fancybox=True)
         plt.title(name_for_saving)
         plt.xticks(np.arange(0, 921, 100), labels=np.around(np.arange(0, 921, 100) * 1.5 / 60, decimals=1))
-        # plt.yticks(np.arange(0.45, 1, 0.05))
-        plt.ylim(0.6, 0.88, 0.25)
+        plt.yticks(np.arange(0.6, 1, 0.05))
+        # plt.ylim(0.6, 0.88, 0.25)
         plt.grid()
         plt.xlabel('Time (hours)')
         plt.ylabel(r'Coordination')
-        # plt.savefig('Coordination_over_time_distances-Control.eps', format='eps')
-        plt.savefig(name_for_saving)
+        plt.savefig('Coordination_over_time_distances-ERK S5.eps', format='eps')
+        # plt.savefig(name_for_saving)
         plt.show()
         plt.close(fig)
 
@@ -107,4 +105,4 @@ if __name__ == '__main__':
     # validator.plot_validate_distances("neighboring distance changes- control")
     validator = CoordinationValidations(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=0.3,
                                         xml_path=r"muscle-formation-diff/data/tracks_xml/0104/Experiment1_w1Widefield550_s5_all_0104.xml")
-    validator.plot_validate_distances("neighboring distance changes- ERK, s7")
+    validator.plot_validate_distances("neighboring distance changes- ERK, s5", vid_num=5)

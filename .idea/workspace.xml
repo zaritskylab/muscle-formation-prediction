@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -20,24 +23,69 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="Added validations ot tsfresh's pipeline">
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_time_as_feature.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/compare_algorithms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/consts.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/correlations.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/experimentation.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/normalize_tracks_microscope_mistakes.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/shap_values_compare.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg no_reg_/S1_properties_no_reg_" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg no_reg_/S5_properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg no_reg_/S5_properties_no_reg_" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg no_reg_/X_train" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg no_reg_/avg conf s1, s5.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg no_reg_/clf.joblib" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg no_reg_/pca.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg no_reg_/y_test" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg no_reg_/y_train" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/ROC.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/S1_properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/S5_properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/X_test" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/X_train" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/avg conf s1, s5.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/clf.joblib" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/df_prob_w=30, video_num=1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/df_prob_w=30, video_num=2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/df_prob_w=30, video_num=3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/df_prob_w=30, video_num=5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/info.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/pca.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/y_test" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_/y_train" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/muscle-formation-regeneration.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/muscle-formation-diff.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Coordination/CoordinationCalc.py" beforeDir="false" afterPath="$PROJECT_DIR$/Coordination/CoordinationCalc.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Coordination/CoordinationCalc_mastodon.py" beforeDir="false" afterPath="$PROJECT_DIR$/Coordination/CoordinationCalc_mastodon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/calc_delta_mastodon.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/calc_delta_mastodon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/diff_tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/diff_tracker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/diff_tracker_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/diff_tracker_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/intensity_erk_compare.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/intensity_erk_compare.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/interpretation.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/interpretation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/mast_intensity.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/mast_intensity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/mastodon.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/mastodon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/mastodon_interpretation.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/mastodon_interpretation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Coordination/CoordinationGraphBuilder.py" beforeDir="false" afterPath="$PROJECT_DIR$/Coordination/CoordinationGraphBuilder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Coordination/CoordinationValidations.py" beforeDir="false" afterPath="$PROJECT_DIR$/Coordination/CoordinationValidations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Coordination/coordination_rings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Coordination/coordination_rings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataPreprocessing/dataPrep.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataPreprocessing/load_tracks_xml.py" beforeDir="false" afterPath="$PROJECT_DIR$/DataPreprocessing/load_tracks_xml.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LatentSpaceTimeRegression.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PCABuilder.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/calc_features.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/calc_features.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/concat_dfs.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/concat_dfs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/consts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/correlations.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_normalize.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_normalize.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/densist_over_diff_score.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/densist_over_diff_score.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/experimentation.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/impute_strategy.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/impute_strategy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/mastodon_motility-True_intensity-False/140,170 frames ERK, 0-330 frames con/all_data , video 3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/mastodon_motility-True_intensity-False/140,170 frames ERK, 0-330 frames con/all_data , video 8" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/nuc_segmentor.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/nuc_segmentor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/prepare_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/prepare_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/roc_over_time.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/tsfresh_transformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/tsfresh_transformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/data_load_save.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/data_load_save.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/plots_functions_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/plots_functions_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/video_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/video_registration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/video_registration_cv2_optical_flow.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/download_files_gdrive.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grid_density.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tracks_exploration/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/params.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tracks_exploration/tracks_variability.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/visualFeaturesCalculations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/visualFeaturesCalculations/aspectRatio.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,6 +122,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="ToolWindowDatabase.ShowToolbar" value="false" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
@@ -91,23 +140,45 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\sbatchs" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\sbatchs" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\TimeSeriesAnalysis" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\Coordination" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\TimeSeriesAnalysis" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\data\videos\BrightField_pixel_ratio_1" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\data\tracks_xml\manual_tracking" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16\track len 30, impute_func-ImputeAllData_impute_zeroes reg reg_MeanOpticalFlowRegistration_" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\30-07-2022-actin_intensity local dens-False, s1, s5 train win size 16\track len 30, impute_func-ImputeAllData_impute_zeroes reg no_reg_" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\TimeSeriesAnalysis\utils" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\TimeSeriesAnalysis" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\data\mastodon\test" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\data\mastodon" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\data" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\Coordination\coordination_outputs" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.build_models">
+  <component name="RunManager" selected="Python.prepare_data">
+    <configuration name="CoordinationCalc_mastodon" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="muscle-formation-diff" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Coordination" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Coordination/CoordinationCalc_mastodon.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <module name="muscle-formation-regeneration" />
+      <module name="muscle-formation-diff" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -128,31 +199,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="build_models" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="muscle-formation-regeneration" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TimeSeriesAnalysis" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TimeSeriesAnalysis/build_models.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="build_models_time_as_feature" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="muscle-formation-regeneration" />
+    <configuration name="auc_over_time_diff_prob" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="muscle-formation-diff" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="SLURM_ARRAY_TASK_ID" value="300" />
       </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TimeSeriesAnalysis" />
@@ -160,8 +213,8 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_time_as_feature.py" />
-      <option name="PARAMETERS" value="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py" />
+      <option name="PARAMETERS" value="motility 10 window_size" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -169,50 +222,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="diff_tracker" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="muscle-formation-regeneration" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TimeSeriesAnalysis" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TimeSeriesAnalysis/diff_tracker.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="experimentation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="muscle-formation-regeneration" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TimeSeriesAnalysis" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TimeSeriesAnalysis/experimentation.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="intensity_erk_compare" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="muscle-formation-regeneration" />
+    <configuration name="calc_features" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="muscle-formation-diff" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="SLURM_ARRAY_TASK_ID" value="5" />
       </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TimeSeriesAnalysis" />
@@ -220,8 +236,8 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TimeSeriesAnalysis/intensity_erk_compare.py" />
-      <option name="PARAMETERS" value="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TimeSeriesAnalysis/calc_features.py" />
+      <option name="PARAMETERS" value="motility" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -230,7 +246,7 @@
       <method v="2" />
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
-      <module name="muscle-formation-regeneration" />
+      <module name="muscle-formation-diff" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -251,13 +267,65 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="prepare_data" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="muscle-formation-diff" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TimeSeriesAnalysis" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TimeSeriesAnalysis/prepare_data.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="tmp_graph_botebook" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="muscle-formation-diff" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Coordination" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Coordination/tmp_graph_botebook.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.calc_features" />
+      <item itemvalue="Python.auc_over_time_diff_prob" />
+      <item itemvalue="Python.tmp_graph_botebook" />
+      <item itemvalue="Python.CoordinationCalc_mastodon" />
+      <item itemvalue="Python.prepare_data" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.build_models" />
-        <item itemvalue="Python.diff_tracker" />
-        <item itemvalue="Python.experimentation" />
-        <item itemvalue="Python.intensity_erk_compare" />
-        <item itemvalue="Python.build_models_time_as_feature" />
+        <item itemvalue="Python.prepare_data" />
+        <item itemvalue="Python.auc_over_time_diff_prob" />
+        <item itemvalue="Python.tmp_graph_botebook" />
+        <item itemvalue="Python.CoordinationCalc_mastodon" />
+        <item itemvalue="Python.calc_features" />
       </list>
     </recent_temporary>
   </component>
@@ -371,7 +439,55 @@
       <workItem from="1645952931247" duration="35659000" />
       <workItem from="1647243400829" duration="22012000" />
       <workItem from="1647319628725" duration="20727000" />
-      <workItem from="1647770631866" duration="39270000" />
+      <workItem from="1647770631866" duration="59499000" />
+      <workItem from="1648031889374" duration="32520000" />
+      <workItem from="1648192487140" duration="127274000" />
+      <workItem from="1648563849880" duration="38166000" />
+      <workItem from="1648694226254" duration="2675000" />
+      <workItem from="1648696945480" duration="70418000" />
+      <workItem from="1649219921171" duration="56927000" />
+      <workItem from="1650176296093" duration="51381000" />
+      <workItem from="1650376874009" duration="1217000" />
+      <workItem from="1650798783884" duration="6619000" />
+      <workItem from="1650853936821" duration="15648000" />
+      <workItem from="1651043847763" duration="5595000" />
+      <workItem from="1651377615107" duration="31734000" />
+      <workItem from="1651487212796" duration="37514000" />
+      <workItem from="1652185489318" duration="61264000" />
+      <workItem from="1652531430652" duration="9895000" />
+      <workItem from="1652677672944" duration="3168000" />
+      <workItem from="1652947211884" duration="933000" />
+      <workItem from="1653291774059" duration="30101000" />
+      <workItem from="1653800828224" duration="19972000" />
+      <workItem from="1653885441818" duration="35212000" />
+      <workItem from="1654501346934" duration="32815000" />
+      <workItem from="1654937852931" duration="14239000" />
+      <workItem from="1655035945099" duration="12916000" />
+      <workItem from="1655135181525" duration="41872000" />
+      <workItem from="1655293606174" duration="31977000" />
+      <workItem from="1655614670463" duration="80505000" />
+      <workItem from="1655963179255" duration="10748000" />
+      <workItem from="1656215736565" duration="23256000" />
+      <workItem from="1656393861516" duration="57898000" />
+      <workItem from="1657519615358" duration="603000" />
+      <workItem from="1657521692817" duration="10058000" />
+      <workItem from="1657698451966" duration="1835000" />
+      <workItem from="1657775532282" duration="53898000" />
+      <workItem from="1658199183000" duration="80537000" />
+      <workItem from="1658754106821" duration="27500000" />
+      <workItem from="1658985767240" duration="68572000" />
+      <workItem from="1659243094796" duration="31408000" />
+      <workItem from="1659329820710" duration="52425000" />
+      <workItem from="1659770627350" duration="67740000" />
+      <workItem from="1660043031702" duration="1322000" />
+      <workItem from="1660092392912" duration="25083000" />
+      <workItem from="1660375067840" duration="4657000" />
+      <workItem from="1660453993855" duration="14159000" />
+      <workItem from="1660472225307" duration="12040000" />
+      <workItem from="1660536002998" duration="55747000" />
+      <workItem from="1661236889002" duration="20135000" />
+      <workItem from="1661686403784" duration="41577000" />
+      <workItem from="1662432624952" duration="659000" />
     </task>
     <task id="LOCAL-00001" summary="Added aae files">
       <created>1617796329153</created>
@@ -485,7 +601,35 @@
       <option name="project" value="LOCAL" />
       <updated>1644911614818</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Added validations ot tsfresh's pipeline">
+      <created>1647932718985</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1647932718985</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Added validations ot tsfresh's pipeline">
+      <created>1653800931951</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1653800931951</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Added validations ot tsfresh's pipeline">
+      <created>1657698549727</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1657698549727</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Added validations ot tsfresh's pipeline">
+      <created>1658749788474</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1658749788475</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -518,133 +662,189 @@
     <option name="LAST_COMMIT_MESSAGE" value="Added validations ot tsfresh's pipeline" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="1924" y="23" width="1510" height="1010" key="#Deployment" timestamp="1644916388106">
+    <state x="1924" y="23" width="1510" height="1010" key="#Deployment" timestamp="1661839015362">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="1924" y="23" width="1510" height="1010" key="#Deployment/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1644916388106" />
-    <state x="239" y="75" key="#Deployment/0.0.1280.680@0.0.1280.680" timestamp="1641939365885" />
-    <state x="2255" y="277" key="#SSH_Configurations" timestamp="1644916387182">
+    <state x="2180" y="58" key="#Deployment/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1660117416797" />
+    <state x="1924" y="23" width="1510" height="1010" key="#Deployment/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661839015362" />
+    <state x="4" y="0" key="#Deployment/0.0.1680.1010@0.0.1680.1010" timestamp="1658199220324" />
+    <state x="2089" y="494" width="1181" height="526" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1661844927881">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="2255" y="277" key="#SSH_Configurations/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1644916387182" />
-    <state x="2547" y="335" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1647327915568">
+    <state x="2097" y="191" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658908137416" />
+    <state x="2089" y="494" width="1181" height="526" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661844927881" />
+    <state x="155" y="176" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1680.1010@0.0.1680.1010" timestamp="1658998911135" />
+    <state x="2547" y="335" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1660204778554">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="2547" y="335" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647327915568" />
-    <state x="478" y="210" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.680@0.0.1280.680" timestamp="1642689599967" />
-    <state x="2565" y="244" key="#com.intellij.ide.util.MemberChooser" timestamp="1644911704136">
+    <state x="2637" y="331" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1660125364463" />
+    <state x="2547" y="335" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1660204778554" />
+    <state x="627" y="312" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1680.1010@0.0.1680.1010" timestamp="1658203674864" />
+    <state x="2477" y="284" key="#com.intellij.ide.macro.MacrosDialog" timestamp="1658387404879">
+      <screen x="1920" y="10" width="1920" height="1040" />
+    </state>
+    <state x="2477" y="284" key="#com.intellij.ide.macro.MacrosDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658387404879" />
+    <state x="2685" y="246" key="#com.intellij.ide.util.MemberChooser" timestamp="1658653788529">
+      <screen x="1920" y="10" width="1920" height="1040" />
+    </state>
+    <state x="2685" y="246" key="#com.intellij.ide.util.MemberChooser/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658653788529" />
+    <state x="2406" y="92" width="949" height="958" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1658751137357">
+      <screen x="1920" y="10" width="1920" height="1040" />
+    </state>
+    <state x="2406" y="92" width="949" height="958" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658751137357" />
+    <state x="2610" y="277" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1658744612225">
+      <screen x="1920" y="10" width="1920" height="1040" />
+    </state>
+    <state x="2610" y="277" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658744612225" />
+    <state x="2249" y="544" width="942" height="435" key="#xdebugger.evaluate" timestamp="1661845268597">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="2565" y="244" key="#com.intellij.ide.util.MemberChooser/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1644911704136" />
-    <state x="2288" y="537" width="1042" height="461" key="#xdebugger.evaluate" timestamp="1647843780959">
+    <state x="2235" y="496" width="831" height="554" key="#xdebugger.evaluate/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1659604576484" />
+    <state x="2249" y="544" width="942" height="435" key="#xdebugger.evaluate/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661845268597" />
+    <state x="381" y="485" width="699" height="427" key="#xdebugger.evaluate/0.0.1680.1010@0.0.1680.1010" timestamp="1658999798419" />
+    <state width="1620" height="511" key="DebuggerActiveHint" timestamp="1660805009214">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="2427" y="109" width="784" height="507" key="#xdebugger.evaluate/0.0.1280.680/1920.0.1536.824@1920.0.1536.824" timestamp="1640674688647" />
-    <state x="2288" y="537" width="1042" height="461" key="#xdebugger.evaluate/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647843780959" />
-    <state x="2294" y="214" width="800" height="496" key="#xdebugger.evaluate/0.0.1280.680/1920.27.1680.1010@1920.27.1680.1010" timestamp="1640093700868" />
-    <state x="202" y="312" width="876" height="368" key="#xdebugger.evaluate/0.0.1280.680@0.0.1280.680" timestamp="1643099552392" />
-    <state width="1527" height="511" key="DebuggerActiveHint" timestamp="1647256411905">
+    <state width="1852" height="527" key="DebuggerActiveHint/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658911032582" />
+    <state width="1620" height="511" key="DebuggerActiveHint/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1660805009214" />
+    <state width="1620" height="511" key="DebuggerActiveHint/0.0.1680.1010@0.0.1680.1010" timestamp="1658926636565" />
+    <state x="2012" y="102" width="1736" height="856" key="DiffContextDialog" timestamp="1656580337728">
+      <screen x="1920" y="10" width="1920" height="1040" />
+    </state>
+    <state x="2012" y="102" width="1736" height="856" key="DiffContextDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1656580337728" />
+    <state x="2376" y="483" width="382" height="465" key="EnvironmentVariablesDialog" timestamp="1661844467253">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state width="1527" height="511" key="DebuggerActiveHint/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647256411905" />
-    <state width="1527" height="511" key="DebuggerActiveHint/0.0.1280.680/1920.27.1680.1010@1920.27.1680.1010" timestamp="1640076171682" />
-    <state width="1163" height="344" key="DebuggerActiveHint/0.0.1280.680@0.0.1280.680" timestamp="1643099429850" />
-    <state x="61" y="60" width="1158" height="560" key="DirDiffDialog" timestamp="1641931594226">
+    <state x="2441" y="382" width="265" height="580" key="EnvironmentVariablesDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658908107710" />
+    <state x="2376" y="483" width="382" height="465" key="EnvironmentVariablesDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661844467253" />
+    <state x="456" y="361" width="265" height="564" key="EnvironmentVariablesDialog/0.0.1680.1010@0.0.1680.1010" timestamp="1658930242849" />
+    <state x="620" y="260" width="675" height="490" key="FileChooserDialogImpl" timestamp="1658922477086">
+      <screen x="0" y="0" width="1680" height="1010" />
+    </state>
+    <state x="2628" y="278" width="675" height="490" key="FileChooserDialogImpl/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1653380275155" />
+    <state x="2540" y="283" key="FileChooserDialogImpl/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1656319710936" />
+    <state x="472" y="175" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1655382626163" />
+    <state x="620" y="260" key="FileChooserDialogImpl/0.0.1680.1010@0.0.1680.1010" timestamp="1658922477086" />
+    <state width="1283" height="262" key="GridCell.Tab.0.bottom" timestamp="1662014956642">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="61" y="60" width="1158" height="560" key="DirDiffDialog/0.0.1280.680@0.0.1280.680" timestamp="1641931594226" />
-    <state x="2584" y="430" key="Github.CreateGistDialog" timestamp="1647758936363">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2584" y="430" key="Github.CreateGistDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647758936363" />
-    <state width="1637" height="287" key="GridCell.Tab.0.bottom" timestamp="1647850092025">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1493" height="137" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.0.1536.824@1920.0.1536.824" timestamp="1640678497388" />
-    <state width="1637" height="219" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1647767026632" />
-    <state width="1237" height="2" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1645950966362" />
-    <state width="1637" height="287" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647850092025" />
-    <state width="1299" height="141" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.27.1680.1010@1920.27.1680.1010" timestamp="1640093727551" />
-    <state width="1237" height="95" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1643100156671" />
-    <state width="1637" height="287" key="GridCell.Tab.0.center" timestamp="1647850092025">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1493" height="137" key="GridCell.Tab.0.center/0.0.1280.680/1920.0.1536.824@1920.0.1536.824" timestamp="1640678497388" />
-    <state width="1637" height="219" key="GridCell.Tab.0.center/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1647767026628" />
-    <state width="1237" height="2" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1645950966362" />
-    <state width="1637" height="287" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647850092025" />
-    <state width="1299" height="141" key="GridCell.Tab.0.center/0.0.1280.680/1920.27.1680.1010@1920.27.1680.1010" timestamp="1640093727551" />
-    <state width="1237" height="95" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1643100156671" />
-    <state width="1637" height="287" key="GridCell.Tab.0.left" timestamp="1647850092024">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1493" height="137" key="GridCell.Tab.0.left/0.0.1280.680/1920.0.1536.824@1920.0.1536.824" timestamp="1640678497388" />
-    <state width="1637" height="219" key="GridCell.Tab.0.left/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1647767026613" />
-    <state width="1237" height="2" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1645950966362" />
-    <state width="1637" height="287" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647850092024" />
-    <state width="1299" height="141" key="GridCell.Tab.0.left/0.0.1280.680/1920.27.1680.1010@1920.27.1680.1010" timestamp="1640093727551" />
-    <state width="1237" height="95" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1643100156669" />
-    <state width="1637" height="287" key="GridCell.Tab.0.right" timestamp="1647850092025">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1493" height="137" key="GridCell.Tab.0.right/0.0.1280.680/1920.0.1536.824@1920.0.1536.824" timestamp="1640678497388" />
-    <state width="1637" height="219" key="GridCell.Tab.0.right/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1647767026629" />
-    <state width="1237" height="2" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1645950966362" />
-    <state width="1637" height="287" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647850092025" />
-    <state width="1299" height="141" key="GridCell.Tab.0.right/0.0.1280.680/1920.27.1680.1010@1920.27.1680.1010" timestamp="1640093727551" />
-    <state width="1237" height="95" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1643100156671" />
-    <state width="1637" height="287" key="GridCell.Tab.1.bottom" timestamp="1647850092025">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1493" height="137" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.0.1536.824@1920.0.1536.824" timestamp="1640678500641" />
-    <state width="1637" height="219" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1647767026640" />
-    <state width="1237" height="2" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1645950966362" />
-    <state width="1637" height="287" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647850092025" />
-    <state width="1299" height="141" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.27.1680.1010@1920.27.1680.1010" timestamp="1640093727551" />
-    <state width="1237" height="95" key="GridCell.Tab.1.bottom/0.0.1280.680@0.0.1280.680" timestamp="1643100156671" />
-    <state width="1637" height="287" key="GridCell.Tab.1.center" timestamp="1647850092025">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1493" height="137" key="GridCell.Tab.1.center/0.0.1280.680/1920.0.1536.824@1920.0.1536.824" timestamp="1640678500641" />
-    <state width="1637" height="219" key="GridCell.Tab.1.center/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1647767026637" />
-    <state width="1237" height="2" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1645950966362" />
-    <state width="1637" height="287" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647850092025" />
-    <state width="1299" height="141" key="GridCell.Tab.1.center/0.0.1280.680/1920.27.1680.1010@1920.27.1680.1010" timestamp="1640093727551" />
-    <state width="1237" height="95" key="GridCell.Tab.1.center/0.0.1280.680@0.0.1280.680" timestamp="1643100156671" />
-    <state width="1637" height="287" key="GridCell.Tab.1.left" timestamp="1647850092025">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1493" height="137" key="GridCell.Tab.1.left/0.0.1280.680/1920.0.1536.824@1920.0.1536.824" timestamp="1640678500641" />
-    <state width="1637" height="219" key="GridCell.Tab.1.left/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1647767026635" />
-    <state width="1237" height="2" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1645950966362" />
-    <state width="1637" height="287" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647850092025" />
-    <state width="1299" height="141" key="GridCell.Tab.1.left/0.0.1280.680/1920.27.1680.1010@1920.27.1680.1010" timestamp="1640093727551" />
-    <state width="1237" height="95" key="GridCell.Tab.1.left/0.0.1280.680@0.0.1280.680" timestamp="1643100156671" />
-    <state width="1637" height="287" key="GridCell.Tab.1.right" timestamp="1647850092025">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1493" height="137" key="GridCell.Tab.1.right/0.0.1280.680/1920.0.1536.824@1920.0.1536.824" timestamp="1640678500641" />
-    <state width="1637" height="219" key="GridCell.Tab.1.right/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1647767026639" />
-    <state width="1237" height="2" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1645950966362" />
-    <state width="1637" height="287" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647850092025" />
-    <state width="1299" height="141" key="GridCell.Tab.1.right/0.0.1280.680/1920.27.1680.1010@1920.27.1680.1010" timestamp="1640093727551" />
-    <state width="1237" height="95" key="GridCell.Tab.1.right/0.0.1280.680@0.0.1280.680" timestamp="1643100156671" />
-    <state x="2261" y="173" key="SettingsEditor" timestamp="1645345468866">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2261" y="173" key="SettingsEditor/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1645345468866" />
-    <state x="2352" y="261" key="Vcs.Push.Dialog.v2" timestamp="1644911622278">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2352" y="261" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1644911622278" />
-    <state width="848" height="513" key="XDebugger.FullValuePopup" timestamp="1647256366174">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="848" height="513" key="XDebugger.FullValuePopup/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1647256366174" />
-    <state x="303" y="1" width="672" height="678" key="search.everywhere.popup" timestamp="1642689705216">
+    <state width="1497" height="235" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1659613932424" />
+    <state width="1283" height="262" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1662014956642" />
+    <state width="1283" height="262" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661848744941" />
+    <state width="1296" height="216" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1660036090722" />
+    <state width="1268" height="289" key="GridCell.Tab.0.bottom/0.0.1680.1010@0.0.1680.1010" timestamp="1658999825007" />
+    <state width="1283" height="262" key="GridCell.Tab.0.center" timestamp="1662014956642">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="303" y="1" width="672" height="678" key="search.everywhere.popup/0.0.1280.680@0.0.1280.680" timestamp="1642689705216" />
+    <state width="1497" height="235" key="GridCell.Tab.0.center/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1659613932424" />
+    <state width="1283" height="262" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1662014956642" />
+    <state width="1283" height="262" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661848744941" />
+    <state width="1296" height="216" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1660036090722" />
+    <state width="1268" height="289" key="GridCell.Tab.0.center/0.0.1680.1010@0.0.1680.1010" timestamp="1658999825006" />
+    <state width="1283" height="262" key="GridCell.Tab.0.left" timestamp="1662014956642">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state width="1497" height="235" key="GridCell.Tab.0.left/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1659613932424" />
+    <state width="1283" height="262" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1662014956642" />
+    <state width="1283" height="262" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661848744941" />
+    <state width="1296" height="216" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1660036090721" />
+    <state width="1268" height="289" key="GridCell.Tab.0.left/0.0.1680.1010@0.0.1680.1010" timestamp="1658999825006" />
+    <state width="1283" height="262" key="GridCell.Tab.0.right" timestamp="1662014956642">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state width="1497" height="235" key="GridCell.Tab.0.right/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1659613932424" />
+    <state width="1283" height="262" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1662014956642" />
+    <state width="1283" height="262" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661848744941" />
+    <state width="1296" height="216" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1660036090722" />
+    <state width="1268" height="289" key="GridCell.Tab.0.right/0.0.1680.1010@0.0.1680.1010" timestamp="1658999825007" />
+    <state width="1283" height="262" key="GridCell.Tab.1.bottom" timestamp="1662014956642">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state width="1497" height="235" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1659613932424" />
+    <state width="1283" height="262" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1662014956642" />
+    <state width="1283" height="262" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661848744941" />
+    <state width="1296" height="216" key="GridCell.Tab.1.bottom/0.0.1280.680@0.0.1280.680" timestamp="1660036090723" />
+    <state width="1268" height="289" key="GridCell.Tab.1.bottom/0.0.1680.1010@0.0.1680.1010" timestamp="1658999825007" />
+    <state width="1283" height="262" key="GridCell.Tab.1.center" timestamp="1662014956642">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state width="1497" height="235" key="GridCell.Tab.1.center/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1659613932424" />
+    <state width="1283" height="262" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1662014956642" />
+    <state width="1283" height="262" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661848744941" />
+    <state width="1296" height="216" key="GridCell.Tab.1.center/0.0.1280.680@0.0.1280.680" timestamp="1660036090723" />
+    <state width="1268" height="289" key="GridCell.Tab.1.center/0.0.1680.1010@0.0.1680.1010" timestamp="1658999825007" />
+    <state width="1283" height="262" key="GridCell.Tab.1.left" timestamp="1662014956642">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state width="1497" height="235" key="GridCell.Tab.1.left/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1659613932424" />
+    <state width="1283" height="262" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1662014956642" />
+    <state width="1283" height="262" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661848744941" />
+    <state width="1296" height="216" key="GridCell.Tab.1.left/0.0.1280.680@0.0.1280.680" timestamp="1660036090723" />
+    <state width="1268" height="289" key="GridCell.Tab.1.left/0.0.1680.1010@0.0.1680.1010" timestamp="1658999825007" />
+    <state width="1283" height="262" key="GridCell.Tab.1.right" timestamp="1662014956642">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state width="1497" height="235" key="GridCell.Tab.1.right/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1659613932424" />
+    <state width="1283" height="262" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1662014956642" />
+    <state width="1283" height="262" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661848744941" />
+    <state width="1296" height="216" key="GridCell.Tab.1.right/0.0.1280.680@0.0.1280.680" timestamp="1660036090723" />
+    <state width="1268" height="289" key="GridCell.Tab.1.right/0.0.1680.1010@0.0.1680.1010" timestamp="1658999825007" />
+    <state x="2487" y="266" width="733" height="539" key="PyMappingSimpleResolveDialog" timestamp="1661778205513">
+      <screen x="1920" y="23" width="1680" height="1010" />
+    </state>
+    <state x="2568" y="260" key="PyMappingSimpleResolveDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658734990010" />
+    <state x="2487" y="266" key="PyMappingSimpleResolveDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661778205513" />
+    <state x="567" y="243" width="733" height="539" key="PyMappingSimpleResolveDialog/0.0.1680.1010@0.0.1680.1010" timestamp="1658999513458" />
+    <state x="2123" y="142" key="SettingsEditor" timestamp="1661844956676">
+      <screen x="1920" y="23" width="1680" height="1010" />
+    </state>
+    <state x="2310" y="164" key="SettingsEditor/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658753063869" />
+    <state x="2123" y="142" key="SettingsEditor/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661844956676" />
+    <state x="341" y="150" key="SettingsEditor/0.0.1680.1010@0.0.1680.1010" timestamp="1658987200135" />
+    <state x="2352" y="261" key="Vcs.Push.Dialog.v2" timestamp="1659679410456">
+      <screen x="1920" y="23" width="1680" height="1010" />
+    </state>
+    <state x="2414" y="255" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658749789966" />
+    <state x="2352" y="261" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1659679410456" />
+    <state width="848" height="513" key="XDebugger.FullValuePopup" timestamp="1660027313510">
+      <screen x="1920" y="23" width="1680" height="1010" />
+    </state>
+    <state width="970" height="529" key="XDebugger.FullValuePopup/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1655379875395" />
+    <state width="848" height="513" key="XDebugger.FullValuePopup/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1660027313510" />
+    <state width="849" height="514" key="XDebugger.FullValuePopup/0.0.1680.1010@0.0.1680.1010" timestamp="1658057609655" />
+    <state x="2577" y="205" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1661763063155">
+      <screen x="1920" y="23" width="1680" height="1010" />
+    </state>
+    <state x="2577" y="205" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661763063155" />
+    <state x="657" y="419" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1658198956547">
+      <screen x="0" y="0" width="1680" height="1010" />
+    </state>
+    <state x="657" y="419" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1680.1010@0.0.1680.1010" timestamp="1658198956547" />
+    <state x="2571" y="394" width="657" height="267" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration" timestamp="1655626541439">
+      <screen x="1920" y="23" width="1680" height="1010" />
+    </state>
+    <state x="2571" y="394" width="657" height="267" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1655626541439" />
+    <state x="2467" y="127" width="721" height="801" key="find.popup" timestamp="1660591278308">
+      <screen x="1920" y="23" width="1680" height="1010" />
+    </state>
+    <state x="2467" y="127" width="721" height="801" key="find.popup/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1660591278308" />
+    <state x="547" y="104" width="585" height="801" key="find.popup/0.0.1680.1010@0.0.1680.1010" timestamp="1653899882790" />
+    <state x="2012" y="216" width="623" height="539" key="ftp.server.browser" timestamp="1661778050292">
+      <screen x="1920" y="23" width="1680" height="1010" />
+    </state>
+    <state x="2025" y="209" key="ftp.server.browser/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1657781344871" />
+    <state x="2012" y="216" width="623" height="539" key="ftp.server.browser/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661778050292" />
+    <state x="2693" y="419" key="publish.login" timestamp="1660117401299">
+      <screen x="1920" y="10" width="1920" height="1040" />
+    </state>
+    <state x="2693" y="419" key="publish.login/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1660117401299" />
+    <state x="2596" y="420" key="publish.login/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1659244765319" />
+    <state x="2318" y="24" width="882" height="1009" key="search.everywhere.popup" timestamp="1661691428462">
+      <screen x="1920" y="23" width="1680" height="1010" />
+    </state>
+    <state x="2375" y="11" width="1008" height="1038" key="search.everywhere.popup/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1658744528375" />
+    <state x="2318" y="24" width="882" height="1009" key="search.everywhere.popup/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661691428462" />
+    <state x="398" y="1" width="882" height="1008" key="search.everywhere.popup/0.0.1680.1010@0.0.1680.1010" timestamp="1655269756439" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -665,39 +865,9 @@
           <option name="timeStamp" value="122" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/visualFeaturesCalculations/aspectRatio.py</url>
-          <line>144</line>
-          <option name="timeStamp" value="203" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/ts_interpretation.py</url>
-          <line>147</line>
-          <option name="timeStamp" value="292" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>remoteDeploymentFS://&lt;6c6293cb-3ed7-4ebc-8394-4b327d807f85&gt;/muscle-formation-diff/ts_fresh.py</url>
           <line>168</line>
           <option name="timeStamp" value="333" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PIV/PIV.py</url>
-          <line>47</line>
-          <option name="timeStamp" value="382" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PIV/PIV.py</url>
-          <line>71</line>
-          <option name="timeStamp" value="384" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/ts_fresh.py</url>
-          <line>340</line>
-          <option name="timeStamp" value="434" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/manual_tracking_val.py</url>
-          <line>91</line>
-          <option name="timeStamp" value="482" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$USER_HOME$/anaconda3/Lib/site-packages/pytrackmate/_trackmate.py</url>
@@ -706,108 +876,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DataPreprocessing/load_tracks_xml.py</url>
-          <line>40</line>
+          <line>39</line>
           <option name="timeStamp" value="486" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DataPreprocessing/load_tracks_xml.py</url>
-          <line>38</line>
+          <line>37</line>
           <option name="timeStamp" value="489" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/calc_delta.py</url>
-          <line>94</line>
-          <option name="timeStamp" value="492" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/calc_delta.py</url>
-          <line>66</line>
-          <option name="timeStamp" value="494" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/ts_fresh.py</url>
-          <line>149</line>
-          <option name="timeStamp" value="519" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/ts_fresh.py</url>
-          <line>422</line>
-          <option name="timeStamp" value="524" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/manual_tracking_val.py</url>
-          <line>239</line>
-          <option name="timeStamp" value="532" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/manual_tracking_val.py</url>
-          <line>240</line>
-          <option name="timeStamp" value="533" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/manual_tracking_val.py</url>
-          <line>238</line>
-          <option name="timeStamp" value="534" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/manual_tracking_val.py</url>
-          <line>208</line>
-          <option name="timeStamp" value="535" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/interpretation.py</url>
-          <line>117</line>
-          <option name="timeStamp" value="539" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/interpretation.py</url>
-          <line>36</line>
-          <option name="timeStamp" value="540" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Motility/calc_velocity.py</url>
-          <line>39</line>
-          <option name="timeStamp" value="543" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Motility/calc_velocity.py</url>
-          <line>97</line>
-          <option name="timeStamp" value="546" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/mastodon_interpretation.py</url>
-          <line>202</line>
-          <option name="timeStamp" value="575" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/mastodon_interpretation.py</url>
-          <line>102</line>
-          <option name="timeStamp" value="576" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/kde_all_data.py</url>
-          <line>36</line>
-          <option name="timeStamp" value="579" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Coordination/CoordinationValidations.py</url>
           <line>39</line>
           <option name="timeStamp" value="582" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/mastodon.py</url>
-          <line>511</line>
-          <option name="timeStamp" value="616" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/mastodon.py</url>
-          <line>432</line>
-          <option name="timeStamp" value="618" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_analysis_mastodon.py</url>
-          <line>39</line>
-          <option name="timeStamp" value="622" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Coordination/CoordinationCalc.py</url>
@@ -816,98 +896,58 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Coordination/CoordinationCalc.py</url>
-          <line>75</line>
-          <option name="timeStamp" value="625" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationCalc.py</url>
           <line>107</line>
           <option name="timeStamp" value="626" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationCalc_mastodon.py</url>
-          <line>90</line>
-          <option name="timeStamp" value="629" />
+          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/diff_tracker.py</url>
+          <line>68</line>
+          <option name="timeStamp" value="926" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/diff_tracker.py</url>
+          <line>23</line>
+          <option name="timeStamp" value="968" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Coordination/CoordinationGraphBuilder.py</url>
+          <line>116</line>
+          <option name="timeStamp" value="1484" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Coordination/CoordinationGraphBuilder.py</url>
+          <line>136</line>
+          <option name="timeStamp" value="1486" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py</url>
+          <line>156</line>
+          <option name="timeStamp" value="1622" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/video_registration.py</url>
+          <line>49</line>
+          <option name="timeStamp" value="1625" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Coordination/CoordinationGraphBuilder.py</url>
+          <line>277</line>
+          <option name="timeStamp" value="1644" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Coordination/CoordinationCalc_mastodon.py</url>
-          <line>81</line>
-          <option name="timeStamp" value="630" />
+          <line>68</line>
+          <option name="timeStamp" value="1651" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationCalc_mastodon.py</url>
-          <line>123</line>
-          <option name="timeStamp" value="632" />
+          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py</url>
+          <line>126</line>
+          <option name="timeStamp" value="1654" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationCalc_mastodon.py</url>
-          <line>128</line>
-          <option name="timeStamp" value="633" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/calc_delta_mastodon.py</url>
-          <line>93</line>
-          <option name="timeStamp" value="639" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/best_window_size.py</url>
-          <line>42</line>
-          <option name="timeStamp" value="688" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/mast_intensity.py</url>
-          <line>420</line>
-          <option name="timeStamp" value="690" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/mast_intensity.py</url>
-          <line>372</line>
-          <option name="timeStamp" value="738" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/mastodon.py</url>
-          <line>45</line>
-          <option name="timeStamp" value="748" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/calc_delta_mastodon.py</url>
-          <line>60</line>
-          <option name="timeStamp" value="766" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/intensity_erk_compare.py</url>
-          <line>208</line>
-          <option name="timeStamp" value="775" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/correlations.py</url>
-          <line>88</line>
-          <option name="timeStamp" value="798" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/mastodon.py</url>
-          <line>111</line>
-          <option name="timeStamp" value="824" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/shap_values_compare.py</url>
-          <line>34</line>
-          <option name="timeStamp" value="825" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/normalize_tracks_microscope_mistakes.py</url>
-          <line>85</line>
-          <option name="timeStamp" value="839" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/build_models_time_as_feature.py</url>
-          <line>109</line>
-          <option name="timeStamp" value="850" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/build_models.py</url>
-          <line>65</line>
-          <option name="timeStamp" value="852" />
+          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py</url>
+          <line>157</line>
+          <option name="timeStamp" value="1656" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -920,51 +960,76 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$PIV.coverage" NAME="PIV Coverage Results" MODIFIED="1628757802109" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$video_registration.coverage" NAME="video_registration Coverage Results" MODIFIED="1658655083301" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$tracks_variability.coverage" NAME="tracks_variability Coverage Results" MODIFIED="1622283647247" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$concat_dfs.coverage" NAME="concat_dfs Coverage Results" MODIFIED="1658201219400" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$GridCoordination.coverage" NAME="GridCoordination Coverage Results" MODIFIED="1618829755756" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$build_models_on_transformed_tracks.coverage" NAME="build_models_on_transformed_tracks Coverage Results" MODIFIED="1659248260126" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$build_models_time_as_feature.coverage" NAME="build_models_time_as_feature Coverage Results" MODIFIED="1647261086441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$build_models_on_transformed_tracks.coverage" NAME="build_models_on_transformed_tracks Coverage Results" MODIFIED="1658731878075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$CoordinationGraphBuilder.coverage" NAME="CoordinationGraphBuilder Coverage Results" MODIFIED="1659605683749" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$LeaveOneOutTraining__1_.coverage" NAME="LeaveOneOutTraining (1) Coverage Results" MODIFIED="1625987589577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$calc_auc.coverage" NAME="calc_auc Coverage Results" MODIFIED="1635659136888" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$granger_causality_amit.coverage" NAME="granger_causality_amit Coverage Results" MODIFIED="1650807222989" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$video_registration.coverage" NAME="video_registration Coverage Results" MODIFIED="1659248716928" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$mastodon_interpretation.coverage" NAME="mastodon_interpretation Coverage Results" MODIFIED="1636572497690" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$kde_all_data.coverage" NAME="kde_all_data Coverage Results" MODIFIED="1636614072754" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$avg_cell.coverage" NAME="avg_cell Coverage Results" MODIFIED="1652424291339" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$correlations.coverage" NAME="correlations Coverage Results" MODIFIED="1654529952203" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$load_tracks_xml.coverage" NAME="load_tracks_xml Coverage Results" MODIFIED="1633786286631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DataPreprocessing" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$single_cell_properties_calc.coverage" NAME="single_cell_properties_calc Coverage Results" MODIFIED="1655190061771" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$CoordinationGraphBuilder.coverage" NAME="CoordinationGraphBuilder Coverage Results" MODIFIED="1656511542623" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$auc_over_time_diff_prob.coverage" NAME="auc_over_time_diff_prob Coverage Results" MODIFIED="1661778574994" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$CoordinationCalc_mastodon.coverage" NAME="CoordinationCalc_mastodon Coverage Results" MODIFIED="1660806958628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$calc_delta.coverage" NAME="calc_delta Coverage Results" MODIFIED="1633842156754" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$concat_dfs.coverage" NAME="concat_dfs Coverage Results" MODIFIED="1659014259790" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$ts_fresh__1_.coverage" NAME="ts_fresh (1) Coverage Results" MODIFIED="1626080006070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$train_on_short_time_ranges.coverage" NAME="train_on_short_time_ranges Coverage Results" MODIFIED="1630736378702" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$best_window_size.coverage" NAME="best_window_size Coverage Results" MODIFIED="1642691314163" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$diff_tracker.coverage" NAME="diff_tracker Coverage Results" MODIFIED="1645095913180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$CoordinationValidations.coverage" NAME="CoordinationValidations Coverage Results" MODIFIED="1659536758363" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$CoordinationCalc_mastodon.coverage" NAME="CoordinationCalc_mastodon Coverage Results" MODIFIED="1658737615773" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$tests.coverage" NAME="tests Coverage Results" MODIFIED="1628146825256" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$single_cell_analysis_mastodon.coverage" NAME="single_cell_analysis_mastodon Coverage Results" MODIFIED="1640093351965" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$ts_fresh_3.coverage" NAME="ts_fresh_3 Coverage Results" MODIFIED="1621409205329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$correlations_new.coverage" NAME="correlations_new Coverage Results" MODIFIED="1654501968322" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$plot_grid_coordination.coverage" NAME="plot_grid_coordination Coverage Results" MODIFIED="1618834256556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$tsfresh.coverage" NAME="ts_fresh Coverage Results" MODIFIED="1620033352717" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$calc_delta_mastodon.coverage" NAME="calc_delta_mastodon Coverage Results" MODIFIED="1643096497495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$coordination_rings.coverage" NAME="coordination_rings Coverage Results" MODIFIED="1659340111747" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$normalize_tracks_microscope_mistakes.coverage" NAME="normalize_tracks_microscope_mistakes Coverage Results" MODIFIED="1646052495643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$PIV.coverage" NAME="PIV Coverage Results" MODIFIED="1628757802109" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$densist_over_diff_score.coverage" NAME="densist_over_diff_score Coverage Results" MODIFIED="1648662666473" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$granger_causality_data_prep.coverage" NAME="granger_causality_data_prep Coverage Results" MODIFIED="1656486076443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$checking_image_data_generator.coverage" NAME="checking_image_data_generator Coverage Results" MODIFIED="1620142487053" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/aae" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$manual_tracking_val.coverage" NAME="manual_tracking_val Coverage Results" MODIFIED="1635654445420" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$ts_fresh_2.coverage" NAME="ts_fresh_2 Coverage Results" MODIFIED="1621348088984" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$build_models_time_as_feature.coverage" NAME="build_models_time_as_feature Coverage Results" MODIFIED="1647261086441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$build_models.coverage" NAME="build_models Coverage Results" MODIFIED="1647842836408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$LeaveOneOutTraining__1_.coverage" NAME="LeaveOneOutTraining (1) Coverage Results" MODIFIED="1625987589577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$calc_auc.coverage" NAME="calc_auc Coverage Results" MODIFIED="1635659136888" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$build_models.coverage" NAME="build_models Coverage Results" MODIFIED="1648299137357" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$prepare_data.coverage" NAME="prepare_data Coverage Results" MODIFIED="1658735099514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$CellsCropper.coverage" NAME="CellsCropper Coverage Results" MODIFIED="1620499066558" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DataPreprocessing" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$mastodon_interpretation.coverage" NAME="mastodon_interpretation Coverage Results" MODIFIED="1636572497690" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$kde_all_data.coverage" NAME="kde_all_data Coverage Results" MODIFIED="1636614072754" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$correlations.coverage" NAME="correlations Coverage Results" MODIFIED="1645005656318" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$tmp_graph_botebook.coverage" NAME="tmp_graph_botebook Coverage Results" MODIFIED="1661059501570" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$prepare_data.coverage" NAME="prepare_data Coverage Results" MODIFIED="1661846819847" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$shap_values_compare.coverage" NAME="shap_values_compare Coverage Results" MODIFIED="1645347820730" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$LeaveOneOutTraining.coverage" NAME="LeaveOneOutTraining Coverage Results" MODIFIED="1624458640027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$classifier.coverage" NAME="classifier Coverage Results" MODIFIED="1620042784602" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Classifier" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$ts_fresh.coverage" NAME="ts_fresh Coverage Results" MODIFIED="1631859950224" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$load_tracks_xml.coverage" NAME="load_tracks_xml Coverage Results" MODIFIED="1633786286631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DataPreprocessing" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$CoordinationGraphBuilder.coverage" NAME="CoordinationGraphBuilder Coverage Results" MODIFIED="1628671592274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$interpretation.coverage" NAME="interpretation Coverage Results" MODIFIED="1635044677112" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$CoordinationCalc.coverage" NAME="CoordinationCalc Coverage Results" MODIFIED="1640498880402" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$ts_interpretation.coverage" NAME="ts_interpretation Coverage Results" MODIFIED="1623840672473" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$diff_tracker_utils.coverage" NAME="diff_tracker_utils Coverage Results" MODIFIED="1656425456368" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$aspectRatio.coverage" NAME="aspectRatio Coverage Results" MODIFIED="1621335021743" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$calc_delta.coverage" NAME="calc_delta Coverage Results" MODIFIED="1633842156754" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$ts_fresh__1_.coverage" NAME="ts_fresh (1) Coverage Results" MODIFIED="1626080006070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$train_on_short_time_ranges.coverage" NAME="train_on_short_time_ranges Coverage Results" MODIFIED="1630736378702" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$calc_features.coverage" NAME="calc_features Coverage Results" MODIFIED="1660020610840" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$video_registration_cv2_optical_flow.coverage" NAME="video_registration_cv2_optical_flow Coverage Results" MODIFIED="1653804601921" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$mastodon.coverage" NAME="mastodon Coverage Results" MODIFIED="1644924639062" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$best_window_size.coverage" NAME="best_window_size Coverage Results" MODIFIED="1642691314163" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$calc_velocity.coverage" NAME="calc_velocity Coverage Results" MODIFIED="1635493567905" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Motility" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$diff_tracker.coverage" NAME="diff_tracker Coverage Results" MODIFIED="1645095913180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$CoordinationCalc_mastodon.coverage" NAME="CoordinationCalc_mastodon Coverage Results" MODIFIED="1644998246736" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$actin_intensity_sum.coverage" NAME="actin_intensity_sum Coverage Results" MODIFIED="1649577092686" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$roc_over_time.coverage" NAME="roc_over_time Coverage Results" MODIFIED="1650187221305" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$CoordinationGraphBuilder_.coverage" NAME="CoordinationGraphBuilder_ Coverage Results" MODIFIED="1630154056303" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$tests.coverage" NAME="tests Coverage Results" MODIFIED="1628146825256" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$single_cell_analysis_mastodon.coverage" NAME="single_cell_analysis_mastodon Coverage Results" MODIFIED="1640093351965" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$mast_intensity.coverage" NAME="mast_intensity Coverage Results" MODIFIED="1644911146001" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$ts_fresh_3.coverage" NAME="ts_fresh_3 Coverage Results" MODIFIED="1621409205329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$intensity_erk_compare.coverage" NAME="intensity_erk_compare Coverage Results" MODIFIED="1647258760521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$plot_grid_coordination.coverage" NAME="plot_grid_coordination Coverage Results" MODIFIED="1618834256556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$CoordinationValidations.coverage" NAME="CoordinationValidations Coverage Results" MODIFIED="1639484563058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$tsfresh.coverage" NAME="ts_fresh Coverage Results" MODIFIED="1620033352717" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$rocket_chek.coverage" NAME="rocket_chek Coverage Results" MODIFIED="1624173830869" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$calc_delta_mastodon.coverage" NAME="calc_delta_mastodon Coverage Results" MODIFIED="1643096497495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$MotilityMeasurements.coverage" NAME="MotilityMeasurements Coverage Results" MODIFIED="1622021525868" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Motility" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$experimentation.coverage" NAME="experimentation Coverage Results" MODIFIED="1647781404096" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_regeneration$normalize_tracks_microscope_mistakes.coverage" NAME="normalize_tracks_microscope_mistakes Coverage Results" MODIFIED="1646052495643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
   </component>
 </project>

@@ -33,8 +33,8 @@ def train_model(X_train, y_train):
 
 
 def get_position(ind, df):
-    x = int(df.iloc[ind]["Spot position X (µm)"] / 0.462)
-    y = int(df.iloc[ind]["Spot position Y (µm)"] / 0.462)
+    x = int(df.iloc[ind]["Spot position X"] / 0.462)
+    y = int(df.iloc[ind]["Spot position Y"] / 0.462)
     spot_frame = int(df.iloc[ind]["Spot frame"])
     return x, y, spot_frame
 
@@ -68,8 +68,8 @@ def get_local_densities_df(df_s, tracks_s, neighboring_distance=100):
         spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
         track_local_density = {
             t: get_local_density(df=df_s,
-                                 x=track[track["Spot frame"] == t]["Spot position X (µm)"].values[0],
-                                 y=track[track["Spot frame"] == t]["Spot position Y (µm)"].values[0],
+                                 x=track[track["Spot frame"] == t]["Spot position X"].values[0],
+                                 y=track[track["Spot frame"] == t]["Spot position Y"].values[0],
                                  t=t,
                                  neighboring_distance=neighboring_distance)
             for t in spot_frames}
@@ -87,9 +87,9 @@ def get_density(df, experiment):
 
 def get_local_density(df, x, y, t, neighboring_distance):
     neighbors = df[(np.sqrt(
-        (df["Spot position X (µm)"] - x) ** 2 + (df["Spot position Y (µm)"] - y) ** 2) <= neighboring_distance) &
+        (df["Spot position X"] - x) ** 2 + (df["Spot position Y"] - y) ** 2) <= neighboring_distance) &
                    (df['Spot frame'] == t) &
-                   (0 < np.sqrt((df["Spot position X (µm)"] - x) ** 2 + (df["Spot position Y (µm)"] - y) ** 2))]
+                   (0 < np.sqrt((df["Spot position X"] - x) ** 2 + (df["Spot position Y"] - y) ** 2))]
     return len(neighbors)
 
 
@@ -104,8 +104,8 @@ def add_features(track, df_s, local_density=True, neighboring_distance=50):
         spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
         track_local_density = [
             get_local_density(df=df_s,
-                              x=track[track["Spot frame"] == t]["Spot position X (µm)"].values[0],
-                              y=track[track["Spot frame"] == t]["Spot position Y (µm)"].values[0],
+                              x=track[track["Spot frame"] == t]["Spot position X"].values[0],
+                              y=track[track["Spot frame"] == t]["Spot position Y"].values[0],
                               t=t,
                               neighboring_distance=neighboring_distance)
             for t in spot_frames]
@@ -145,11 +145,16 @@ def calc_prob(transformed_tracks_df, clf, n_frames=260):
     for track_id, track in transformed_tracks_df.groupby("Spot track ID"):
         spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
         diff_score = {"Spot track ID": track_id}
-        for t in spot_frames:
-            probs = clf.predict_proba(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1))
-            diff_score[t] = probs[0][1]
+        try:
+            for t in spot_frames:
+                probs = clf.predict_proba(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1))
 
-        df_score = df_score.append(diff_score, ignore_index=True, sort=False)
+                diff_score[t] = pd.to_numeric(probs[0][1], downcast='float')
+
+            df_score = df_score.append(diff_score, ignore_index=True, sort=False)
+        except Exception as e:
+            print(e)
+            print(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1).size)
     return df_score
 
 
@@ -172,6 +177,7 @@ def concat_dfs(diff_df, con_df, diff_t_window=None, con_t_windows=None):
     # diff_df = diff_df[(diff_df["Spot frame"] >= diff_start) & (diff_df["Spot frame"] < diff_end)]
     # todo: the correction:
     diff_df = diff_df[diff_df["Spot frame"] == diff_end]
+    print("size of diff_df: ", diff_df.shape)
 
     for label, label_df in diff_df.groupby('Spot track ID'):
         # if len(
@@ -195,6 +201,7 @@ def concat_dfs(diff_df, con_df, diff_t_window=None, con_t_windows=None):
             label_df["Spot track ID"] = new_label
             control_df = control_df.append(label_df)
     con_df = control_df.copy()
+    print("size of con_df: ", con_df.shape)
 
     new_diff_df, max_val = set_indexes(new_diff_df, target=True, max_val=max_val)
     con_df, _ = set_indexes(con_df, target=False, max_val=max_val)

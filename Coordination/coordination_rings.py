@@ -10,7 +10,6 @@ import sys
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 import TimeSeriesAnalysis.consts as consts
 
-
 from Coordination.CoordinationCalc_mastodon import CoordinationCalc
 
 import numpy as np
@@ -31,11 +30,37 @@ def validate_change_distances(coord_calculator, save_path):
 
 if __name__ == '__main__':
     print("coordination Calculator")
-    path = consts.cluster_path
-    s_run_num = int(os.getenv('SLURM_ARRAY_TASK_ID')[0])
-    csv_path = path + fr"/data/mastodon/all_detections_s{s_run_num}-vertices.csv"
+    # path = consts.cluster_path
+    path = ""
+    os.chdir("/home/shakarch/muscle-formation-diff")
+    # os.chdir(r'C:\Users\Amit\PycharmProjects\muscle-formation-diff')
+    print("\n"
+          f"===== current working directory: {os.getcwd()} =====")
+
+    s_run = consts.s_runs[sys.argv[1]]
+    registration_method = sys.argv[2]
+    ring_size = int(sys.argv[3])
+    only_tagged = sys.argv[4] == "True"
+    SMOOTHING_VAR = int(sys.argv[5])
+    neighboring_distance = int(os.getenv('SLURM_ARRAY_TASK_ID'))
+
+    print(f"running coordination rings"
+          f"\nsrun={s_run['name']}, "
+          f"registration_method={registration_method}, "
+          f"ring_size={ring_size}, "
+          f"only_tagged={only_tagged}, "
+          f"neighboring_distance={neighboring_distance}", flush=True)
+
+    csv_path = path + consts.data_csv_path % (registration_method, s_run['name'])
 
     print(csv_path)
-    save_path = path + fr"/Coordination/coordination_outputs/coordination_dfs/manual_tracking/coord_mastodon_s{s_run_num}"
-    coord = CoordinationCalc(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=30, csv_path=csv_path)
-    validate_change_distances(coord, save_path)
+    # print("ring_size: ", ring_size)
+    manual_tracking_dir_path = fr"Coordination/coordination_outputs/coordination_dfs/manual_tracking"
+    save_dir = os.path.join(manual_tracking_dir_path, f"ring_size_{ring_size}")
+    os.makedirs(save_dir, exist_ok=True)
+    save_path = save_dir + fr"/coord_mastodon_{s_run['name']} reg {registration_method}"
+
+    coord_calculator = CoordinationCalc(SMOOTHING_VAR=SMOOTHING_VAR, NEIGHBORING_DISTANCE=neighboring_distance, csv_path=csv_path)
+    coord_calculator.build_coordination_df(validation=False, rings=True, only_tagged=only_tagged, ring_size=ring_size)
+    coord_calculator.save_coordinationDF(save_path + f"_n_dist={neighboring_distance}" + (
+        " only tagged" if only_tagged is True else "") + f" smooth {SMOOTHING_VAR}.pkl")  # only tagged

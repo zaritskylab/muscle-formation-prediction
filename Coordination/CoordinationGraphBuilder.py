@@ -4,29 +4,71 @@ Created on Tue Jun 30 16:52:27 2020
 
 @author: Amit Shakarchy
 """
+import gzip
+
 from matplotlib.colors import ListedColormap
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
-import pickle
+# import pickle
 import numpy as np
 # from DataPreprocessing.load_tracks_xml import load_tracks_xml
 import pandas as pd
+import pickle
+# import pickle5 as pickle
+import TimeSeriesAnalysis.consts as consts
+from utils.data_load_save import get_tracks
 
 
 class CoordinationGraphBuilder():
 
-    def read_coordination_df(self, coord_df, pkl=False):
+    def read_coordination_df(self, coord_df_path, mastodon=True, fused=False, vid_num=None):
         '''
         The method receives a coordination dataframe and calculates its mean value for each time point.
         :param coord_df: coordination dataframe
         :return: mean coordination for each time point
         '''
-        if not pkl:
+        if mastodon:
+            # coord_df = pd.read_csv(coord_df_path, dtype=np.float32)
+            # coord_df = pd.read_pickle(coord_df_path)
+
+            with open(coord_df_path, "rb") as fh:
+                coord_df = pickle.load(fh)
+            # coord_df = pickle.load(open(coord_df_path, 'rb'))
             coord_df["Spot frame"] = coord_df["cos_theta"].apply(lambda x: x[0])
             coord_df["cos_theta_"] = coord_df["cos_theta"].apply(lambda x: x[1])
+            if fused:  # get tracks from a specific area
+                fused_cells_ids = [20641, 6327, 17293, 26859, 22581, 7816, 11802, 27037, 2696, 26693, 27621, 19359,
+                                   23706, 20156, 26671, 20996, 8392, 24643, 8850, 8866, 2992, 6291,
+                                   5725, 22574, 8794, 9769, 16249, 25973, 5391, 6312, 6824, 689,
+                                   8453, 15158, 13296, 22697, 12958, 402, 16682, 10137, 15262, 28549,
+                                   5058, 16548, 16526, 9857, 12110, 15176, 20110, 9108, 20189, 22589,
+                                   16574, 27712, 20793, 8957, 9665, 16708, 23149, 13474, 23452, 25540,
+                                   7661, 19542, 11808, 9433, 3753, 25703, 4307, 10129, 11316, 6018,
+                                   18541, 5827, 17467, 5774, 6360, 12310, 14010, 8062, 4292, 6207,
+                                   19455, 17639, 18372, 10247, 11915, 24501, 8350, 28568, 11352, 23276,
+                                   18484, 7757, 611, 15195, 23742, 17843, 10690, 1768, 14297, 9704, 2023,
+                                   3654, 19442, 23548, 5333, 15817, 12885, 6739, 27617, 25891,
+                                   11324, 2252, 10712, 12242, 6847, 13984, 4341, 9722, 22602, 13348,
+                                   8799, 26196, 19506, 7434, 21069, 12144, 7534, 9938, 5989, 9661,
+                                   22507, 5815, 12090, 17110, 28536, 15932, 10762, 10175, 8943, 19364,
+                                   8853, 19061, 16424, 15862, 13998, 27805, 806, 9759, 6997, 22788,
+                                   19334, 9516, 20140, 17733, 5931, 6747, 13846, 22809, 7957, 12311,
+                                   29748, 6764, 8298, 23358, 26674, 23704, 16371, 1537, 14166, 6237,
+                                   1423, 3264, 16857, 12943, 13183, 15781, 22671,]
+                # tracks_csv = consts.data_csv_path % (consts.registration_method, "S" + vid_num)
+                # df_tracks, _ = get_tracks(tracks_csv, manual_tagged_list=True)
+                # x_pos = df_tracks["Spot position X"]
+                # y_pos = df_tracks["Spot position Y"]
+                # df_tracks = df_tracks[(900 < x_pos) & (x_pos < 1400) & (160 < y_pos) & (y_pos < 330)]
+
+                coord_df = coord_df[coord_df["Track #"].isin(fused_cells_ids)]
+
             mean_cos_theta = coord_df.groupby("Spot frame")["cos_theta_"].mean()
             std_cos_theta = coord_df.groupby("Spot frame")["cos_theta_"].std()
+
+
         else:
+            coord_df = pickle.load(open(coord_df_path, 'rb'))
             mean_time = None
             K = coord_df.shape[0]
             ar = np.zeros((K, 927))
@@ -59,8 +101,8 @@ class CoordinationGraphBuilder():
             total_coord += coord
         return total_coord / elements_num, total_time / elements_num
 
-    def plot_coord_over_time(self, coordination_dfs, name_for_saving, legend, line_styles,
-                             label_casting_param=0.025, pkl=False):
+    def plot_coord_over_time(self, coord_paths, name_for_saving, legend, line_styles,
+                             label_casting_param=0.025, mastodon=True):
         '''
         The method plots average coordination over time, of all of the cells in the given dataframes
         :param coordination_dfs: list of coordination dataframes to display [coord1, coord2, ... ]
@@ -70,10 +112,10 @@ class CoordinationGraphBuilder():
         :param label_casting_param: casting parameter for adjusting xticks to the experiment times in hours. usually * 1.5 / 60
         :return: -
         '''
-        if pkl:
+        if mastodon:
             fig = plt.figure(figsize=(6, 4))
-            for (coord_df, style) in zip(coordination_dfs, line_styles):
-                std_cos_theta, mean_cos_theta = self.read_coordination_df(coord_df, pkl)
+            for (coord_path, style) in zip(coord_paths, line_styles):
+                std_cos_theta, mean_cos_theta = self.read_coordination_df(coord_path, mastodon)
                 # mean_cos_theta.index = mean_cos_theta.index * 5 / 60
                 # std_cos_theta.index = std_cos_theta.index * 5 / 60
                 # m_std = mean_cos_theta - std_cos_theta
@@ -93,7 +135,7 @@ class CoordinationGraphBuilder():
             plt.close(fig)
         else:
             fig = plt.figure(figsize=(6, 4))
-            for (coord_df, style) in zip(coordination_dfs, line_styles):
+            for (coord_df, style) in zip(coord_paths, line_styles):
                 std_cos_theta, mean_cos_theta = self.read_coordination_df(coord_df, pkl)
                 mean_cos_theta.index = mean_cos_theta.index * 5 / 60
                 std_cos_theta.index = std_cos_theta.index * 5 / 60
@@ -112,7 +154,6 @@ class CoordinationGraphBuilder():
             plt.savefig(name_for_saving)
             plt.show()
             plt.close(fig)
-
 
     def get_density(self, tracks_xml):
         '''
@@ -231,12 +272,16 @@ if __name__ == '__main__':
     RdPu = ListedColormap(RdPu_rBig(np.linspace(0.25, 0.75, 256)))
 
     builder = CoordinationGraphBuilder()
-    builder.plot_coord_over_time(coordination_dfs=[coord_con, coord_diff, coord_p38, coord_p38_erk, null_coord],
-                                 name_for_saving="Coordination over time validation",
-                                 legend=["control", "ERK", "p38", "ERKi + p38", "randomized null model"],
-                                 label_casting_param=0.025,
-                                 line_styles=[None, None, None, None, '--'],
-                                 pkl=True)
+    vv, vvv_ = builder.read_coordination_df(
+        fr"C:\Users\Amit\PycharmProjects\muscle-formation-diff\Coordination\coordination_outputs\coordination_dfs\manual_tracking\coord_mastodon_S3 reg no_reg__n_dist=100.pkl")
+
+    builder.plot_coord_over_time(
+        coord_paths=[coord_con_path, coord_diff_path, coord_p38_path, coord_p38_erk_path, null_coord_path],
+        name_for_saving="Coordination over time validation",
+        legend=["control", "ERK", "p38", "ERKi + p38", "randomized null model"],
+        label_casting_param=0.025,
+        line_styles=[None, None, None, None, '--'],
+        pkl=True)
 
     # builder.plot_coord_over_density(coordination_dfs=[coord_con, coord_diff], xml_paths=[xml_con_path, xml_diff_path],
     #                                 name_for_saving="manual_tracking_coordination_over_density 1,3",

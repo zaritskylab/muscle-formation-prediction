@@ -1,10 +1,14 @@
+
 vid_path_s3_nuc = r"data/videos/test/S3_nuclei.tif"
 vid_path_s2_nuc = r"data/videos/test/S2_nuclei.tif"
 vid_path_s5_nuc = r"data/videos/train/S5_nuclei.tif"
 vid_path_s1_nuc = r"data/videos/train/S1_nuclei.tif"
-vid_path_s6_nuc = r"data/videos/train/s6.tif"
+vid_path_s6_nuc = r"data/videos/test/S6_nuclei.tif"
 vid_path_s7_nuc = r"data/videos/train/s7.tif"
-vid_path_s8_nuc = r"data/videos/train/s8.tif"
+vid_path_s8_nuc = r"data/videos/test/S8_nuclei.tif"
+vid_path_s1_ck666_nuc = r"data/videos/test/211213_s1_control_Nuclei.tif"
+vid_path_s4_ck666_nuc = r"data/videos/test/211213_s4_ERKi_Nuclei.tif"
+vid_path_s5_ck666_nuc = r"data/videos/test/211213_s5_ERKiCK666150_Nuclei.tif"
 vid_path_s10_nuc = r"data/videos/train/s10.tif"
 
 vid_path_s5_actin = r"data/videos/train/S5_Actin.tif"
@@ -15,24 +19,14 @@ vid_path_s7_actin = r"data/videos/test/S7_Actin.tif"
 vid_path_s10_actin = r"data/videos/test/S10_Actin.tif"
 vid_path_s6_actin = r"data/videos/test/S6_Actin.tif"
 vid_path_s8_actin = r"data/videos/test/S8_Actin.tif"
+vid_path_s1_ck666_actin = "data/videos/test/211213_s1_control_Actin.tif"
+vid_path_s4_ck666_actin = "data/videos/test/211213_s4_ERKi_Actin.tif"
+vid_path_s5_ck666_actin = "data/videos/test/211213_s5_ERKiCK666150_Actin.tif"
 
 data_csv_path = r"data/mastodon/%s%s all detections.csv"
 
 cluster_path = "muscle-formation-diff"
 local_path = ".."
-
-# intensity
-window_size = 16
-tracks_len = 30
-
-diff_window = [140, 170]
-# con_window = [[10, 40], [40, 70], [70, 100], [100, 130], [130, 160], [160, 190], [190, 220], [220, 250]]
-con_window = [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]]
-
-to_run = "motility"
-local_density = False
-
-wt_cols = [wt for wt in range(0, 260, tracks_len)]
 
 s1 = {"name": "S1",
       "target": 0,
@@ -78,10 +72,57 @@ s8 = {"name": "S8",
       "actin_path": vid_path_s8_actin,
       "nuc_path": vid_path_s8_nuc}
 
+s1_211212 = {"name": "S1 211212",
+             "target": 0,
+             "actin_path": "not exist",
+             "nuc_path": "not exist"}
+
+s4_211212 = {"name": "S4 211212",
+             "target": 1,
+             "actin_path": "not exist",
+             "nuc_path": "not exist"}
+
+s5_211212 = {"name": "S5 211212",  # erk + p38
+             "target": 1,
+             "actin_path": "not exist",
+             "nuc_path": "not exist"}
+
+s7_211212 = {"name": "S7 211212",  # p38
+             "target": 0,
+             "actin_path": "not exist",
+             "nuc_path": "not exist"}
+
+s1_ck666 = {"name": "S1 ck666",  # control
+            "target": 0,
+            "actin_path": vid_path_s1_ck666_actin,
+            "nuc_path": vid_path_s1_ck666_nuc}
+
+s4_ck666 = {"name": "S4 ck666",  # ERKi positive control
+            "target": 1,
+            "actin_path": vid_path_s4_ck666_actin,
+            "nuc_path": vid_path_s4_ck666_nuc}
+
+s5_ck666 = {"name": "S5 ck666",  # ERKi ck666
+            "target": 1,
+            "actin_path": vid_path_s5_ck666_actin,
+            "nuc_path": vid_path_s5_ck666_nuc}
+
 s_runs = {"1": s1,
           "2": s2,
           "3": s3,
           "5": s5,
           "6": s6,
           "8": s8,
+          "s1_211212": s1_211212,
+          "s4_211212": s4_211212,
+          "s5_211212": s5_211212,
+          "s7_211212": s7_211212,
+          "s1_ck666": s1_ck666,
+          "s5_ck666": s5_ck666,
+          "s4_ck666": s4_ck666,
+
+          "11": s1_ck666,
+          "55": s5_ck666,
+          "44": s4_ck666,
+
           }

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/muscle-formation-regeneration.iml" filepath="$PROJECT_DIR$/.idea/muscle-formation-regeneration.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/muscle-formation-diff.iml" filepath="$PROJECT_DIR$/.idea/muscle-formation-diff.iml" />
     </modules>
   </component>
 </project>

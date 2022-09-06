@@ -9,10 +9,12 @@ import pandas as pd
 from skimage import io
 
 ROLLING_VAL = 30
+sys.path.append('/sise/home/shakarch/muscle-formation-diff')
+sys.path.append(os.path.abspath('..'))
 
 
-def correlations_percentage(df_mot, df_int, tagged_df, all_tracks, dir_path, s_name, actin_vid_path):
-    second_dir = s_name + "_properties"
+def single_cell_properties_calc(df_mot, df_int, tagged_df, all_tracks, dir_path, s_name, actin_vid_path, reg_method):
+    second_dir = s_name + "_properties" + "_" + registration_method
     save_dir = dir_path + "/" + second_dir
     all_correlations_df = pd.DataFrame()
     for label, track_score_mot in df_mot.groupby("Spot track ID"):
@@ -20,7 +22,6 @@ def correlations_percentage(df_mot, df_int, tagged_df, all_tracks, dir_path, s_n
         if len(track_score_mot.iloc[0]) < 60 or len(track_score_int) == 0:
             continue
 
-        # correlations_df = get_correlations_df(track, tagged_df, label, all_tracks)
         correlations_df = get_single_cell_properties(track_score_mot, track_score_int,
                                                      tagged_df[tagged_df["Spot track ID"] == label],
                                                      all_tracks, actin_vid_path, actin_win_size=7)
@@ -28,12 +29,9 @@ def correlations_percentage(df_mot, df_int, tagged_df, all_tracks, dir_path, s_n
     pickle.dump(all_correlations_df, open(save_dir, 'wb'))
 
 
-def load_correlations_data(s_run, dir_path_score):
+def load_correlations_data(s_run, dir_path_score, coordination_df_path, tracks_csv_path):
     # get coordination df
-    df_coord = pickle.load(
-        (open(
-            path + f"/Coordination/coordination_outputs/coordination_dfs/manual_tracking - only tagged tracks/coord_mastodon_s{s_run['name'][1]}.pkl",
-            'rb')))
+    df_coord = pickle.load((open(coordination_df_path, 'rb')))
     df_coord["Spot track ID"] = df_coord["Track #"].apply(lambda x: x)
     df_coord["Spot frame"] = df_coord["cos_theta"].apply(lambda x: x[0])
     df_coord["cos_theta_values"] = df_coord["cos_theta"].apply(lambda x: x[1])
@@ -42,11 +40,10 @@ def load_correlations_data(s_run, dir_path_score):
     df_score = pickle.load(open(dir_path_score + f"/df_prob_w=30, video_num={s_run['name'][1]}", 'rb'))
     print(df_score.shape)
 
-    # calculate local density
-    df_all_tracks, _ = get_tracks(path + s_run["csv_all_path"], manual_tagged_list=False)
-    # df = pd.read_csv(path + s_run["csv_tagged_path"], encoding="ISO-8859-1")
-    df_tagged = df_all_tracks[df_all_tracks["manual"] == 1]  # todo change
+    df_all_tracks, _ = get_tracks(tracks_csv_path, manual_tagged_list=False)
+    df_tagged = df_all_tracks[df_all_tracks["manual"] == 1]
 
+    # calculate local density
     # local_density_df = utils.add_features_df(df_tagged, df_all_tracks, local_density=local_density)
 
     df_score['cos_theta'] = -1
@@ -61,12 +58,12 @@ def load_correlations_data(s_run, dir_path_score):
     return df_score, df_tagged, df_all_tracks
 
 
-def get_dir_path(to_run):
-    dir_path_score = f"30-03-2022-manual_mastodon_{to_run} local density-{local_density}, s{con_train_n}, s{diff_train_n} are train"
-    second_dir = f"{diff_window} frames ERK, {con_windows} frames con track len {tracks_len}"
-    open_dirs(dir_path_score, second_dir)
-    dir_path_score += "/" + second_dir
-    return dir_path_score
+def get_dir_path(modality):
+    dir_path = f"/home/shakarch/30-07-2022-{modality} local dens-{consts.local_density}, s{con_train_n}, s{diff_train_n} train" + (
+        f" win size {consts.window_size}" if modality != "motility" else "")
+    second_dir = f"track len {consts.tracks_len}, impute_func-{impute_methodology}_{impute_func} reg {registration_method}"
+    dir_path += "/" + second_dir
+    return dir_path
 
 
 def get_single_cell_data(track_id, df_merge_col_mot, df_merge_col_int, pct_change=False):
@@ -103,25 +100,26 @@ def get_local_density(label_track, all_tracks, track_coord_data):
 
 def get_speed(track_data):
     # calc speed
-    track_data = track_data[["Spot frame", "Spot position X (µm)", "Spot position Y (µm)", "Spot track ID"]]
+    track_data = track_data[["Spot frame", "Spot position X", "Spot position Y", "Spot track ID"]]
     track_data = track_data.sort_values("Spot frame")
-    track_data["speed_x"] = track_data["Spot position X (µm)"].diff()
-    track_data["speed_y"] = track_data["Spot position Y (µm)"].diff()
+    track_data["speed_x"] = track_data["Spot position X"].diff()
+    track_data["speed_y"] = track_data["Spot position Y"].diff()
     track_data["speed"] = np.sqrt(np.square(track_data["speed_x"]) + np.square(track_data["speed_y"]))
     track_data["speed_change"] = track_data["speed"].diff()
-    return track_data[["speed", "speed_x", "speed_y", "speed_change", "Spot frame", "Spot track ID"]]
+    return track_data[["speed", "speed_x", "speed_y", "speed_change", "Spot frame", "Spot track ID", "Spot position X",
+                       "Spot position Y"]]
 
 
 def calc_speed_df(df_mot, dir_path, s_name):
-        second_dir = s_name + "_speed"
-        save_dir = dir_path + "/" + second_dir
-        total_speed_df = pd.DataFrame()
-        for label, track_score_mot in df_mot.groupby("Spot track ID"):
-            total_speed_df = total_speed_df.append(get_speed(track_score_mot), ignore_index=True)
+    second_dir = s_name + "_speed"
+    save_dir = dir_path + "/" + second_dir
+    total_speed_df = pd.DataFrame()
+    for label, track_score_mot in df_mot.groupby("Spot track ID"):
+        total_speed_df = total_speed_df.append(get_speed(track_score_mot), ignore_index=True)
 
-        # print(total_speed_df)
+    # print(total_speed_df)
 
-        pickle.dump(total_speed_df, open(save_dir, 'wb'))
+    pickle.dump(total_speed_df, open(save_dir, 'wb'))
 
 
 def get_rolling_avg(feature_list, df, rolling_window_size=ROLLING_VAL):
@@ -154,8 +152,8 @@ def get_directionality_ratio(track, window_size=ROLLING_VAL):
     time = []
     for chunk in time_frames_chunks:
         track_portion = track[track["Spot frame"].isin(chunk)]
-        x_vec = track_portion["Spot position X (µm)"]
-        y_vec = track_portion["Spot position Y (µm)"]
+        x_vec = track_portion["Spot position X"]
+        y_vec = track_portion["Spot position Y"]
         displacement = get_displacement(x_vec, y_vec)
         path_len = get_path_len(x_vec, y_vec)
         directionality_ratio = displacement / path_len
@@ -170,12 +168,13 @@ def get_directionality(track, speed_df, window_size=ROLLING_VAL):
     directionality = get_directionality_ratio(track, window_size)
     track["directionality_cos_alpha"] = \
         speed_df["speed_x"] / np.sqrt(speed_df["speed_x"] ** 2 + speed_df["speed_y"] ** 2)
-    directionality = pd.merge(directionality, track[["directionality_cos_alpha", "Spot frame", "Spot track ID"]], on=["Spot frame"])
+    directionality = pd.merge(directionality, track[["directionality_cos_alpha", "Spot frame", "Spot track ID"]],
+                              on=["Spot frame"])
     return directionality
 
 
 def get_single_cell_properties(track_coord_data_mot_score, track_score_int, track, all_tracks, actin_vid_path,
-                               actin_win_size=7):
+                               actin_win_size=16):
     coord = get_coordination_data(track_coord_data_mot_score)
     local_density = get_local_density(track, all_tracks, track_coord_data_mot_score)
     score_mot = track_coord_data_mot_score.copy().iloc[0, :].drop(
@@ -198,44 +197,47 @@ def get_single_cell_properties(track_coord_data_mot_score, track_score_int, trac
 
     speed_df = get_speed(track)
     actin_df = get_single_cell_intensity_measures(label=spot_track_id[0], df=track,
-                                                        im_actin=io.imread(actin_vid_path), window_size=actin_win_size)
+                                                  im_actin=io.imread(actin_vid_path), window_size=actin_win_size)
     directionality_df = get_directionality(track, speed_df, ROLLING_VAL)
 
     properties_df = reduce(lambda df_left, df_right:
                            pd.merge(df_left, df_right, on=["Spot frame", "Spot track ID"]),
-                           [properties_df, speed_df[["speed", "speed_change", "Spot frame", "Spot track ID"]], actin_df,
+                           [properties_df, speed_df[
+                               ["speed", "speed_change", "Spot frame", "Spot track ID", "Spot position X",
+                                "Spot position Y"]], actin_df,
                             directionality_df])
-
-    rolling_features_list = ['coordination', 'speed', 'speed_change', 'local density', 'mean',
-                             'directionality_cos_alpha']
-    properties_df = get_rolling_avg(rolling_features_list, properties_df, ROLLING_VAL)
 
     return properties_df
 
 
 if __name__ == '__main__':
     print("single_cell_properties_calc")
+    os.chdir("/home/shakarch/muscle-formation-diff")
+    # os.chdir(r'C:\Users\Amit\PycharmProjects\muscle-formation-diff')
+    print("\n"
+          f"===== current working directory: {os.getcwd()} =====")
 
-    diff_window = [140, 170]
-    tracks_len = 30
-    con_windows = [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]]
+    s_run = consts.s_runs[sys.argv[1]]
 
-    s_runs = [consts.s5, consts.s1, consts.s3, consts.s2]
-    path = consts.cluster_path
+    registration_method = consts.registration_method
+    impute_func = consts.impute_func
+    impute_methodology = consts.impute_methodology
 
-    local_density = False
-    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(2, 3, 1, 5), (1, 5, 2, 3), ]:
+    coord_df_path = f"Coordination/coordination_outputs/coordination_dfs/manual_tracking/coord_mastodon_S{s_run['name'][1]} reg {registration_method}_n_dist={30}.pkl"
 
-        for s_run in s_runs:
-            print(s_run)
-            dir_path_score = get_dir_path("motility")
-            df_merge_col_mot, df_tagged_mot, df_all_tracks_mot = load_correlations_data(s_run, dir_path_score)
-            dir_path_score = get_dir_path("intensity")
-            df_merge_col_int, df_tagged_int, df_all_tracks_int = load_correlations_data(s_run, dir_path_score)
+    csv_path = consts.data_csv_path % (registration_method, s_run['name'])
 
-            correlations_percentage(df_merge_col_mot, df_merge_col_int, df_tagged_mot, df_all_tracks_mot,
-                                    dir_path_score, s_run["name"],
-                                    path + s_run["actin_path"])
+    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3)]:  # , (2, 3, 1, 5),
+        print(s_run, flush=True)
+        path_scores_df = get_dir_path("motility")
+        df_merge_col_mot, df_tagged_mot, df_all_tracks_mot = load_correlations_data(s_run, path_scores_df,
+                                                                                    coord_df_path,
+                                                                                    csv_path)
+        path_scores_df = get_dir_path("actin_intensity")
+        df_merge_col_int, df_tagged_int, df_all_tracks_int = load_correlations_data(s_run, path_scores_df,
+                                                                                    coord_df_path,
+                                                                                    csv_path)
 
-            # calc_speed_df(df_tagged_mot, dir_path_score, s_run["name"])
-            # print(pickle.load(open(dir_path_score + r"\S5_speed", 'rb')))
+        single_cell_properties_calc(df_merge_col_mot, df_merge_col_int, df_tagged_mot, df_all_tracks_mot,
+                                    path_scores_df, s_run["name"],
+                                    s_run["actin_path"], registration_method)

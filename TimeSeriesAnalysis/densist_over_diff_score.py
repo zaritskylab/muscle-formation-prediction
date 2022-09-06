@@ -23,19 +23,19 @@ def get_density(df, experiment):
 
 def get_local_density(df, x, y, t, neighboring_distance):
     neighbors = df[(np.sqrt(
-        (df["Spot position X (µm)"] - x) ** 2 + (df["Spot position Y (µm)"] - y) ** 2) <= neighboring_distance) &
+        (df["Spot position X"] - x) ** 2 + (df["Spot position Y"] - y) ** 2) <= neighboring_distance) &
                    (df['Spot frame'] == t) &
-                   (0 < np.sqrt((df["Spot position X (µm)"] - x) ** 2 + (df["Spot position Y (µm)"] - y) ** 2))]
+                   (0 < np.sqrt((df["Spot position X"] - x) ** 2 + (df["Spot position Y"] - y) ** 2))]
     return len(neighbors)
 
 
 def get_tracks(path):
     df_s = load_clean_rows(path)
-    df_s.rename(columns={"Spot position": "Spot position X (µm)", "Spot position.1": "Spot position Y (µm)"},
+    df_s.rename(columns={"Spot position": "Spot position X", "Spot position.1": "Spot position Y"},
                 inplace=True)
     df_s["Spot frame"] = df_s["Spot frame"].astype(int)
-    df_s["Spot position X (µm)"] = df_s["Spot position X (µm)"].astype(float)
-    df_s["Spot position Y (µm)"] = df_s["Spot position Y (µm)"].astype(float)
+    df_s["Spot position X"] = df_s["Spot position X"].astype(float)
+    df_s["Spot position Y"] = df_s["Spot position Y"].astype(float)
     tracks_s = get_tracks_list(df_s[df_s["manual"] == 1], target=1)
 
     return df_s, tracks_s
@@ -56,8 +56,8 @@ def get_local_densities_df(df_s, tracks_s, neighboring_distance):
         spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
         track_local_density = {
             t: get_local_density(df=df_s,
-                                 x=track[track["Spot frame"] == t]["Spot position X (µm)"].values[0],
-                                 y=track[track["Spot frame"] == t]["Spot position Y (µm)"].values[0],
+                                 x=track[track["Spot frame"] == t]["Spot position X"].values[0],
+                                 y=track[track["Spot frame"] == t]["Spot position Y"].values[0],
                                  t=t,
                                  neighboring_distance=neighboring_distance)
             for t in spot_frames}
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     df_s5, tracks_s5 = get_tracks(path + data_csv_path % (registration_method, s5['name']))
     df_s1, tracks_s1 = get_tracks(path + data_csv_path % (registration_method, s1['name']))
 
-    df_s2.rename(columns={"Spot position": "Spot position X (µm)", "Spot position.1": "Spot position Y (µm)"},
+    df_s2.rename(columns={"Spot position": "Spot position X", "Spot position.1": "Spot position Y"},
                  inplace=True)
 
     local_densities_s3 = get_local_densities_df(df_s3, tracks_s3, neighboring_distance)
