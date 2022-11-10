@@ -15,6 +15,7 @@ class DataNormalizerStrategy(object):
         self.name = name
 
     def preprocess_data(self, data):
+        print("normalize data", flush=True)
         # todo add features option
         if not data.empty:
             data = self.drop_columns(data)

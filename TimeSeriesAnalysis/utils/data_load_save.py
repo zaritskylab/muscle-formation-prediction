@@ -7,7 +7,7 @@ import numpy as np
 import sys
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
-import TimeSeriesAnalysis.consts as consts
+import TimeSeriesAnalysis.params as params
 
 
 def load_clean_rows(file_path):
@@ -15,7 +15,8 @@ def load_clean_rows(file_path):
 
     df = pd.DataFrame()
     chunksize = 10 ** 3
-    with pd.read_csv(file_path, encoding="cp1252", chunksize=chunksize) as reader: #, dtype=np.float32,  index_col=[0],
+    with pd.read_csv(file_path, encoding="cp1252",
+                     chunksize=chunksize) as reader:  # , dtype=np.float32,  index_col=[0],
         for chunk in reader:
             # try:
             #     chunk = chunk.drop(labels=range(0, 2), axis=0)
@@ -87,11 +88,11 @@ def downcast_df(data_copy, fillna=True):
         except:
             continue
 
-    print(data_copy.info(memory_usage='deep'))
+    # print(data_copy.info(memory_usage='deep'))
     return data_copy
 
 
-def get_tracks(file_path, manual_tagged_list, target=1):
+def get_tracks(file_path, tagged_only=False, manual_tagged_list=True, target=1):
     df_s = load_clean_rows(file_path)
 
     df_s = df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _.]+', '', x))
@@ -106,22 +107,19 @@ def get_tracks(file_path, manual_tagged_list, target=1):
                                 "Spot intensity.4": "Spot intensity Median ch1 (Counts)",
                                 "Spot intensity.5": "Spot intensity Sum ch1 (Counts)",
                                 })
-    cols = ["Spot position X", "Spot position Y", "manual", "Spot frame", "Spot track ID",
-            # "Spot center intensity Center ch1 (Counts)", "Spot intensity Mean ch1 (Counts)",
-            # "Spot intensity Std ch1 (Counts)", "Spot intensity Min ch1 (Counts)", "Spot intensity Max ch1 (Counts)",
-            # "Spot intensity Median ch1 (Counts)", "Spot intensity Sum ch1 (Counts)"
-            ]
+    cols = ["Spot position X", "Spot position Y", "manual", "Spot frame", "Spot track ID"]
     df_s = df_s[cols]
     df_s = df_s.astype(float)
     df_s = downcast_df(df_s)
+    df_s = df_s[df_s["manual"] == 1] if tagged_only else df_s
     data = df_s[df_s["manual"] == 1] if manual_tagged_list else df_s
     tracks_s = get_tracks_list(data, target=target)
     return df_s, tracks_s
 
 
-def get_all_properties_df(modality, con_train_vid_num, diff_train_vid_num, scores_vid_num, reg_method="no_reg_"):
-    properties_data_path = fr"C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\30-07-2022-{modality} local dens-False, s{con_train_vid_num}, s{diff_train_vid_num} train" + (
-        " win size 16" if modality != "motility" else "") + fr"\track len 30, impute_func-{consts.impute_methodology}_{consts.impute_func} reg {reg_method}\S{scores_vid_num}_properties_{reg_method}"
-
-    properties_df = pickle.load(open(properties_data_path, 'rb'))
+def get_all_properties_df(modality, con_train_vid_num, diff_train_vid_num, scores_vid_num,
+                          reg_method=params.registration_method):
+    properties_data_path = fr"/storage/users/assafzar/Muscle_Differentiation_AvinoamLab/30-07-2022-{modality} local dens-False, s{con_train_vid_num}, s{diff_train_vid_num} train" + (
+        " win size 16" if modality != "motility" else "") + fr"/track len 30, impute_func-{params.impute_methodology}_{params.impute_func} reg {reg_method}/S{scores_vid_num}_properties_{reg_method}"
+    properties_df = pickle.load(open(properties_data_path + ".pkl", 'rb'))
     return properties_df

@@ -1,8 +1,14 @@
 from abc import ABCMeta, abstractmethod, ABC
 import sys
 import os
+
+sys.path.append(os.path.abspath('../..'))
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
+print(sys.path)
 import image_registration
-import numpy as np
 from pystackreg import StackReg
 from skimage import io
 from skimage import registration
@@ -10,12 +16,11 @@ from utils.diff_tracker_utils import *
 from utils.data_load_save import *
 from skimage.transform import warp
 import cv2
-
 import consts
 from tqdm import tqdm
 
 
-class RegistrationStrategy(object):
+class VideoRegistratorStrategy(object):
     """
     An abstract base class for defining models. The interface,
     to be implemented by subclasses, define standard model
@@ -58,14 +63,14 @@ class RegistrationStrategy(object):
         return to_reg_data
 
 
-class MeanOpticalFlowRegistration(RegistrationStrategy, ABC):
+class MeanOpticalFlowVideoRegistrator(VideoRegistratorStrategy, ABC):
     """
     I(x,y,t)=I(x+np.mean(dx),y+np.mean(dy))
     """
 
     def __init__(self):
-        name = 'MeanOpticalFlowRegistration'
-        super(MeanOpticalFlowRegistration, self).__init__(name)
+        name = 'MeanOpticalFlowReg'
+        super(MeanOpticalFlowVideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, nuclei_vid):
         flows = []
@@ -85,14 +90,14 @@ class MeanOpticalFlowRegistration(RegistrationStrategy, ABC):
         return flow_x, flow_y
 
 
-class OpticalFlowRegistration(RegistrationStrategy, ABC):
+class OpticalFlowVideoRegistrator(VideoRegistratorStrategy, ABC):
     """
     I(x,y,t)=I(x+dx,y+dy,t+dt)
     """
 
     def __init__(self):
         name = 'OpticalFlowRegistration'
-        super(OpticalFlowRegistration, self).__init__(name)
+        super(OpticalFlowVideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, nuclei_vid):
         flows = []
@@ -129,7 +134,7 @@ class OpticalFlowRegistration(RegistrationStrategy, ABC):
         io.imsave(f"data/videos/{s_run['name']}_Nuclei_aligned.tif", im_nuc_new)
 
 
-class StackRegRegistration(RegistrationStrategy, ABC):
+class StackRegVideoRegistrator(VideoRegistratorStrategy, ABC):
     """
     Translation. Upon translation, a straight line is mapped to a straight line of identical orientation,
     with conservation of the distance between any pair of points. A single landmark in each image gives a complete
@@ -138,7 +143,7 @@ class StackRegRegistration(RegistrationStrategy, ABC):
     def __init__(self):
         name = 'StackRegRegistration'
         self.sr = StackReg(StackReg.TRANSLATION)
-        super(StackRegRegistration, self).__init__(name)
+        super(StackRegVideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, nuclei_vid):
         transition_mats = []
@@ -154,14 +159,14 @@ class StackRegRegistration(RegistrationStrategy, ABC):
         return flow_x, flow_y
 
 
-class CrossCorrelationRegistration(RegistrationStrategy, ABC):
+class CrossCorrelationVideoRegistrator(VideoRegistratorStrategy, ABC):
     """
     Efficient subpixel image translation registration by cross-correlation
     """
 
     def __init__(self):
         name = 'CrossCorrelationRegistration'
-        super(CrossCorrelationRegistration, self).__init__(name)
+        super(CrossCorrelationVideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, *args):
         shifts = []
@@ -176,7 +181,7 @@ class CrossCorrelationRegistration(RegistrationStrategy, ABC):
         return flow_x, flow_y
 
 
-class OpticalFlowTvl1Registration(RegistrationStrategy, ABC):
+class OpticalFlowTvl1VideoRegistrator(VideoRegistratorStrategy, ABC):
     """
     the optical flow is the vector field (u, v) verifying image1(x+u, y+v) = image0(x, y),
     where (image0, image1) is a couple of consecutive 2D frames from a sequence.
@@ -185,7 +190,7 @@ class OpticalFlowTvl1Registration(RegistrationStrategy, ABC):
 
     def __init__(self):
         name = 'OpticalFlowTvl1Registration'
-        super(OpticalFlowTvl1Registration, self).__init__(name)
+        super(OpticalFlowTvl1VideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, *args):
         shifts = []
@@ -200,14 +205,14 @@ class OpticalFlowTvl1Registration(RegistrationStrategy, ABC):
         return flow_x[x_pix, y_pix], flow_y[x_pix, y_pix]
 
 
-class Chi2ShiftRegistration(RegistrationStrategy, ABC):  # not working
+class Chi2ShiftVideoRegistrator(VideoRegistratorStrategy, ABC):  # not working
     """
     An ordinary least squares (OLS) linear regression model
     """
 
     def __init__(self):
         name = 'Chi2ShiftRegistration'
-        super(Chi2ShiftRegistration, self).__init__(name)
+        super(Chi2ShiftVideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, *args):
         flows = []
@@ -225,11 +230,11 @@ class Chi2ShiftRegistration(RegistrationStrategy, ABC):  # not working
 def video_registration_factory(registrator_name):
     """Factory Method"""
     registrators = {
-        "OpticalFlowRegistration": OpticalFlowRegistration(),
-        "MeanOpticalFlowRegistration": MeanOpticalFlowRegistration(),
-        "StackRegRegistration": StackRegRegistration(),
-        "OpticalFlowTvl1Registration": OpticalFlowTvl1Registration(),
-        "CrossCorrelationRegistration": CrossCorrelationRegistration()
+        "OpticalFlowRegistration": OpticalFlowVideoRegistrator(),
+        "MeanOpticalFlowReg": MeanOpticalFlowVideoRegistrator(),
+        "StackRegRegistration": StackRegVideoRegistrator(),
+        "OpticalFlowTvl1Registration": OpticalFlowTvl1VideoRegistrator(),
+        "CrossCorrelationRegistration": CrossCorrelationVideoRegistrator()
     }
 
     return registrators[registrator_name]
@@ -239,7 +244,6 @@ if __name__ == '__main__':
     os.chdir("/home/shakarch/muscle-formation-diff")
 
     # os.chdir(os.getcwd() + r'/muscle-formation-diff')
-    # # os.chdir(r'C:\\Users\\Amit\\PycharmProjects\\muscle-formation-diff')
     print("current working directory: ", os.getcwd())
 
     s_run = consts.s_runs[sys.argv[1]]

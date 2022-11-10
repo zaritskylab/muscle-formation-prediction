@@ -30,8 +30,8 @@ def clean_redundant_columns(df):
 
 def load_tsfresh_csv(path, modality, vid_num, registration="no_reg_", local_density=False, impute_func="impute",
                      impute_methodology="ImputeAllData"):
-    path_prefix = path + f"/data/mastodon/ts_transformed_new/{modality}/{impute_methodology}_{impute_func}/"
-    end = f"_imputed reg={registration}, local_den={local_density}, win size {consts.window_size}"
+    path_prefix = path + f"/data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/"
+    end = f"_reg={registration}, local_den={local_density}, win size {consts.window_size}"
 
     print("reading csv - load_tsfresh_csv function")
     df = pd.read_csv(path_prefix + f"S{vid_num}" + end, encoding="cp1252", index_col=[0])
@@ -71,8 +71,7 @@ def get_to_run(path, modality, con_train_num=None, con_test_num=None, diff_train
 def prep_data(diff_df, con_df, diff_t_window, con_t_windows):
     print("\n preparing data")
     print("\nconcatenating control data & ERKi data")
-    df = concat_dfs(diff_df, con_df, diff_t_window,
-                    con_t_windows)
+    df = concat_dfs(diff_df, con_df, diff_t_window, con_t_windows)
     df = df.sample(frac=1).reset_index(drop=True)
     print("\nshape after concat_dfs", df.shape)
     print(df.isna().sum())

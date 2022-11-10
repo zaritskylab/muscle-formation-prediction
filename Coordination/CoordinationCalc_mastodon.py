@@ -16,6 +16,7 @@ import pickle
 import numpy as np
 import pandas as pd
 from TimeSeriesAnalysis.utils.data_load_save import *
+from TimeSeriesAnalysis import consts as consts
 
 np.seterr(divide='ignore', invalid='ignore')
 import warnings
@@ -60,7 +61,8 @@ class CoordinationCalc():
         else:
             if rings == True:
                 # Get all neighbors - different distances
-                neighbors = df[(np.sqrt((df['Spot position X'] - x[0]) ** 2 + (df['Spot position Y'] - y[0]) ** 2) <= self.NEIGHBORING_DISTANCE) &
+                neighbors = df[(np.sqrt((df['Spot position X'] - x[0]) ** 2 + (
+                        df['Spot position Y'] - y[0]) ** 2) <= self.NEIGHBORING_DISTANCE) &
                                (df['Spot frame'] == cur_time) &
                                (self.NEIGHBORING_DISTANCE - ring_size < np.sqrt(
                                    (df['Spot position X'] - x[0]) ** 2 + (df['Spot position Y'] - y[0]) ** 2))]
@@ -209,9 +211,8 @@ if __name__ == '__main__':
     save_dir = os.path.join(manual_tracking_dir_path, f"ring_size_{ring_size}")
     os.makedirs(save_dir, exist_ok=True)
 
-    save_path = save_dir + fr"/coord_mastodon_{s_run['name']} reg {reg_method}" + (
+    save_path = save_dir + fr"/coord_mastodon_{s_run['name']} reg {reg_method}" + f"_n_dist={ring_size}" + (
         " only tagged" if only_tagged is True else "")
-
     print(csv_path)
     coord = CoordinationCalc(SMOOTHING_VAR=5, NEIGHBORING_DISTANCE=ring_size, csv_path=csv_path)
     coord.build_coordination_df(validation=False, only_tagged=only_tagged)

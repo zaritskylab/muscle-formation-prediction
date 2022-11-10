@@ -1,12 +1,12 @@
-from calc_features import *
-from data_normalize import *
-from impute_strategy import *
-from tsfresh_transformer import *
+from data_preprocessing.features_calculator import *
+from data_preprocessing.data_normalizer import *
+from data_preprocessing.imputer_strategy import *
+from data_preprocessing.tsfresh_transformer import *
 from tsfresh.utilities.dataframe_functions import impute_dataframe_zero, impute
 
 
 class DataPreprocessor:
-    """ it simply returns the french version """
+    """ Object that holds all data preprocessing operations """
 
     def __init__(self, features_creator, data_normalizer, tsfresh_transformer, imputer):
         self.feature_creator = features_creator()
@@ -14,13 +14,20 @@ class DataPreprocessor:
         self.tsfresh_transformer = tsfresh_transformer()
         self.imputer = imputer
 
+    def __str__(self) -> str:
+        my_str = self.feature_creator.name \
+                 + " " + self.data_normalizer.name \
+                 + " " + self.tsfresh_transformer.name \
+                 + " " + self.imputer.name
+        return my_str
+
 
 def data_preprocessor_factory(modality, transformer_name, impute_func, impute_methodology):
     """Factory Method"""
     data_operators = {
-        "motility": (MotilityCalcFeatures, MotilityDataNormalizer),
-        "actin_intensity": (ActinIntensityCalcFeatures, ActinIntensityDataNormalizer),
-        "nuclei_intensity": (NucleiIntensityCalcFeatures, NucleiIntensityDataNormalizer),
+        "motility": (MotilityFeaturesCalculator, MotilityDataNormalizer),
+        "actin_intensity": (ActinIntensityFeaturesCalculator, ActinIntensityDataNormalizer),
+        "nuclei_intensity": (NucleiIntensityFeaturesCalculator, NucleiIntensityDataNormalizer),
     }
     tsfresh_transformers = {
         "time_split_transform": TimeSplitsTSFreshTransform,
@@ -32,9 +39,9 @@ def data_preprocessor_factory(modality, transformer_name, impute_func, impute_me
     }
     imputing_method = imputing_functions[impute_func]
     imputers = {
-        "ImputeSingleCell": ImputeSingleCell(imputing_method),
-        "ImputeAllData": ImputeAllData(imputing_method),
-        "ImputeTimeSlots": ImputeTimeSlots(imputing_method),
+        "ImputeSingleCell": ImputerSingleCell(imputing_method),
+        "ImputeAllData": ImputerAllData(imputing_method),
+        "ImputeTimeSlots": ImputerTimeSlots(imputing_method),
     }
 
     (features_creator, data_normalizer) = data_operators[modality]

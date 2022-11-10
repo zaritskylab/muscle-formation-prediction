@@ -4,11 +4,15 @@ from tsfresh.utilities.dataframe_functions import impute
 import pandas as pd
 import sys, os
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
-sys.path.append(os.path.abspath('..'))
-from TimeSeriesAnalysis.utils.diff_tracker_utils import *
+sys.path.append(os.path.abspath('../..'))
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
+from utils.diff_tracker_utils import *
 import consts
 
-class ImputeStrategy(object):
+class ImputerStrategy(object):
     '''
     An abstract base class for defining models. The interface,
     to be implemented by subclasses, define standard model
@@ -26,28 +30,28 @@ class ImputeStrategy(object):
         pass
 
 
-class ImputeAllData(ImputeStrategy, ABC):
+class ImputerAllData(ImputerStrategy, ABC):
     '''
     An ordinary least squares (OLS) linear regression model
     '''
 
     def __init__(self, impute_func=impute):
         name = 'ImputeAllData'
-        super(ImputeAllData, self).__init__(name, impute_func)
+        super(ImputerAllData, self).__init__(name, impute_func)
 
     def impute(self, data):
         imputed = self.apply_impute(data)
         return imputed
 
 
-class ImputeSingleCell(ImputeStrategy, ABC):
+class ImputerSingleCell(ImputerStrategy, ABC):
     '''
     An ordinary least squares (OLS) linear regression model
     '''
 
     def __init__(self, impute_func=impute):
         name = 'ImputeSingleCell'
-        super(ImputeSingleCell, self).__init__(name, impute_func)
+        super(ImputerSingleCell, self).__init__(name, impute_func)
 
     def impute(self, data):
         imputed = pd.DataFrame()
@@ -57,14 +61,14 @@ class ImputeSingleCell(ImputeStrategy, ABC):
         return imputed
 
 
-class ImputeTimeSlots(ImputeStrategy, ABC):
+class ImputerTimeSlots(ImputerStrategy, ABC):
     '''
     An ordinary least squares (OLS) linear regression model
     '''
 
     def __init__(self, impute_func=impute):
         name = 'ImputeTimeSlots'
-        super(ImputeTimeSlots, self).__init__(name, impute_func)
+        super(ImputerTimeSlots, self).__init__(name, impute_func)
 
     def impute(self, data):
         imputed = pd.DataFrame()

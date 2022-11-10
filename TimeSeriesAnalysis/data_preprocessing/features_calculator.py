@@ -6,8 +6,13 @@ import os
 from tqdm import tqdm
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
-sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath('../..'))
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
 import consts
+import params
 from utils.data_load_save import get_tracks, downcast_df
 from utils.diff_tracker_utils import *
 
@@ -17,7 +22,7 @@ import nuc_segmentor as segmentor
 import time
 
 
-class CalcFeaturesStrategy(object):
+class FeaturesCalculatorStrategy(object):
     """
     An abstract base class for defining models. The interface,
     to be implemented by subclasses, define standard model
@@ -39,9 +44,10 @@ class CalcFeaturesStrategy(object):
         spot_frame = int(df.iloc[ind]["Spot frame"])
         return x, y, spot_frame
 
-    def calc_features(self, data, actin_vid_path, window_size, local_density):
+    def calc_features(self, data, vid_path, window_size, local_density):
+        print("calculate features", flush=True)
         # check if a features dataframe already exist
-        vid_num = os.path.basename(actin_vid_path)[1]
+        vid_num = os.path.basename(vid_path)[1]
         features_df_path = f"data/mastodon/features/S{vid_num}_{self.name}"
         if os.path.exists(features_df_path):
             print("data exists, returning an already built features dataframe")
@@ -49,9 +55,10 @@ class CalcFeaturesStrategy(object):
             features_df = features_df[features_df["Spot track ID"].isin(data["Spot track ID"].unique())]
             # print(features_df.head(5))
             # print(features_df.shape)
+            print("data shape after calculate features: ", data.shape)
             return features_df
 
-        im = io.imread(actin_vid_path)
+        im = io.imread(vid_path)
         features_df = pd.DataFrame()
         data = remove_short_tracks(data, window_size)
 
@@ -71,14 +78,14 @@ class CalcFeaturesStrategy(object):
         pass
 
 
-class ActinIntensityCalcFeatures(CalcFeaturesStrategy, ABC):
+class ActinIntensityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
     """
     An ordinary least squares (OLS) linear regression model
     """
 
     def __init__(self):
         name = 'actin_intensity'
-        super(ActinIntensityCalcFeatures, self).__init__(name)
+        super(ActinIntensityFeaturesCalculator, self).__init__(name)
 
     def get_single_cell_measures(self, label, df, im_actin, window_size):
         features_df = pd.DataFrame(columns=["min", "max", "mean", "sum", "Spot track ID", "Spot frame", "x", "y"])
@@ -97,7 +104,7 @@ class ActinIntensityCalcFeatures(CalcFeaturesStrategy, ABC):
         return features_df
 
 
-class NucleiIntensityCalcFeatures(CalcFeaturesStrategy, ABC):
+class NucleiIntensityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
     """
     An ordinary least squares (OLS) linear regression model
     """
@@ -105,7 +112,7 @@ class NucleiIntensityCalcFeatures(CalcFeaturesStrategy, ABC):
     def __init__(self):
         name = 'nuclei_intensity'
         self.segmentor = None
-        super(NucleiIntensityCalcFeatures, self).__init__(name)
+        super(NucleiIntensityFeaturesCalculator, self).__init__(name)
 
     def activate_segmentor(self):
         if self.segmentor is not None:
@@ -158,14 +165,14 @@ class NucleiIntensityCalcFeatures(CalcFeaturesStrategy, ABC):
         return df_measures
 
 
-class MotilityCalcFeatures(CalcFeaturesStrategy, ABC):
+class MotilityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
     """
     An ordinary least squares (OLS) linear regression model
     """
 
     def __init__(self):
         name = 'motility'
-        super(MotilityCalcFeatures, self).__init__(name)
+        super(MotilityFeaturesCalculator, self).__init__(name)
 
     def get_single_cell_measures(self, label, df, im_actin, window_size):
         return df
@@ -182,19 +189,19 @@ if __name__ == '__main__':
     # s_run = consts.s_runs['1']
     modality = "nuclei_intensity"
 
-    feature_creator = NucleiIntensityCalcFeatures()
+    feature_creator = NucleiIntensityFeaturesCalculator()
     features_df_save_path = f"/home/shakarch/muscle-formation-diff/data/mastodon/features/{s_run['name']}_{feature_creator.name}"
 
     print(f"\n"
           f"===== running: modality={modality}, "
           f"\nvideo={s_run['name']}, "
-          f"\nlocal density={consts.local_density}, "
-          f"\nreg={consts.registration_method}, "
-          f"\nimpute func= {consts.impute_func},"
+          f"\nlocal density={params.local_density}, "
+          f"\nreg={params.registration_method}, "
+          f"\nimpute func= {params.impute_func},"
           f"\nfeature_calc={feature_creator.name} =====", flush=True)
 
     print("\n===== loading data =====", flush=True)
-    csv_path = consts.data_csv_path % (consts.registration_method, s_run['name'])
+    csv_path = consts.data_csv_path % (params.registration_method, s_run['name'])
     df_all, _ = get_tracks(csv_path, manual_tagged_list=True)
     df_tagged = df_all[df_all["manual"] == 1]
     del df_all
@@ -202,8 +209,8 @@ if __name__ == '__main__':
 
     vid_path = s_run["actin_path"] if modality == "actin_intensity" else s_run["nuc_path"]
     calculated_features = feature_creator.calc_features(df_tagged,
-                                                        actin_vid_path=vid_path,
-                                                        window_size=consts.window_size,
+                                                        vid_path=vid_path,
+                                                        window_size=params.window_size,
                                                         local_density=False)
     print(calculated_features)
 

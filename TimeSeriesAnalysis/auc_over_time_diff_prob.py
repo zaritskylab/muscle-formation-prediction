@@ -62,7 +62,7 @@ def plot_auc_over_time(aucs_lst, path=None, time=(0, 25)):
 def load_csv_in_portions(path, modality, vid_num, registration="no_reg_", local_density=False,
                          impute_func="impute", window_size=16,
                          impute_methodology="ImputeAllData"):
-    path_prefix = path + f"/data/mastodon/ts_transformed_new/{modality}/{impute_methodology}_{impute_func}/"
+    path_prefix = path + f"/data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/"
     end = f"_imputed reg={registration}, local_den={local_density}, win size {window_size}"
 
     df = pd.DataFrame()
@@ -81,6 +81,8 @@ def load_csv_in_portions(path, modality, vid_num, registration="no_reg_", local_
 if __name__ == '__main__':
     print("diff prob auc over time bitch", flush=True)
     modality = sys.argv[1]
+    s_run = consts.s_runs[sys.argv[2]]
+
 
     local_density = False
     window_size = 16
@@ -109,20 +111,31 @@ if __name__ == '__main__':
         if "Spot frame" not in cols:
             cols.extend(["Spot frame"])
 
-        for vid_num in ["1 ck666", "4 ck666", "5 ck666"]:  # 6, 8, 3, 5, 1, 2,
-            print(f"loading vid {vid_num}", flush=True)
-            # df_s = load_csv_in_portions("/home/shakarch/muscle-formation-diff", modality, vid_num,
-            #                             registration=consts.registration_method,
-            #                             local_density=consts.local_density, impute_func=consts.impute_func,
-            #                             impute_methodology=consts.impute_methodology)
+        # vid_num = con_test_n
+        # tsfresh_transform_path = f"/home/shakarch/muscle-formation-diff/data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/S{vid_num}_imputed reg=" \
+        #                          f"{registration_method}, local_den={local_density}, win size {window_size}.pkl"
+        # con_df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
+        # con_df_s = con_df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
+        #
+        # vid_num = diff_test_n
+        # tsfresh_transform_path = f"/home/shakarch/muscle-formation-diff/data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/S{vid_num}_imputed reg=" \
+        #                          f"{registration_method}, local_den={local_density}, win size {window_size}.pkl"
+        # diff_df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
+        # diff_df_s = con_df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
+        #
+        # aucs = auc_over_time(con_df_s[cols], diff_df_s[cols], clf)
+        # plot_auc_over_time([(aucs, dir_path + f"/auc_over_time s{con_test_n}, s{diff_test_n}")])
 
-            tsfresh_transform_path = f"/home/shakarch/muscle-formation-diff/data/mastodon/ts_transformed_new/{modality}/{impute_methodology}_{impute_func}/S{vid_num}_imputed reg=" \
-                                     f"{registration_method}, local_den={local_density}, win size {window_size}.pkl"
 
-            df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
+        print(f"loading vid {s_run['name']}", flush=True)
+        tsfresh_transform_path = f"/home/shakarch/muscle-formation-diff/data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}_imputed reg=" \
+                                 f"{registration_method}, local_den={local_density}, win size {window_size}.pkl"
 
-            print(f"calc avg prob vid {vid_num}", flush=True)
-            df_s = df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
+        df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
 
-            df_score = calc_prob(df_s.loc[:, ~df_s.columns.duplicated()][cols], clf, n_frames=260)
-            pickle.dump(df_score, open(dir_path + f"/df_prob_w={tracks_len}, video_num={vid_num}", 'wb'))
+        print(f"calc avg prob vid {s_run['name']}", flush=True)
+        df_s = df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
+
+
+        df_score = calc_prob(df_s.loc[:, ~df_s.columns.duplicated()][cols], clf, n_frames=260)
+        pickle.dump(df_score, open(dir_path + f"/df_prob_w={tracks_len}, video_num={s_run['name']}", 'wb'))

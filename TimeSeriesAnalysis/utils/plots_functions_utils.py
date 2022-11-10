@@ -94,6 +94,20 @@ def plot_feature_importance(clf, feature_names, path):
     plt.close()
     plt.clf()
 
+
+def convert_score_df(score_df, modality):
+    """converts the scores dataframe from horizontal to vertical view"""
+    df = pd.DataFrame()
+    for i in range(len(score_df)):
+        track = score_df.iloc[i, :]
+        tmp_df = pd.DataFrame({f"score {modality}": track.drop(index="Spot track ID")})
+        if "time" not in tmp_df.columns:
+            tmp_df["time"] = tmp_df.index * 5 / 60
+        tmp_df["Spot track ID"] = track["Spot track ID"]
+        df = df.append(tmp_df, ignore_index=True)
+    return df
+
+
 def plot_avg_conf(conf_data, modality, path=None, plot_std=True):
     """
     :param conf_data:   [(df_score_dif.drop("Spot track ID", axis=1), "ERK", "DarkOrange","Orange"),(df_score_con.drop("Spot track ID", axis=1), "Control", "blue", "blue")]
@@ -109,9 +123,10 @@ def plot_avg_conf(conf_data, modality, path=None, plot_std=True):
         std_vals_diff = ([df[col].std() for col in df.columns])
         p_std = np.asarray(avg_vals_diff) + np.asarray(std_vals_diff)
         m_std = np.asarray(avg_vals_diff) - np.asarray(std_vals_diff)
-        plt.plot([i * 5 / 60 for i in range(len(avg_vals_diff))], avg_vals_diff, color=color1, label=label + " avg")
+        plt.plot([(i + int(df.columns[0])) * 5 / 60 for i in range(len(avg_vals_diff))], avg_vals_diff, color=color1,
+                 label=label + " avg")
         if plot_std:
-            plt.fill_between([i * 5 / 60 for i in range(len(avg_vals_diff))], m_std, p_std, alpha=0.4, color=color2,
+            plt.fill_between([(i + int(df.columns[0])) * 5 / 60 for i in range(len(avg_vals_diff))], m_std, p_std, alpha=0.4, color=color2,
                              label=label + " std")
 
     for (df, label, avg_color, std_color) in conf_data:
@@ -119,6 +134,7 @@ def plot_avg_conf(conf_data, modality, path=None, plot_std=True):
 
     plt.legend()
     plt.grid()
+    plt.ylabel((0, 1))
     plt.xlabel("time (h)")
     plt.ylabel("avg score")
     plt.title(f"avg differentiation score over time ({modality})")

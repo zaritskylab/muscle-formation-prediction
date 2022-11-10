@@ -1,5 +1,11 @@
 from abc import ABCMeta, abstractmethod, ABC
 from tqdm import tqdm
+import os, sys
+
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
 from utils.diff_tracker_utils import *
 from utils.data_load_save import *
 from tsfresh import extract_features
@@ -66,6 +72,7 @@ class SingleCellTSFreshTransform(TSFreshTransformStrategy, ABC):
 
     @staticmethod
     def ts_fresh_transform_single_cell(track, target, track_len):
+        print("transform data", flush=True)
         trans_track = pd.DataFrame()
         trans_track["Spot track ID"] = track["Spot track ID"].max()
         trans_track["target"] = target
@@ -121,6 +128,7 @@ class TimeSplitsTSFreshTransform(TSFreshTransformStrategy, ABC):
         return data_chunks[current_split_ind]
 
     def ts_fresh_transform_df(self, df_to_transform, target, track_len):
+        print("transform data", flush=True)
         if df_to_transform.empty:
             return pd.DataFrame()
 
