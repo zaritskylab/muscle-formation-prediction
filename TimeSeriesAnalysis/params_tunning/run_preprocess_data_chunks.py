@@ -9,7 +9,7 @@ if __name__ == '__main__':
     modality = sys.argv[1]
     n_tasks = int(sys.argv[2])
     s_run = consts.s_runs[sys.argv[3]]
-    job_id = int(os.getenv('SLURM_ARRAY_TASK_ID')[1])
+    job_id = int(os.getenv('SLURM_ARRAY_TASK_ID')[1:])
 
     # loop
     preprocess_data(n_tasks=n_tasks, job_id=job_id, s_run=s_run, modality=modality,
