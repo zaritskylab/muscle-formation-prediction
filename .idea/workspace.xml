@@ -23,14 +23,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="re-packaged data-preprocessing code">
-      <change beforePath="$PROJECT_DIR$/.idea/muscle-formation-diff.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/muscle-formation-diff.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -442,7 +436,7 @@
       <workItem from="1666594283520" duration="11441000" />
       <workItem from="1667129558492" duration="31552000" />
       <workItem from="1667894931349" duration="6814000" />
-      <workItem from="1667984061424" duration="56856000" />
+      <workItem from="1667984061424" duration="58093000" />
     </task>
     <task id="LOCAL-00001" summary="Added aae files">
       <created>1617796329153</created>
@@ -654,7 +648,21 @@
       <option name="project" value="LOCAL" />
       <updated>1668331423904</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="re-packaged data-preprocessing code">
+      <created>1668341908794</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1668341908794</updated>
+    </task>
+    <task id="LOCAL-00032" summary="re-packaged data-preprocessing code">
+      <created>1668341929928</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1668341929928</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -801,10 +809,10 @@
     </state>
     <state x="2310" y="164" key="SettingsEditor/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666592257768" />
     <state x="2123" y="142" key="SettingsEditor/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668333231679" />
-    <state x="2352" y="261" key="Vcs.Push.Dialog.v2" timestamp="1668331425462">
+    <state x="2352" y="261" key="Vcs.Push.Dialog.v2" timestamp="1668341931153">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="2352" y="261" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668331425462" />
+    <state x="2352" y="261" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668341931153" />
     <state x="432" y="238" key="Vcs.Push.Dialog.v2/0.0.1680.1010@0.0.1680.1010" timestamp="1662434316652" />
     <state width="848" height="513" key="XDebugger.FullValuePopup" timestamp="1668337077200">
       <screen x="1920" y="23" width="1680" height="1010" />

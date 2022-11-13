@@ -195,7 +195,7 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
                                                        con_train_num=con_train_n, diff_train_num=diff_train_n,
                                                        con_test_num=None, diff_test_num=None)
         today = datetime.datetime.now()
-        dir_path = f"{today.strftime('%d-%m-%Y')}-{modality} local dens-{local_density}, s{con_train_n}, s{diff_train_n} train" + (
+        dir_path = f"{consts.storage_path}{today.strftime('%d-%m-%Y')}-{modality} local dens-{local_density}, s{con_train_n}, s{diff_train_n} train" + (
             f" win size {window_size}" if modality != "motility" else "")
         second_dir = f"track len {tracks_len}, impute_func-{impute_methodology}_{impute_func} reg {registration_method}"
         os.makedirs(dir_path, exist_ok=True)
