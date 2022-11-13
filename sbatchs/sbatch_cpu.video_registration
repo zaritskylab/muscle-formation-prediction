@@ -26,4 +26,4 @@ source activate tf-env-new            ### activating Conda environment, environm
 
 arg_vid=$1
 arg_registrator_name=$2
-python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/data_preprocessing/video_registrator.py $arg_vid $arg_registrator_name
+python /home/shakarch/muscle-formation-regeneration/TimeSeriesAnalysis/data_preprocessing/video_registrator.py $arg_vid $arg_registrator_name

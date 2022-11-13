@@ -19,11 +19,11 @@ modality=$1
 param_explore=$2
 
 # first job - no dependencies
-jid1=$(sbatch --parsable muscle-formation-diff/sbatchs/sbatch_cpu.prepare_data $modality $param_explore)
+jid1=$(sbatch --parsable muscle-formation-regeneration/sbatchs/sbatch_cpu.prepare_data $modality $param_explore)
 
-jid2=$(sbatch --parsable --dependency=afterok:$jid1 muscle-formation-diff/sbatchs/sbatch_cpu.concat_dfs $modality $param_explore)
+jid2=$(sbatch --parsable --dependency=afterok:$jid1 muscle-formation-regeneration/sbatchs/sbatch_cpu.concat_dfs $modality $param_explore)
 
-jid3=$(sbatch --parsable --dependency=afterok:$jid2 muscle-formation-diff/sbatchs/sbatch_cpu.build_models_on_transformed_tracks $modality $param_explore)
+jid3=$(sbatch --parsable --dependency=afterok:$jid2 muscle-formation-regeneration/sbatchs/sbatch_cpu.build_models_on_transformed_tracks $modality $param_explore)
 
 
 

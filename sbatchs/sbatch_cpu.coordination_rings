@@ -31,4 +31,4 @@ arg_reg_method=$2
 arg_ring_size=10
 arg_only_tagged=$3
 arg_smooth_var=$4
-python /home/shakarch/muscle-formation-diff/Coordination/coordination_rings.py $arg_srun $arg_reg_method $arg_ring_size $arg_only_tagged $arg_smooth_var
+python /home/shakarch/muscle-formation-regeneration/Coordination/coordination_rings.py $arg_srun $arg_reg_method $arg_ring_size $arg_only_tagged $arg_smooth_var

@@ -19,4 +19,4 @@ source activate tf-env-new            ### activating Conda environment, environm
 arg_srun=$1
 arg_reg_method=$2
 arg_only_tagged=$3
-python /home/shakarch/muscle-formation-diff/Coordination/CoordinationCalc_mastodon.py $arg_srun $arg_reg_method	$arg_only_tagged	### this command executes jupyter lab – replace with your own command
+python /home/shakarch/muscle-formation-regeneration/Coordination/CoordinationCalc_mastodon.py $arg_srun $arg_reg_method	$arg_only_tagged	### this command executes jupyter lab – replace with your own command

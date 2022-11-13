@@ -25,4 +25,4 @@ source activate tf-env-new            ### activating Conda environment, environm
 arg_modality=$1
 param_explore=$2
 
-python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py $arg_modality 10 $param_explore
+python /home/shakarch/muscle-formation-regeneration/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py $arg_modality 10 $param_explore

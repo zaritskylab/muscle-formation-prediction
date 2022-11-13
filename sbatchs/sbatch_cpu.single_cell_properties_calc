@@ -30,5 +30,5 @@ source activate tf-env-new 				### activate a conda environment, replace my_env 
 s_run=$1
 
 
-python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/single_cell_properties_calc.py $s_run	### execute python script – replace with your own command
+python /home/shakarch/muscle-formation-regeneration/TimeSeriesAnalysis/single_cell_properties_calc.py $s_run	### execute python script – replace with your own command
 

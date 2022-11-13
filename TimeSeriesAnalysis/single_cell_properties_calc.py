@@ -7,7 +7,7 @@ import pandas as pd
 from skimage import io
 
 ROLLING_VAL = 30
-sys.path.append('/sise/home/shakarch/muscle-formation-diff')
+sys.path.append('/sise/home/shakarch/muscle-formation-regeneration')
 sys.path.append(os.path.abspath('..'))
 from TimeSeriesAnalysis import consts
 from TimeSeriesAnalysis.utils.diff_tracker_utils import *
@@ -237,7 +237,7 @@ def get_single_cell_properties(track_coord_data_mot_score, track_score_int, trac
 
 if __name__ == '__main__':
     print("single_cell_properties_calc")
-    os.chdir("/home/shakarch/muscle-formation-diff")
+    # os.chdir("/home/shakarch/muscle-formation-regeneration")
 
     print("\n"f"===== current working directory: {os.getcwd()} =====")
 
@@ -250,6 +250,9 @@ if __name__ == '__main__':
     for con_train_n, diff_train_n in [(1, 5), (2, 3)]:
         print(s_run, flush=True)
         path_scores_df = get_dir_path("motility", con_train_n, diff_train_n)
+        print(path_scores_df)
+        print(coord_df_path)
+        print(csv_path)
         df_score_mot, df_tagged_mot, all_tracks_mot = load_correlations_data(s_run,
                                                                              path_scores_df,
                                                                              coord_df_path,

@@ -21,5 +21,5 @@ source activate tf-env-new            ### activating Conda environment, environm
 arg_modality=$1
 param_explore=$2
 
-python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/build_models_on_transformed_tracks.py $arg_modality $param_explore
+python /home/shakarch/muscle-formation-regeneration/TimeSeriesAnalysis/build_models_on_transformed_tracks.py $arg_modality $param_explore
 

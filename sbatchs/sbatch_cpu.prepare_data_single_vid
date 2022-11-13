@@ -24,4 +24,4 @@ arg_modality=$1
 vid_num=$2
 
 
-python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py $arg_modality 10 $vid_num
+python /home/shakarch/muscle-formation-regeneration/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py $arg_modality 10 $vid_num

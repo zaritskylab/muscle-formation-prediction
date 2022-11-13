@@ -22,4 +22,4 @@ source activate tf-env-new            ### activating Conda environment, environm
 arg_modality=$1
 arg_srun=$2
 
-python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/auc_over_time_diff_prob.py $arg_modality $arg_srun
+python /home/shakarch/muscle-formation-regeneration/TimeSeriesAnalysis/auc_over_time_diff_prob.py $arg_modality $arg_srun

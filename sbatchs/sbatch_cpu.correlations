@@ -14,4 +14,4 @@ echo "SLURM_JOB_NODELIST"=$SLURM_JOB_NODELIST
 ### Start you code below ####
 module load anaconda              ### load anaconda module
 source activate tf-env-new            ### activating Conda environment, environment must be configured before running the job
-python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/correlations.py			### this command executes jupyter lab – replace with your own command
+python /home/shakarch/muscle-formation-regeneration/TimeSeriesAnalysis/correlations.py			### this command executes jupyter lab – replace with your own command
