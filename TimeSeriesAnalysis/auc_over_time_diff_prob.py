@@ -3,7 +3,13 @@ import sys, os
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('..'))
-from TimeSeriesAnalysis.params import PARAMS_DICT, impute_methodology, impute_func, registration_method
+
+sys.path.append(os.path.abspath('../..'))
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+import TimeSeriesAnalysis.consts as consts
+from TimeSeriesAnalysis.params import impute_methodology, impute_func, registration_method
 from TimeSeriesAnalysis.utils.diff_tracker_utils import *
 from TimeSeriesAnalysis.utils.data_load_save import *
 import matplotlib.pyplot as plt
@@ -83,7 +89,6 @@ if __name__ == '__main__':
     modality = sys.argv[1]
     s_run = consts.s_runs[sys.argv[2]]
 
-
     local_density = False
     window_size = 16
     tracks_len = 30
@@ -92,7 +97,7 @@ if __name__ == '__main__':
         print(f"con_train_n {con_train_n}, diff_train_n {diff_train_n}, "
               f"con_test_n {con_test_n}, diff_test_n {diff_test_n}", flush=True)
 
-        dir_path = f"/home/shakarch/30-07-2022-{modality} local dens-{local_density}, s{con_train_n}, s{diff_train_n} train" + (
+        dir_path = consts.storage_path + f"30-07-2022-{modality} local dens-{local_density}, s{con_train_n}, s{diff_train_n} train" + (
             f" win size {window_size}" if modality != "motility" else "")
         second_dir = f"track len {tracks_len}, impute_func-{impute_methodology}_{impute_func} reg {registration_method}"
         dir_path += "/" + second_dir
@@ -111,31 +116,17 @@ if __name__ == '__main__':
         if "Spot frame" not in cols:
             cols.extend(["Spot frame"])
 
-        # vid_num = con_test_n
-        # tsfresh_transform_path = f"/home/shakarch/muscle-formation-diff/data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/S{vid_num}_imputed reg=" \
-        #                          f"{registration_method}, local_den={local_density}, win size {window_size}.pkl"
-        # con_df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
-        # con_df_s = con_df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
-        #
-        # vid_num = diff_test_n
-        # tsfresh_transform_path = f"/home/shakarch/muscle-formation-diff/data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/S{vid_num}_imputed reg=" \
-        #                          f"{registration_method}, local_den={local_density}, win size {window_size}.pkl"
-        # diff_df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
-        # diff_df_s = con_df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
-        #
-        # aucs = auc_over_time(con_df_s[cols], diff_df_s[cols], clf)
-        # plot_auc_over_time([(aucs, dir_path + f"/auc_over_time s{con_test_n}, s{diff_test_n}")])
-
-
         print(f"loading vid {s_run['name']}", flush=True)
-        tsfresh_transform_path = f"/home/shakarch/muscle-formation-diff/data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}_imputed reg=" \
-                                 f"{registration_method}, local_den={local_density}, win size {window_size}.pkl"
+        tsfresh_transform_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}_reg=" \
+                                                       f"{registration_method}, local_den={local_density}, win size {window_size}.pkl"
 
         df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
 
         print(f"calc avg prob vid {s_run['name']}", flush=True)
         df_s = df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
 
-
-        df_score = calc_prob(df_s.loc[:, ~df_s.columns.duplicated()][cols], clf, n_frames=260)
+        cols_to_check = list(set(cols) & set(df_s.columns))
+        df_s = df_s[cols_to_check]
+        print(df_s.shape)
+        df_score = calc_prob(df_s, clf, n_frames=260)
         pickle.dump(df_score, open(dir_path + f"/df_prob_w={tracks_len}, video_num={s_run['name']}", 'wb'))

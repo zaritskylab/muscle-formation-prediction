@@ -196,6 +196,9 @@ def get_single_cell_properties(track_coord_data_mot_score, track_score_int, trac
     cols_to_drop = ["Spot track ID", "Track #", "t0", "cos_theta"]
     score_mot = track_coord_data_mot_score.copy().iloc[0, :].drop(columns=cols_to_drop)
     score_int = track_score_int.copy().iloc[0, :].drop(columns=cols_to_drop)
+    print(track.shape)
+    print(track_coord_data_mot_score.shape)
+    print(track_score_int.shape)
     spot_track_id = track["Spot track ID"].values[0]
 
     coord = get_coordination_data(track_coord_data_mot_score) if coordination else [np.nan for i in range(500)]

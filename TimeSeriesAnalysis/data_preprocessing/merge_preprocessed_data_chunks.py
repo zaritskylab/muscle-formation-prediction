@@ -34,7 +34,7 @@ def concat_data_portions(local_density, window_size):
     print(f"running: modality={modality}, video={s_run['name']}, local density={local_density}, "
           f"reg={params.registration_method}, impute_methodology={params.impute_methodology}, impute func= {params.impute_func},")
 
-    s_run_files_dir_path = path + f"/data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{s_run['name']}"
+    s_run_files_dir_path = consts.storage_path + f"/data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{s_run['name']}"
 
     # concat all dfs
     df_all_chunks = pd.DataFrame()

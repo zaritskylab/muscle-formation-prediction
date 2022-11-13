@@ -7,7 +7,6 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-print(sys.path)
 import image_registration
 from pystackreg import StackReg
 from skimage import io
@@ -242,10 +241,9 @@ def video_registration_factory(registrator_name):
 
 if __name__ == '__main__':
     os.chdir("/home/shakarch/muscle-formation-diff")
-
-    # os.chdir(os.getcwd() + r'/muscle-formation-diff')
     print("current working directory: ", os.getcwd())
 
+    # print("hello")
     s_run = consts.s_runs[sys.argv[1]]
     reg_name = sys.argv[2]
 
@@ -263,4 +261,4 @@ if __name__ == '__main__':
     registrator = video_registration_factory(reg_name)
     corrections = registrator.calc_shifts(im_nuc)
     reg_data = registrator.register_tracks(data_to_registrate=data_to_reg, flows=corrections)
-    reg_data.to_csv(f"data/mastodon/reg_{registrator.name}_{s_run['name']} all detections.csv")
+    reg_data.to_csv(consts.storage_path + f"data/mastodon/{registrator.name}_{s_run['name']} all detections.csv")

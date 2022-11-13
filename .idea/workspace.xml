@@ -22,27 +22,15 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="Added validations ot tsfresh's pipeline">
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py" afterDir="false" />
+    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="re-packaged data-preprocessing code">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/muscle-formation-diff.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/muscle-formation-diff.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Coordination/CoordinationCalc_mastodon.py" beforeDir="false" afterPath="$PROJECT_DIR$/Coordination/CoordinationCalc_mastodon.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/calc_features.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/features_calculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/concat_dfs.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/consts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_normalize.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/data_normalizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocess.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/data_preprocessor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/impute_strategy.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/imputer_strategy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/params.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/params.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/prepare_data.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/video_registrator.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/video_registrator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/tsfresh_transformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/tsfresh_transformer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/data_load_save.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/data_load_save.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/plots_functions_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/plots_functions_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/video_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/video_registrator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -227,9 +215,6 @@
       <module name="muscle-formation-diff" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TimeSeriesAnalysis" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -455,7 +440,7 @@
       <workItem from="1666594283520" duration="11441000" />
       <workItem from="1667129558492" duration="31552000" />
       <workItem from="1667894931349" duration="6814000" />
-      <workItem from="1667984061424" duration="20188000" />
+      <workItem from="1667984061424" duration="38878000" />
     </task>
     <task id="LOCAL-00001" summary="Added aae files">
       <created>1617796329153</created>
@@ -604,7 +589,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662434314017</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="re-packaged data-preprocessing code">
+      <created>1668078808985</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1668078808985</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -634,7 +626,8 @@
     <MESSAGE value="time series classification- added validations to tsfresh's pipeline, such as tracks_length_analysis.py, and LeaveOneOutTraining.py" />
     <MESSAGE value="PIV" />
     <MESSAGE value="Added validations ot tsfresh's pipeline" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added validations ot tsfresh's pipeline" />
+    <MESSAGE value="re-packaged data-preprocessing code" />
+    <option name="LAST_COMMIT_MESSAGE" value="re-packaged data-preprocessing code" />
   </component>
   <component name="WindowStateProjectService">
     <state x="265" y="19" width="1510" height="1010" key="#Deployment" timestamp="1667197271977">
@@ -666,17 +659,17 @@
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state x="2157" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668075760282" />
-    <state x="2055" y="478" width="1158" height="429" key="#xdebugger.evaluate" timestamp="1667662871940">
+    <state x="2071" y="316" width="1158" height="501" key="#xdebugger.evaluate" timestamp="1668321520315">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state x="2235" y="496" width="831" height="554" key="#xdebugger.evaluate/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666593002559" />
-    <state x="2055" y="478" width="1158" height="429" key="#xdebugger.evaluate/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667662871940" />
+    <state x="2071" y="316" width="1158" height="501" key="#xdebugger.evaluate/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668321520314" />
     <state x="111" y="94" key="#xdebugger.evaluate/0.0.1280.680@0.0.1280.680" timestamp="1662875740543" />
-    <state width="1620" height="511" key="DebuggerActiveHint" timestamp="1667662159450">
+    <state width="1620" height="511" key="DebuggerActiveHint" timestamp="1668321422658">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1852" height="527" key="DebuggerActiveHint/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666592996711" />
-    <state width="1620" height="511" key="DebuggerActiveHint/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667662159450" />
+    <state width="1620" height="511" key="DebuggerActiveHint/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668321422658" />
     <state x="2012" y="115" width="1496" height="826" key="DiffContextDialog" timestamp="1667462298455">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
@@ -685,75 +678,75 @@
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state x="2376" y="483" width="382" height="465" key="EnvironmentVariablesDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661844467253" />
-    <state width="1383" height="186" key="GridCell.Tab.0.bottom" timestamp="1667662950958">
+    <state width="1637" height="399" key="GridCell.Tab.0.bottom" timestamp="1668321699961">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1587" height="242" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1666723159452" />
-    <state width="1383" height="186" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667662950958" />
+    <state width="1637" height="399" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668321699961" />
     <state width="1047" height="150" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
-    <state width="1383" height="186" key="GridCell.Tab.0.center" timestamp="1667662950958">
+    <state width="1637" height="399" key="GridCell.Tab.0.center" timestamp="1668321699961">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.0.center/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1587" height="242" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1666723159452" />
-    <state width="1383" height="186" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667662950958" />
+    <state width="1637" height="399" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668321699961" />
     <state width="1047" height="150" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
-    <state width="1383" height="186" key="GridCell.Tab.0.left" timestamp="1667662950957">
+    <state width="1637" height="399" key="GridCell.Tab.0.left" timestamp="1668321699961">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.0.left/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1587" height="242" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1666723159450" />
-    <state width="1383" height="186" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667662950957" />
+    <state width="1637" height="399" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668321699961" />
     <state width="1047" height="150" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
-    <state width="1383" height="186" key="GridCell.Tab.0.right" timestamp="1667662950958">
+    <state width="1637" height="399" key="GridCell.Tab.0.right" timestamp="1668321699961">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.0.right/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1587" height="242" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1666723159452" />
-    <state width="1383" height="186" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667662950958" />
+    <state width="1637" height="399" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668321699961" />
     <state width="1047" height="150" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
-    <state width="1383" height="186" key="GridCell.Tab.1.bottom" timestamp="1667662950958">
+    <state width="1637" height="399" key="GridCell.Tab.1.bottom" timestamp="1668321699962">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1587" height="242" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1666723159453" />
-    <state width="1383" height="186" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667662950958" />
+    <state width="1637" height="399" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668321699962" />
     <state width="1047" height="150" key="GridCell.Tab.1.bottom/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
-    <state width="1383" height="186" key="GridCell.Tab.1.center" timestamp="1667662950958">
+    <state width="1637" height="399" key="GridCell.Tab.1.center" timestamp="1668321699961">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.1.center/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1587" height="242" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1666723159453" />
-    <state width="1383" height="186" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667662950958" />
+    <state width="1637" height="399" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668321699961" />
     <state width="1047" height="150" key="GridCell.Tab.1.center/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
-    <state width="1383" height="186" key="GridCell.Tab.1.left" timestamp="1667662950958">
+    <state width="1637" height="399" key="GridCell.Tab.1.left" timestamp="1668321699961">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.1.left/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1587" height="242" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1666723159453" />
-    <state width="1383" height="186" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667662950958" />
+    <state width="1637" height="399" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668321699961" />
     <state width="1047" height="150" key="GridCell.Tab.1.left/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
-    <state width="1383" height="186" key="GridCell.Tab.1.right" timestamp="1667662950958">
+    <state width="1637" height="399" key="GridCell.Tab.1.right" timestamp="1668321699962">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.1.right/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1587" height="242" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1666723159453" />
-    <state width="1383" height="186" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667662950958" />
+    <state width="1637" height="399" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668321699962" />
     <state width="1047" height="150" key="GridCell.Tab.1.right/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
     <state x="2487" y="266" width="733" height="539" key="PyMappingSimpleResolveDialog" timestamp="1661778205513">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state x="2487" y="266" key="PyMappingSimpleResolveDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661778205513" />
-    <state x="2123" y="142" key="SettingsEditor" timestamp="1667660235476">
+    <state x="2123" y="142" key="SettingsEditor" timestamp="1668322451436">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state x="2310" y="164" key="SettingsEditor/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666592257768" />
-    <state x="2123" y="142" key="SettingsEditor/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667660235476" />
-    <state x="432" y="238" key="Vcs.Push.Dialog.v2" timestamp="1662434316652">
-      <screen x="0" y="0" width="1680" height="1010" />
+    <state x="2123" y="142" key="SettingsEditor/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668322451436" />
+    <state x="2352" y="261" key="Vcs.Push.Dialog.v2" timestamp="1668078811249">
+      <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="2352" y="261" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1659679410456" />
+    <state x="2352" y="261" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668078811249" />
     <state x="432" y="238" key="Vcs.Push.Dialog.v2/0.0.1680.1010@0.0.1680.1010" timestamp="1662434316652" />
     <state width="970" height="529" key="XDebugger.FullValuePopup" timestamp="1666592966774">
       <screen x="1920" y="10" width="1920" height="1040" />
@@ -768,10 +761,10 @@
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state x="2467" y="127" width="721" height="801" key="find.popup/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1660591278308" />
-    <state x="2012" y="216" width="623" height="539" key="ftp.server.browser" timestamp="1661778050292">
+    <state x="2012" y="216" width="623" height="539" key="ftp.server.browser" timestamp="1668320866530">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="2012" y="216" width="623" height="539" key="ftp.server.browser/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1661778050292" />
+    <state x="2012" y="216" width="623" height="539" key="ftp.server.browser/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668320866530" />
     <state x="2596" y="420" key="publish.login" timestamp="1662797131417">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
@@ -871,11 +864,6 @@
           <option name="timeStamp" value="1651" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py</url>
-          <line>139</line>
-          <option name="timeStamp" value="1654" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py</url>
           <line>157</line>
           <option name="timeStamp" value="1656" />
@@ -891,9 +879,14 @@
           <option name="timeStamp" value="1672" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py</url>
+          <line>7</line>
+          <option name="timeStamp" value="1678" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py</url>
-          <line>206</line>
-          <option name="timeStamp" value="1674" />
+          <line>41</line>
+          <option name="timeStamp" value="1679" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -944,7 +937,7 @@
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$calc_delta_mastodon.coverage" NAME="calc_delta_mastodon Coverage Results" MODIFIED="1643096497495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_diff$coordination_rings.coverage" NAME="coordination_rings Coverage Results" MODIFIED="1659340111747" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Coordination" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$normalize_tracks_microscope_mistakes.coverage" NAME="normalize_tracks_microscope_mistakes Coverage Results" MODIFIED="1646052495643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
-    <SUITE FILE_PATH="coverage/muscle_formation_diff$single_cell_properties_calc.coverage" NAME="single_cell_properties_calc Coverage Results" MODIFIED="1667662569063" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
+    <SUITE FILE_PATH="coverage/muscle_formation_diff$single_cell_properties_calc.coverage" NAME="single_cell_properties_calc Coverage Results" MODIFIED="1668321042895" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$PIV.coverage" NAME="PIV Coverage Results" MODIFIED="1628757802109" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$densist_over_diff_score.coverage" NAME="densist_over_diff_score Coverage Results" MODIFIED="1648662666473" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />
     <SUITE FILE_PATH="coverage/muscle_formation_regeneration$granger_causality_data_prep.coverage" NAME="granger_causality_data_prep Coverage Results" MODIFIED="1656486076443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TimeSeriesAnalysis" />

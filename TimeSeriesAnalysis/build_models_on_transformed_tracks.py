@@ -4,7 +4,7 @@ import os, sys
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('..'))
 
-from TimeSeriesAnalysis.params import PARAMS_DICT, impute_methodology, impute_func, registration_method, get_tine_windows
+from TimeSeriesAnalysis.params import impute_methodology, impute_func, registration_method
 from TimeSeriesAnalysis.utils.diff_tracker_utils import *
 from TimeSeriesAnalysis.utils.data_load_save import *
 from TimeSeriesAnalysis.utils.plots_functions_utils import *
@@ -242,16 +242,5 @@ if __name__ == '__main__':
     modality = sys.argv[1]
     param_explore = sys.argv[2]
 
-    PARAMS = PARAMS_DICT[param_explore]
-    for exp_param in PARAMS[param_explore]:
-        print(f"{param_explore} : {exp_param}")
-        params_copy = PARAMS.copy()
-        params_copy.update({param_explore: exp_param})
-
-        if param_explore == "tracks_len":
-            diff_window, con_window = get_tine_windows(params_copy["start"], params_copy["tracks_len"])
-            params_copy["diff_window"] = diff_window
-            params_copy["con_window"] = con_window
-
-        build_model_trans_tracks(params_copy['local_density'], params_copy['window_size'], params_copy['track_len'],
-                                 params_copy['con_window'], params_copy['diff_window'])
+    build_model_trans_tracks(params.local_density, params.window_size, params.tracks_len,
+                             params.con_window, params.diff_window)
