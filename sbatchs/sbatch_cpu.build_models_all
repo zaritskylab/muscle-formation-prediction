@@ -16,4 +16,32 @@ module load anaconda              ### load anaconda module
 source activate tf-env-new            ### activating Conda environment, environment must be configured before running the job
 
 
-sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare intensity no_reg_ impute_zeroes ImputeSingleCell
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare actin_intensity no_reg_ impute_zeroes ImputeAllData
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare motility no_reg_ impute_zeroes ImputeAllData
+#
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare actin_intensity reg_CrossCorrelationRegistration_ impute_zeroes ImputeAllData
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare motility reg_CrossCorrelationRegistration_ impute_zeroes ImputeAllData
+#
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare actin_intensity reg_OpticalFlowRegistration_ impute_zeroes ImputeAllData
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare motility reg_OpticalFlowRegistration_ impute_zeroes ImputeAllData
+#
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare actin_intensity reg_StackRegRegistration_ impute_zeroes ImputeAllData
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare motility reg_StackRegRegistration_ impute_zeroes ImputeAllData
+#
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare actin_intensity reg_MeanOpticalFlowRegistration_ impute_zeroes ImputeAllData
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.seq_data_prepare motility reg_MeanOpticalFlowRegistration_ impute_zeroes ImputeAllData
+
+#######################################################
+
+#sbatch muscle-formation-diff/sbatchs/sbatch_cpu.build_models_on_transformed_tracks motility no_reg_ impute_zeroes ImputeAllData
+##sbatch muscle-formation-diff/sbatchs/sbatch_cpu.build_models_on_transformed_tracks actin_intensity no_reg_ impute_zeroes ImputeAllData
+
+sbatch muscle-formation-diff/sbatchs/sbatch_cpu.single_cell_properties_calc reg_MeanOpticalFlowRegistration_ 1
+sbatch muscle-formation-diff/sbatchs/sbatch_cpu.single_cell_properties_calc reg_MeanOpticalFlowRegistration_ 2
+sbatch muscle-formation-diff/sbatchs/sbatch_cpu.single_cell_properties_calc reg_MeanOpticalFlowRegistration_ 3
+sbatch muscle-formation-diff/sbatchs/sbatch_cpu.single_cell_properties_calc reg_MeanOpticalFlowRegistration_ 5
+
+sbatch muscle-formation-diff/sbatchs/sbatch_cpu.single_cell_properties_calc no_reg_ 1
+sbatch muscle-formation-diff/sbatchs/sbatch_cpu.single_cell_properties_calc no_reg_ 5
+
+

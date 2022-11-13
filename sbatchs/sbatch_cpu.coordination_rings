@@ -2,17 +2,21 @@
 ### sbatch config parameters must start with #SBATCH and must precede any other command. to ignore just add another # - like so ##SBATCH
 #SBATCH --partition main                         ### specify partition name where to run a job. short - 7 days time limit; debug – for testing - 2 hours and 1 job at a time
 #SBATCH --time 3-11:30:00                      ### limit the time of job running. Make sure it is not greater than the partition time limit!! Format: D-H:MM:SS
-#SBATCH --job-name concat_dfs                   ### name of the job. replace my_job with your desired job name
+#SBATCH --job-name coord_rings                   ### name of the job. replace my_job with your desired job name
 
 #SBATCH --mail-user=shakarch@post.bgu.ac.il      ### users email for sending job status notifications
 #SBATCH --mail-type=END,FAIL            ### conditions when to send the email. ALL,BEGIN,END,FAIL, REQUEU, NONE
 
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
+#SBATCH --mem=12G
 
-#SBATCH --array=1,2,3,5
+#SBATCH --array=10,20,30,40,50##,100,120,140
 #SBATCH --output output_file_name_%A_%a.out           ### output log for running job - %J is the job number variable
 
+##30,60,90,120,150,180,210,240
+##20,40,60,80,100,120,140
+##50,100,150,200,250,300
 
 ### Print some data to output file ###
 echo "SLURM_JOBID"=$SLURM_JOBID
@@ -21,4 +25,10 @@ echo "SLURM_JOB_NODELIST"=$SLURM_JOB_NODELIST
 ### Start you code below ####
 module load anaconda              ### load anaconda module
 source activate tf-env-new            ### activating Conda environment, environment must be configured before running the job
-python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/coordination_rings.py
+
+arg_srun=$1
+arg_reg_method=$2
+arg_ring_size=10
+arg_only_tagged=$3
+arg_smooth_var=$4
+python /home/shakarch/muscle-formation-diff/Coordination/coordination_rings.py $arg_srun $arg_reg_method $arg_ring_size $arg_only_tagged $arg_smooth_var

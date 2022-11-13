@@ -7,6 +7,8 @@
 #SBATCH --mail-user=shakarch@post.bgu.ac.il      ### users email for sending job status notifications
 #SBATCH --mail-type=END,FAIL            ### conditions when to send the email. ALL,BEGIN,END,FAIL, REQUEU, NONE
 
+#SBATCH --output  prep_data_%A_%a.out
+
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=6
 
@@ -18,12 +20,8 @@ echo "SLURM_JOB_NODELIST"=$SLURM_JOB_NODELIST
 module load anaconda              ### load anaconda module
 source activate tf-env-new            ### activating Conda environment, environment must be configured before running the job
 
-arg_vid=100-109
-arg_modality=$2
-param_explore=$3
-
-#SBATCH --array=arg_vid
-#SBATCH --output output_file_name_%A_%a.out           ### output log for running job - %J is the job number variable
+arg_modality=$1
+vid_num=$2
 
 
-python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/prepare_data.py $arg_modality 10 $param_explore
+python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py $arg_modality 10 $vid_num

@@ -13,7 +13,7 @@
 #SBATCH --cpus-per-task=4
 
 # Note: the following 4 lines are commented out
-##SBATCH --mail-user=user@post.bgu.ac.il	### user's email for sending job status messages
+#SBATCH --mail-user=user@post.bgu.ac.il	### user's email for sending job status messages
 #SBATCH --mail-type=END,FAIL			### conditions for sending the email. ALL,BEGIN,END,FAIL, REQUEU, NONE
 #SBATCH --mem=12G				### ammount of RAM memory
 
@@ -26,5 +26,9 @@ echo 'single_cell_prop'
 ### Start your code below ####
 module load anaconda				### load anaconda module (must be present when working with conda environments)
 source activate tf-env-new 				### activate a conda environment, replace my_env with your conda environment
-python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/single_cell_properties_calc.py				### execute python script – replace with your own command
+
+s_run=$1
+
+
+python /home/shakarch/muscle-formation-diff/TimeSeriesAnalysis/single_cell_properties_calc.py $s_run	### execute python script – replace with your own command
 
