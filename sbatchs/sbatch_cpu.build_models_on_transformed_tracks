@@ -19,7 +19,6 @@ module load anaconda              ### load anaconda module
 source activate tf-env-new            ### activating Conda environment, environment must be configured before running the job
 
 arg_modality=$1
-param_explore=$2
 
-python /home/shakarch/muscle-formation-regeneration/TimeSeriesAnalysis/build_models_on_transformed_tracks.py $arg_modality $param_explore
+python /home/shakarch/muscle-formation-regeneration/TimeSeriesAnalysis/build_models_on_transformed_tracks.py $arg_modality
 

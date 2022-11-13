@@ -240,7 +240,6 @@ def build_model_trans_tracks(local_density, window_size, tracks_len, con_window,
 if __name__ == '__main__':
     path = consts.cluster_path
     modality = sys.argv[1]
-    param_explore = sys.argv[2]
 
     build_model_trans_tracks(params.local_density, params.window_size, params.tracks_len,
                              params.con_window, params.diff_window)

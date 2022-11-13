@@ -1,10 +1,7 @@
-import numpy as np
-
 # intensity
 window_size = 16
 tracks_len = 30
 diff_window = [140, 170]
-# con_window = [[10, 40], [40, 70], [70, 100], [100, 130], [130, 160], [160, 190], [190, 220], [220, 250]]
 con_window = [[0, 30], [40, 70], [90, 120], [140, 170], [180, 210], [220, 250]]
 local_density = False
 
