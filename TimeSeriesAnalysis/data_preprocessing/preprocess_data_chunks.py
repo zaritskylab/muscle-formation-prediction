@@ -79,7 +79,7 @@ if __name__ == '__main__':
     s_run = consts.s_runs[sys.argv[3]]
     # s_run = consts.s_runs[os.getenv('SLURM_ARRAY_TASK_ID')[:1]]  #:2 for ck666 experiment
 
-    job_id = int(os.getenv('SLURM_ARRAY_TASK_ID')[1])
+    job_id = int(os.getenv('SLURM_ARRAY_TASK_ID')[1:])
 
     preprocess_data(n_tasks=n_tasks, job_id=job_id, s_run=s_run, modality=modality,
                     win_size=params.window_size, local_den=params.local_density,

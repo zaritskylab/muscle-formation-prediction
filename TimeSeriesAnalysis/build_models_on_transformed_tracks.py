@@ -5,6 +5,7 @@ sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('..'))
 
 from TimeSeriesAnalysis.params import impute_methodology, impute_func, registration_method
+import TimeSeriesAnalysis.consts as consts
 from TimeSeriesAnalysis.utils.diff_tracker_utils import *
 from TimeSeriesAnalysis.utils.data_load_save import *
 from TimeSeriesAnalysis.utils.plots_functions_utils import *
@@ -31,10 +32,11 @@ def clean_redundant_columns(df):
 def load_tsfresh_csv(path, modality, vid_num, registration="no_reg_", local_density=False, impute_func="impute",
                      impute_methodology="ImputeAllData"):
     path_prefix = path + f"/data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/"
-    end = f"_reg={registration}, local_den={local_density}, win size {consts.window_size}"
+    end = f"_reg={registration}, local_den={local_density}, win size {params.window_size}"
 
     print("reading csv - load_tsfresh_csv function")
-    df = pd.read_csv(path_prefix + f"S{vid_num}" + end, encoding="cp1252", index_col=[0])
+    # df = pd.read_csv(path_prefix + f"S{vid_num}" + end, encoding="cp1252", index_col=[0])
+    df = pickle.load(open(path_prefix + f"S{vid_num}" + end + ".pkl", 'rb'))
     # print(df.info(memory_usage='deep'), flush=True)
     df = downcast_df(df, fillna=False)  # todo check
     df = clean_redundant_columns(df)
@@ -181,7 +183,7 @@ def plot_avg_conf(df_con, df_diff, mot_int, path=""):
     plt.clf()
 
 
-def build_model_trans_tracks(local_density, window_size, tracks_len, con_window, diff_window):
+def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_window, diff_window):
     print(f"\nrunning: build_models_on_transformed_tracks"
           f"\nmodality={modality}, local density={local_density}, reg={registration_method}, "
           f"impute func= {impute_func},impute_methodology= {impute_methodology}")
@@ -238,8 +240,7 @@ def build_model_trans_tracks(local_density, window_size, tracks_len, con_window,
 
 
 if __name__ == '__main__':
-    path = consts.cluster_path
     modality = sys.argv[1]
 
-    build_model_trans_tracks(params.local_density, params.window_size, params.tracks_len,
+    build_model_trans_tracks(consts.storage_path, params.local_density, params.window_size, params.tracks_len,
                              params.con_window, params.diff_window)

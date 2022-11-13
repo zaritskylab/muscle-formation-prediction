@@ -155,6 +155,7 @@ def calc_prob(transformed_tracks_df, clf, n_frames=260):
         except Exception as e:
             print(e)
             print(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1).size)
+    print(df_score.shape)
     return df_score
 
 

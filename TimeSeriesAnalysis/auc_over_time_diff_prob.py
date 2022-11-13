@@ -111,6 +111,7 @@ if __name__ == '__main__':
         cols = [re.sub('[^A-Za-z0-9 _]+', '', col) for col in cols]
         cols = [col.replace("Spot position X m", "Spot position X") for col in cols]
         cols = [col.replace("Spot position Y m", "Spot position Y") for col in cols]
+        cols.remove("Unnamed 0")
         if "Spot track ID" not in cols:
             cols.extend(["Spot track ID"])
         if "Spot frame" not in cols:
@@ -125,6 +126,8 @@ if __name__ == '__main__':
         print(f"calc avg prob vid {s_run['name']}", flush=True)
         df_s = df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
 
+        # cols_to_check = list(set(cols) & set(df_s.columns))
+        df_s = df_s.loc[:, ~df_s.columns.duplicated()]
         cols_to_check = list(set(cols) & set(df_s.columns))
         df_s = df_s[cols_to_check]
         print(df_s.shape)

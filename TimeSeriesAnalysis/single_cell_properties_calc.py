@@ -64,7 +64,7 @@ def load_correlations_data(s_run, dir_path_score, coordination_df_path, tracks_c
     """
     print(f"load correlations data: {s_run['name']}", flush=True)
     # get single cells score df
-    df_score = pickle.load(open(dir_path_score + f"/df_prob_w=30, video_num={s_run['name'][1]}", 'rb'))
+    df_score = pickle.load(open(dir_path_score + f"/df_prob_w=30, video_num={s_run['name']}", 'rb'))
 
     # get tagged tracks
     df_all_tracks, _ = get_tracks(tracks_csv_path, manual_tagged_list=False)
@@ -250,9 +250,6 @@ if __name__ == '__main__':
     for con_train_n, diff_train_n in [(1, 5), (2, 3)]:
         print(s_run, flush=True)
         path_scores_df = get_dir_path("motility", con_train_n, diff_train_n)
-        print(path_scores_df)
-        print(coord_df_path)
-        print(csv_path)
         df_score_mot, df_tagged_mot, all_tracks_mot = load_correlations_data(s_run,
                                                                              path_scores_df,
                                                                              coord_df_path,
