@@ -23,10 +23,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="re-packaged data-preprocessing code">
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/rest_of_process.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/run_preprocess_data_chunks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/params.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/params.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -436,7 +434,7 @@
       <workItem from="1666594283520" duration="11441000" />
       <workItem from="1667129558492" duration="31552000" />
       <workItem from="1667894931349" duration="6814000" />
-      <workItem from="1667984061424" duration="46571000" />
+      <workItem from="1667984061424" duration="46721000" />
     </task>
     <task id="LOCAL-00001" summary="Added aae files">
       <created>1617796329153</created>
@@ -634,7 +632,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668330586089</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="re-packaged data-preprocessing code">
+      <created>1668331290539</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1668331290539</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -781,10 +786,10 @@
     </state>
     <state x="2310" y="164" key="SettingsEditor/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666592257768" />
     <state x="2123" y="142" key="SettingsEditor/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668324371801" />
-    <state x="2352" y="261" key="Vcs.Push.Dialog.v2" timestamp="1668330587486">
+    <state x="2352" y="261" key="Vcs.Push.Dialog.v2" timestamp="1668331291744">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="2352" y="261" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668330587486" />
+    <state x="2352" y="261" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668331291744" />
     <state x="432" y="238" key="Vcs.Push.Dialog.v2/0.0.1680.1010@0.0.1680.1010" timestamp="1662434316652" />
     <state width="970" height="529" key="XDebugger.FullValuePopup" timestamp="1666592966774">
       <screen x="1920" y="10" width="1920" height="1040" />
