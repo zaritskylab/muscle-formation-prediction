@@ -37,7 +37,7 @@ def concat_data_portions(local_density, window_size, s_run, modality, feature_ty
 
     s_run_files_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{s_run['name']}/feature_type_{feature_type}/{window_size}/"
 
-    #todo add by reut
+    # todo add by reut
 
     # concat dfs
     df_all_chunks = pd.DataFrame()
@@ -62,7 +62,6 @@ def concat_data_portions(local_density, window_size, s_run, modality, feature_ty
     else:
         print("directory was empty")
 
-
     try:
         loaded_csv = pickle.load(open(data_save_csv_path + ".pkl", 'rb'))
 
@@ -79,62 +78,11 @@ def concat_data_portions(local_density, window_size, s_run, modality, feature_ty
         print("could not upload csv")
         print(e)
 
-     # concat all dfs
-    #todo convert to note by reut
-
-    # df_all_chunks = pd.DataFrame()
-    # for file in glob.glob(s_run_files_dir_path + '/*.pkl'):
-    #     if f"reg={params.registration_method},local_den={local_density}" in file:
-    #         if modality != "motility":
-    #             if f"win size {window_size}" not in file:
-    #                 continue
-    #         try:
-    #             chunk_df = pickle.load(open(file, 'rb'))  # + ".pkl"
-    #             chunk_df = downcast_df(chunk_df)
-    #             print(chunk_df.shape)
-    #             if chunk_df.shape[0] > 0:
-    #                 df_all_chunks = pd.concat([df_all_chunks, chunk_df], ignore_index=True)
-    #         except Exception as e:
-    #             print(e)
-    #             continue
-
-    # data_save_csv_path = s_run_files_dir_path + f"merged_chunks_reg={params.registration_method},local_den={local_density},win size={window_size}"
-    # if not df_all_chunks.empty:
-    #     pickle.dump(df_all_chunks, open(data_save_csv_path + ".pkl", 'wb'))
-    #     print(df_all_chunks.shape)
-    #     print("saved")
-    # else:
-    #     print("directory was empty")
-
-    # try:
-    #     loaded_csv = pickle.load(open(data_save_csv_path + ".pkl", 'rb'))
-    #
-    #     # delete files
-    #     print("starting delete files")
-    #     for file in glob.glob(s_run_files_dir_path + "*.pkl"):
-    #         if f"{s_run['name']}_reg={params.registration_method},local_den={local_density}" in file:
-    #             print(f"reg={params.registration_method},local_den={local_density} are inside file")
-    #             if modality != "motility":
-    #                 print("modality not equal to motility")
-    #                 if f"win size {window_size}" not in file:
-    #                     print(f"win size {window_size} not in file")
-    #                     continue
-    #
-    #             os.remove(file)
-    #
-    #     print("finished delete files")
-    # except Exception as e:
-    #     print("could not upload csv")
-    #     print(e)
-
-    #todo add by reut
 
 def read_txt_file(path):
     with open(path, 'r') as f:
         data_files = f.read().splitlines()
     return data_files
-
-
 
 
 if __name__ == '__main__':
