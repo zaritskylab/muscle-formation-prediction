@@ -69,7 +69,6 @@ def preprocess_data(n_tasks, job_id, s_run, modality, win_size, local_den, diff_
         except (IOError, OSError, pickle.PickleError, pickle.UnpicklingError):
             print(f"Dataframe's file is not valid. path: {save_transformed_data_path + job_id}_{i}.csv")
 
-
 if __name__ == '__main__':
     print("running prepare_data")
 

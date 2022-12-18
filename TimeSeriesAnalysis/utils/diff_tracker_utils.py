@@ -27,8 +27,12 @@ def evaluate(clf, X_test, y_test):
 
 
 def train_model(X_train, y_train):
+    # from sklearn.linear_model import LogisticRegression
+    # from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+    # clf = LinearDiscriminantAnalysis()
     clf = RandomForestClassifier(max_depth=8)
-    clf.fit(X_train, y_train, )
+    clf.fit(X_train, y_train)
     return clf
 
 
