@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" host="gpu.bgu.ac.il" id="9f2eed01-9f90-4349-aecd-f6da237110ef" port="22" customName="BGU" nameFormat="CUSTOM" username="shakarch">
+        <option name="customName" value="BGU" />
+      </sshConfig>
+      <sshConfig authType="PASSWORD" host="132.72.65.199" id="d6e28e33-2c68-4312-b3f2-399154418481" port="22" customName="CPU_BGU" nameFormat="CUSTOM" username="shakarch">
+        <option name="customName" value="CPU_BGU" />
+      </sshConfig>
+    </configs>
+  </component>
+</project>
