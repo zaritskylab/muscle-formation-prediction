@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -21,7 +22,7 @@ warnings.filterwarnings('ignore')
 warnings.simplefilter('ignore', pd.errors.DtypeWarning)
 
 
-def preprocess_data_chunk(prep, data, vid_path, local_den, win_size, track_len) -> pd.DataFrame:
+def preprocess_data_chunk(prep, data, vid_path, local_den, win_size, track_len, s_run) -> pd.DataFrame:
     data = prep.feature_creator.calc_features(data, vid_path=vid_path,
                                               window_size=win_size, local_density=local_den)
     preprocessed_data = prep.data_normalizer.preprocess_data(data)
@@ -36,11 +37,11 @@ def preprocess_data_chunk(prep, data, vid_path, local_den, win_size, track_len) 
     return transformed_data
 
 
-def preprocess_data(n_tasks, job_id, s_run, modality, win_size, local_den, diff_win, con_win, track_len):
-    print(f"\nrunning: modality={modality},\nvideo={s_run['name']},\nreg={registration_method}, \njob_id={job_id}")
+def preprocess_data(n_tasks, job_id, s_run, modality, win_size, local_den, diff_win, con_win, track_len, feature_type, specific_feature_calc):
+    print(f"\nrunning: modality={modality},\nvideo={s_run['name']},\nreg={registration_method}, \njob_id={job_id}, \nwin_size={win_size}")
 
     # set paths for saving transformed data
-    transformed_data_dir = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}"
+    transformed_data_dir = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}/feature_type_{feature_type}/{specific_feature_calc}"
     save_transformed_data_path = transformed_data_dir + \
                                  f"/{s_run['name']}_reg={registration_method},local_den={local_den}" + \
                                  (f"win size {win_size}" if modality != "motility" else "")
@@ -58,16 +59,28 @@ def preprocess_data(n_tasks, job_id, s_run, modality, win_size, local_den, diff_
     len_chunks = len(data_chunks)
 
     # preprocess & save each data chunk
+    txt_dict = {}
     for i, data_i in enumerate(data_chunks):
         print(f"{i}/{len_chunks - 1}")
-        transformed_data = preprocess_data_chunk(preprocessor, data_i, vid_path, local_den, win_size, track_len)
+        transformed_data = preprocess_data_chunk(preprocessor, data_i, vid_path, local_den, win_size, track_len, s_run)
         if not transformed_data.empty:
             pickle.dump(transformed_data, open(save_transformed_data_path + f"{job_id}_{i}.pkl", 'wb'))
+            txt_dict[f"file_{job_id}_{i}"] = f"{save_transformed_data_path}{job_id}_{i}.pkl"
 
         try:
-            pickle.load(open(save_transformed_data_path + f"{job_id}_{i}.pkl", 'rb'))
+            # todo convert to note by reut
+            # pickle.load(open(save_transformed_data_path + f"{job_id}_{i}.pkl", 'rb'))
+
+            pickle.load(open(txt_dict[f"file_{job_id}_{i}"], 'rb'))
         except (IOError, OSError, pickle.PickleError, pickle.UnpicklingError):
             print(f"Dataframe's file is not valid. path: {save_transformed_data_path + job_id}_{i}.csv")
+
+    try:
+        with open(f"{transformed_data_dir}/files_dict.txt", 'a') as f:
+            [f.write(file_name+'\n') for file_name in txt_dict.values()]
+    except Exception:
+        print("cannot save json file")
+
 
 if __name__ == '__main__':
     print("running prepare_data")

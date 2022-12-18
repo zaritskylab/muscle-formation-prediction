@@ -133,30 +133,3 @@ def get_all_properties_df(modality, con_train_vid_num, diff_train_vid_num, score
         " win size 16" if modality != "motility" else "") + fr"/track len 30, impute_func-{params.impute_methodology}_{params.impute_func} reg {reg_method}/S{scores_vid_num}_properties_{reg_method}"
     properties_df = pickle.load(open(properties_data_path + ".pkl", 'rb'))
     return properties_df
-
-
-def load_fusion_data(path=consts.storage_path + r"data/mastodon/no_reg_S3 all detections.csv"):
-    # load the raw data with fusion tags
-    df = pd.read_csv(path, encoding="cp1252", header=[0, 1])  # header=[0, 1]
-    df.columns = ['_'.join(col) for col in df.columns]
-    df = df[df["manual_manual"] == 1]
-    df.rename(columns=lambda x: x.replace("_", " ").strip(), inplace=True)
-    fusion_cols = ['Spot track ID', 'Spot frame', 'Spot position X', 'Spot position Y', 'manual manual'] + [col for col
-                                                                                                            in
-                                                                                                            df.columns
-                                                                                                            if
-                                                                                                            "First" in col]
-    df = df[fusion_cols]
-    df.rename(columns=lambda x: x.split(" ")[3] if "First" in x else x, inplace=True)
-    df = df[1:]
-    df = df.astype(float)
-
-    c = df.iloc[:, 5:].idxmax(axis=1)
-    is_valid = df.iloc[:, 5:].sum(axis=1) > 0
-    c[~is_valid] = np.nan
-    df["fusion_frame"] = c
-    df = df.dropna(subset=["fusion_frame"])
-    df = df.drop_duplicates(subset=['fusion_frame', 'Spot track ID'])
-    fusion_time_df = df[['Spot track ID', 'fusion_frame']]  # ,'manual manual'
-    fusion_time_df["fusion_time"] = fusion_time_df["fusion_frame"].astype(float) * 5 / 60
-    return fusion_time_df
