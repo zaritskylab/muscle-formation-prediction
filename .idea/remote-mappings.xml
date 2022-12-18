@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteMappingsManager">
+    <list>
+      <list>
+        <remote-mappings server-id="python@sftp://shakarch@132.72.67.129:22/home/shakarch/.conda/envs/tf-env-new/bin/python">
+          <settings>
+            <list>
+              <mapping local-root="$PROJECT_DIR$" remote-root="/home/shakarch/muscle-formation-diff" />
+            </list>
+          </settings>
+        </remote-mappings>
+        <remote-mappings server-id="python@sftp://shakarch@132.72.80.124:22/home/shakarch/.conda/envs/tf-env-new/bin/python">
+          <settings>
+            <list>
+              <mapping local-root="$PROJECT_DIR$" remote-root="/home/shakarch/muscle-formation-diff" />
+            </list>
+          </settings>
+        </remote-mappings>
+        <remote-mappings server-id="python@sftp://shakarch@132.72.80.146:22/home/shakarch/.conda/envs/tf-env-new/bin/python" />
+        <remote-mappings server-id="python@sftp://shakarch@132.72.46.244:22/home/shakarch/.conda/envs/tf-env-new/bin/python" />
+      </list>
+    </list>
+  </component>
+</project>
