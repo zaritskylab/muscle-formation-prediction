@@ -12,14 +12,14 @@ if __name__ == '__main__':
     modality = sys.argv[1]
     feature_type = sys.argv[2]
 
-    # for win_size in params.feature_calc_types[feature_type]:
-    #     build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density, window_size=win_size,
-    #                              tracks_len=params.tracks_len, con_window=params.con_window,
-    #                              diff_window=params.diff_window, feature_type=feature_type,
-    #                              specific_feature_type=win_size)
+    for win_size in params.feature_calc_types[feature_type]:
+        build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density, window_size=win_size,
+                                 tracks_len=params.tracks_len, con_window=params.con_window,
+                                 diff_window=params.diff_window, feature_type=feature_type,
+                                 specific_feature_type=win_size, modality=modality)
 
-    win_size=16
-    build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density, window_size=win_size,
-                             tracks_len=params.tracks_len, con_window=params.con_window,
-                             diff_window=params.diff_window, feature_type=feature_type,
-                             specific_feature_type=win_size, modality=modality)
+    # win_size=16
+    # build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density, window_size=win_size,
+    #                          tracks_len=params.tracks_len, con_window=params.con_window,
+    #                          diff_window=params.diff_window, feature_type=feature_type,
+    #                          specific_feature_type=win_size, modality=modality)
