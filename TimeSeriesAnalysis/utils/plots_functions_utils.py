@@ -126,7 +126,8 @@ def plot_avg_conf(conf_data, modality, path=None, plot_std=True):
         plt.plot([(i + int(df.columns[0])) * 5 / 60 for i in range(len(avg_vals_diff))], avg_vals_diff, color=color1,
                  label=label + " avg")
         if plot_std:
-            plt.fill_between([(i + int(df.columns[0])) * 5 / 60 for i in range(len(avg_vals_diff))], m_std, p_std, alpha=0.4, color=color2,
+            plt.fill_between([(i + int(df.columns[0])) * 5 / 60 for i in range(len(avg_vals_diff))], m_std, p_std,
+                             alpha=0.4, color=color2,
                              label=label + " std")
 
     for (df, label, avg_color, std_color) in conf_data:
@@ -139,8 +140,9 @@ def plot_avg_conf(conf_data, modality, path=None, plot_std=True):
     plt.ylabel("avg score")
     plt.title(f"avg differentiation score over time ({modality})")
     plt.plot([i * 5 / 60 for i in range(260)], [0.5 for i in range(260)], color="black", linestyle="--")
+    plt.ylim((0, 1))
     if path:
         if path:
-            plt.savefig(path + "/" + 'avg differentiation score over time ({modality})', dpi=300)
+            plt.savefig(path + "/" + f'avg differentiation score over time ({modality}).eps', format="eps", dpi=300)
     plt.show()
     plt.clf()

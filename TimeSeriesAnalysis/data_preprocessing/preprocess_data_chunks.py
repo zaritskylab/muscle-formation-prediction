@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-sys.path.append('/sise/home/reutme/muscle-formation-diff')
+sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -59,14 +59,12 @@ def preprocess_data(n_tasks, job_id, s_run, modality, win_size, local_den, diff_
     len_chunks = len(data_chunks)
 
     # preprocess & save each data chunk
-    #todo json dict add by reut
-    txt_dict={}
+    txt_dict = {}
     for i, data_i in enumerate(data_chunks):
         print(f"{i}/{len_chunks - 1}")
         transformed_data = preprocess_data_chunk(preprocessor, data_i, vid_path, local_den, win_size, track_len, s_run)
         if not transformed_data.empty:
             pickle.dump(transformed_data, open(save_transformed_data_path + f"{job_id}_{i}.pkl", 'wb'))
-            # todo add by reut
             txt_dict[f"file_{job_id}_{i}"] = f"{save_transformed_data_path}{job_id}_{i}.pkl"
 
         try:
@@ -77,7 +75,6 @@ def preprocess_data(n_tasks, job_id, s_run, modality, win_size, local_den, diff_
         except (IOError, OSError, pickle.PickleError, pickle.UnpicklingError):
             print(f"Dataframe's file is not valid. path: {save_transformed_data_path + job_id}_{i}.csv")
 
-    #todo add by reut
     try:
         with open(f"{transformed_data_dir}/files_dict.txt", 'a') as f:
             [f.write(file_name+'\n') for file_name in txt_dict.values()]

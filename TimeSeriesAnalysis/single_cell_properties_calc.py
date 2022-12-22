@@ -95,7 +95,7 @@ def load_correlations_data(s_run, dir_path_score, coordination_df_path, tracks_c
 
 
 def get_dir_path(modality, con_train_n, diff_train_n, ):
-    dir_path = consts.storage_path + f"30-07-2022-{modality} local dens-{params.local_density}, s{con_train_n}, s{diff_train_n} train" + (
+    dir_path = consts.storage_path + f"13-11-2022-{modality} local dens-{params.local_density}, s{con_train_n}, s{diff_train_n} train" + (
         f" win size {params.window_size}" if modality != "motility" else "")
     second_dir = f"track len {params.tracks_len}, impute_func-{params.impute_methodology}_{params.impute_func} reg {params.registration_method}"
     dir_path += "/" + second_dir
@@ -196,9 +196,6 @@ def get_single_cell_properties(track_coord_data_mot_score, track_score_int, trac
     cols_to_drop = ["Spot track ID", "Track #", "t0", "cos_theta"]
     score_mot = track_coord_data_mot_score.copy().iloc[0, :].drop(columns=cols_to_drop)
     score_int = track_score_int.copy().iloc[0, :].drop(columns=cols_to_drop)
-    print(track.shape)
-    print(track_coord_data_mot_score.shape)
-    print(track_score_int.shape)
     spot_track_id = track["Spot track ID"].values[0]
 
     coord = get_coordination_data(track_coord_data_mot_score) if coordination else [np.nan for i in range(500)]

@@ -58,9 +58,10 @@ def plot_auc_over_time(aucs_lst, path=None, time=(0, 25)):
     plt.xlabel("time (h)")
     plt.ylabel("auc")
     plt.title("auc over time")
+    plt.ylim((0.2 , 1))
     plt.legend()
     if path:
-        plt.savefig(path)
+        plt.savefig(path, format="eps")
     plt.show()
     plt.clf()
 
@@ -90,46 +91,45 @@ if __name__ == '__main__':
     s_run = consts.s_runs[sys.argv[2]]
 
     local_density = False
-    window_size = 16
-    tracks_len = 30
 
     for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3), (2, 3, 1, 5), ]:
         print(f"con_train_n {con_train_n}, diff_train_n {diff_train_n}, "
               f"con_test_n {con_test_n}, diff_test_n {diff_test_n}", flush=True)
 
-        dir_path = consts.storage_path + f"30-07-2022-{modality} local dens-{local_density}, s{con_train_n}, s{diff_train_n} train" + (
-            f" win size {window_size}" if modality != "motility" else "")
-        second_dir = f"track len {tracks_len}, impute_func-{impute_methodology}_{impute_func} reg {registration_method}"
-        dir_path += "/" + second_dir
+        print(consts)
+        dir_path = consts.motility_model_path if modality == "motility" else consts.intensity_model_path
 
-        clf, _, X_test, _, _ = load_data(dir_path, load_clf=True, load_x_train=False, load_x_test=True,
-                                         load_y_test=False, load_y_train=False)
+        clf, _, _, _, _ = load_data(dir_path, load_clf=True, load_x_train=False, load_x_test=False,
+                                    load_y_test=False, load_y_train=False)
 
-        cols = list(X_test.columns)
-        del X_test
-
-        cols = [re.sub('[^A-Za-z0-9 _]+', '', col) for col in cols]
-        cols = [col.replace("Spot position X m", "Spot position X") for col in cols]
-        cols = [col.replace("Spot position Y m", "Spot position Y") for col in cols]
-        cols.remove("Unnamed 0")
-        if "Spot track ID" not in cols:
-            cols.extend(["Spot track ID"])
-        if "Spot frame" not in cols:
-            cols.extend(["Spot frame"])
+        # todo I removed since I load data as pkl and not csv
+        # cols = list(X_test.columns)
+        # del X_test
+        # cols = [re.sub('[^A-Za-z0-9 _]+', '', col) for col in cols]
+        # cols = [col.replace("Spot position X m", "Spot position X") for col in cols]
+        # cols = [col.replace("Spot position Y m", "Spot position Y") for col in cols]
+        # cols.remove("Unnamed 0")
+        # if "Spot track ID" not in cols:
+        #     cols.extend(["Spot track ID"])
+        # if "Spot frame" not in cols:
+        #     cols.extend(["Spot frame"])
 
         print(f"loading vid {s_run['name']}", flush=True)
         tsfresh_transform_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}_reg=" \
-                                                       f"{registration_method}, local_den={local_density}, win size {window_size}.pkl"
+                                                       f"{registration_method}, local_den={local_density}, win size {params.window_size}.pkl"
 
         df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
 
         print(f"calc avg prob vid {s_run['name']}", flush=True)
-        df_s = df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
 
+        # todo I removed since I load data as pkl and not csv
+        # df_s = df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
+
+        # df_s = df_s.loc[:, ~df_s.columns.duplicated()]
         # cols_to_check = list(set(cols) & set(df_s.columns))
-        df_s = df_s.loc[:, ~df_s.columns.duplicated()]
-        cols_to_check = list(set(cols) & set(df_s.columns))
+        # df_s = df_s[cols_to_check]
+        cols_to_check = list(clf.feature_names_in_) + ["Spot track ID", "Spot frame"]
         df_s = df_s[cols_to_check]
         print(df_s.shape)
         df_score = calc_prob(df_s, clf, n_frames=260)
-        pickle.dump(df_score, open(dir_path + f"/df_prob_w={tracks_len}, video_num={s_run['name']}", 'wb'))
+        pickle.dump(df_score, open(dir_path + f"/df_prob_w={params.tracks_len}, video_num={s_run['name']}", 'wb'))

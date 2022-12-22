@@ -6,8 +6,18 @@ import re
 import numpy as np
 import sys
 
+import sys, os
+
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
+sys.path.append(os.path.abspath('..'))
+
+sys.path.append(os.path.abspath('../..'))
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
 import TimeSeriesAnalysis.params as params
+import TimeSeriesAnalysis.consts as consts
 
 
 def load_clean_rows(file_path):
@@ -119,7 +129,7 @@ def get_tracks(file_path, tagged_only=False, manual_tagged_list=True, target=1):
 
 def get_all_properties_df(modality, con_train_vid_num, diff_train_vid_num, scores_vid_num,
                           reg_method=params.registration_method):
-    properties_data_path = fr"/storage/users/assafzar/Muscle_Differentiation_AvinoamLab/30-07-2022-{modality} local dens-False, s{con_train_vid_num}, s{diff_train_vid_num} train" + (
+    properties_data_path = fr"/storage/users/assafzar/Muscle_Differentiation_AvinoamLab/13-11-2022-{modality} local dens-False, s{con_train_vid_num}, s{diff_train_vid_num} train" + (
         " win size 16" if modality != "motility" else "") + fr"/track len 30, impute_func-{params.impute_methodology}_{params.impute_func} reg {reg_method}/S{scores_vid_num}_properties_{reg_method}"
     properties_df = pickle.load(open(properties_data_path + ".pkl", 'rb'))
     return properties_df

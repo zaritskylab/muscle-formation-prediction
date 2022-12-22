@@ -2,8 +2,22 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="bd32106b-49e6-48b9-a64b-f8c5c91ae4d3" name="home">
-        <fileTransfer rootFolder="/home/reutme" accessType="SFTP" host="132.72.65.199" port="22" sshConfigId="2cd46be5-51a4-4441-8163-4f2c1af0b86f" sshConfig="cpu_cluster">
+      <webServer id="6c6293cb-3ed7-4ebc-8394-4b327d807f85" name="Home">
+        <fileTransfer rootFolder="/home/shakarch" accessType="SFTP" host="132.72.65.199" port="22" sshConfigId="d6e28e33-2c68-4312-b3f2-399154418481" sshConfig="CPU_BGU">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="729af95e-cf24-4bbd-8b2e-7cf1863f7c22" name="Storage">
+        <fileTransfer rootFolder="/storage" accessType="SFTP" host="gpu.bgu.ac.il" port="22" sshConfigId="9f2eed01-9f90-4349-aecd-f6da237110ef" sshConfig="BGU">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="a106a854-3032-4242-901b-a4de068cf916" name="Muscle_Differentiation_AvinoamLab">
+        <fileTransfer rootFolder="/storage/users/assafzar/Muscle_Differentiation_AvinoamLab" accessType="SFTP" host="132.72.65.199" port="22" sshConfigId="d6e28e33-2c68-4312-b3f2-399154418481" sshConfig="CPU_BGU">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
