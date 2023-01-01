@@ -12,14 +12,27 @@ if __name__ == '__main__':
     modality = sys.argv[1]
     feature_type = sys.argv[2]
 
-    for win_size in params.feature_calc_types[feature_type]:
-        build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density, window_size=win_size,
-                                 tracks_len=params.tracks_len, con_window=params.con_window,
-                                 diff_window=params.diff_window, feature_type=feature_type,
-                                 specific_feature_type=win_size, modality=modality)
+    # for win_size in params.feature_calc_types[feature_type]:
+    #     build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density,
+    #                              window_size=params.window_size,
+    #                              tracks_len=params.tracks_len, con_window=params.con_window,
+    #                              diff_window=params.diff_window, feature_type=feature_type,
+    #                              specific_feature_type=win_size, modality=modality)
 
-    # win_size=16
-    # build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density, window_size=win_size,
-    #                          tracks_len=params.tracks_len, con_window=params.con_window,
-    #                          diff_window=params.diff_window, feature_type=feature_type,
-    #                          specific_feature_type=win_size, modality=modality)
+    list_of_tempural_diff_win_con_win = params.feature_calc_types[feature_type]
+    temporal_segment_array = list_of_tempural_diff_win_con_win[0][0]
+    diff_wind_array = list_of_tempural_diff_win_con_win[0][1]
+    con_wind_array = list_of_tempural_diff_win_con_win[0][2]
+
+    for temporal_segment, diff_wind, con_wind in zip(temporal_segment_array, diff_wind_array, con_wind_array):
+        print(f"start_merge with feature_type: {feature_type}, temporal_segment: {temporal_segment}")
+        print(f"diff_wind: {diff_wind}")
+        print(f"con_wind: {con_wind}")
+
+        feature_specific = temporal_segment
+
+        build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density,
+                                 window_size=params.window_size,
+                                 tracks_len=temporal_segment, con_window=con_wind,
+                                 diff_window=diff_wind, feature_type=feature_type,
+                                 specific_feature_type=feature_specific, modality=modality)

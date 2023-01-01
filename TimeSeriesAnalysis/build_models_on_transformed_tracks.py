@@ -306,14 +306,14 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
         df_score_con = calc_prob(con_df_test[cols].dropna(axis=1), clf, n_frames=260)
         df_score_dif = calc_prob(diff_df_test[cols].dropna(axis=1), clf, n_frames=260)
 
-        pickle.dump(df_score_con, open(dir_path + f"data_frame_score_control.pkl", 'wb'))
-        pickle.dump(df_score_dif, open(dir_path + f"data_frame_score_differentiate.pkl", 'wb'))
+        pickle.dump(df_score_con, open(dir_path + f"data_frame_score_control_vid_num_{con_test_n}.pkl", 'wb'))
+        pickle.dump(df_score_dif, open(dir_path + f"data_frame_score_differentiate_vid_num_{diff_test_n}.pkl", 'wb'))
 
         # plot_avg_conf(df_score_con.drop("Spot track ID", axis=1), df_score_dif.drop("Spot track ID", axis=1),
         #               modality, dir_path + f"/avg conf s{con_test_n}, s{diff_test_n}.eps")
 
-        plot_avg_conf(df_score_con.drop("Spot track ID", axis=1), df_score_dif.drop("Spot track ID", axis=1),
-                      modality, dir_path)
+        plot_avg_conf(df_score_con.drop("Spot track ID", axis=1),
+                      df_score_dif.drop("Spot track ID", axis=1), modality, dir_path)
 
 
 if __name__ == '__main__':

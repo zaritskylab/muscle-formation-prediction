@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-sys.path.append('/sise/home/shakarch/muscle-formation-diff')
+sys.path.append('/sise/home/reutme/muscle-formation-diff')
 sys.path.append(os.path.abspath('../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -23,7 +23,7 @@ warnings.simplefilter('ignore', pd.errors.DtypeWarning)
 
 
 def preprocess_data_chunk(prep, data, vid_path, local_den, win_size, track_len, s_run) -> pd.DataFrame:
-    data = prep.feature_creator.calc_features(data, vid_path=vid_path,
+    data = prep.feature_creator.calc_features(data, vid_path=vid_path, temporal_seg=track_len,
                                               window_size=win_size, local_density=local_den)
     preprocessed_data = prep.data_normalizer.preprocess_data(data)
     transformed_data = prep.tsfresh_transformer.ts_fresh_transform_df(
@@ -64,8 +64,11 @@ def preprocess_data(n_tasks, job_id, s_run, modality, win_size, local_den, diff_
         print(f"{i}/{len_chunks - 1}")
         transformed_data = preprocess_data_chunk(preprocessor, data_i, vid_path, local_den, win_size, track_len, s_run)
         if not transformed_data.empty:
+            print("data not empty")
             pickle.dump(transformed_data, open(save_transformed_data_path + f"{job_id}_{i}.pkl", 'wb'))
             txt_dict[f"file_{job_id}_{i}"] = f"{save_transformed_data_path}{job_id}_{i}.pkl"
+        else:
+            print("data is empty")
 
         try:
             # todo convert to note by reut
@@ -79,7 +82,7 @@ def preprocess_data(n_tasks, job_id, s_run, modality, win_size, local_den, diff_
         with open(f"{transformed_data_dir}/files_dict.txt", 'a') as f:
             [f.write(file_name+'\n') for file_name in txt_dict.values()]
     except Exception:
-        print("cannot save json file")
+        print("cannot save txt file")
 
 
 if __name__ == '__main__':
