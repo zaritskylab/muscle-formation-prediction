@@ -10,7 +10,6 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=6
 
-#SBATCH --array=1
 #SBATCH --output merge_chunks_%A_%a.out           ### output log for running job - %J is the job number variable
 
 ### Print some data to output file ###
