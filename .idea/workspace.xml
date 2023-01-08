@@ -23,6 +23,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="re-packaged data-preprocessing code">
+      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -68,6 +69,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="ToolWindowDatabase.ShowToolbar" value="false" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
@@ -457,6 +459,13 @@
       <workItem from="1670233843054" duration="22508000" />
       <workItem from="1671030038885" duration="649000" />
       <workItem from="1671085534017" duration="10666000" />
+      <workItem from="1671374104606" duration="10671000" />
+      <workItem from="1671608837366" duration="3314000" />
+      <workItem from="1671907604308" duration="12864000" />
+      <workItem from="1672549583191" duration="6751000" />
+      <workItem from="1672820989069" duration="2009000" />
+      <workItem from="1672896067612" duration="1285000" />
+      <workItem from="1673169215555" duration="1097000" />
     </task>
     <task id="LOCAL-00001" summary="Added aae files">
       <created>1617796329153</created>
@@ -703,7 +712,42 @@
       <option name="project" value="LOCAL" />
       <updated>1671349495025</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="re-packaged data-preprocessing code">
+      <created>1671350519271</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1671350519271</updated>
+    </task>
+    <task id="LOCAL-00037" summary="re-packaged data-preprocessing code">
+      <created>1671350645243</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1671350645243</updated>
+    </task>
+    <task id="LOCAL-00038" summary="re-packaged data-preprocessing code">
+      <created>1671350821734</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1671350821734</updated>
+    </task>
+    <task id="LOCAL-00039" summary="re-packaged data-preprocessing code">
+      <created>1671351915176</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1671351915176</updated>
+    </task>
+    <task id="LOCAL-00040" summary="re-packaged data-preprocessing code">
+      <created>1673170245813</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1673170245813</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -737,15 +781,19 @@
     <option name="LAST_COMMIT_MESSAGE" value="re-packaged data-preprocessing code" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="398" y="107" width="1510" height="885" key="#Deployment" timestamp="1670237250114">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="2130" y="306" width="1510" height="854" key="#Deployment" timestamp="1671959317124">
+      <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state x="-31" y="0" key="#Deployment/0.0.1280.680/1920.10.1920.1040@0.0.1280.680" timestamp="1666078221223" />
     <state x="2318" y="117" key="#Deployment/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1670233620835" />
-    <state x="265" y="0" key="#Deployment/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1669705833956" />
-    <state x="1958" y="148" width="1510" height="885" key="#Deployment/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668942345926" />
+    <state x="2130" y="306" key="#Deployment/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1671959317124" />
+    <state x="1953" y="23" width="1510" height="854" key="#Deployment/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1671374641242" />
     <state x="265" y="19" key="#Deployment/0.0.1280.680@0.0.1280.680" timestamp="1667197271977" />
     <state x="398" y="107" key="#Deployment/0.0.1920.1040@0.0.1920.1040" timestamp="1670237250114" />
+    <state x="318" y="22" key="#Options" timestamp="1671959166910">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state x="318" y="22" key="#Options/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1671959166910" />
     <state x="295" y="330" key="#SSH_Configurations" timestamp="1670237208043">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -775,7 +823,6 @@
     </state>
     <state x="2235" y="496" width="831" height="554" key="#xdebugger.evaluate/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666593002559" />
     <state x="2409" y="388" width="960" height="456" key="#xdebugger.evaluate/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725611273" />
-    <state x="111" y="94" key="#xdebugger.evaluate/0.0.1280.680@0.0.1280.680" timestamp="1662875740543" />
     <state width="1620" height="511" key="DebuggerActiveHint" timestamp="1668348825225">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
@@ -795,71 +842,75 @@
     <state width="1587" height="242" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1302" height="251" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867589" />
     <state width="1297" height="242" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965274" />
-    <state width="1047" height="150" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
     <state width="1297" height="242" key="GridCell.Tab.0.center" timestamp="1669725965273">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.0.center/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1302" height="251" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867588" />
     <state width="1297" height="242" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965273" />
-    <state width="1047" height="150" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
     <state width="1297" height="242" key="GridCell.Tab.0.left" timestamp="1669725965273">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.0.left/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1302" height="251" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867587" />
     <state width="1297" height="242" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965273" />
-    <state width="1047" height="150" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
     <state width="1297" height="242" key="GridCell.Tab.0.right" timestamp="1669725965273">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.0.right/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1302" height="251" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867588" />
     <state width="1297" height="242" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965273" />
-    <state width="1047" height="150" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
     <state width="1297" height="242" key="GridCell.Tab.1.bottom" timestamp="1669725965274">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1302" height="251" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867589" />
     <state width="1297" height="242" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965274" />
-    <state width="1047" height="150" key="GridCell.Tab.1.bottom/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
     <state width="1297" height="242" key="GridCell.Tab.1.center" timestamp="1669725965274">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.1.center/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1302" height="251" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867589" />
     <state width="1297" height="242" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965274" />
-    <state width="1047" height="150" key="GridCell.Tab.1.center/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
     <state width="1297" height="242" key="GridCell.Tab.1.left" timestamp="1669725965274">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.1.left/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1302" height="251" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867589" />
     <state width="1297" height="242" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965274" />
-    <state width="1047" height="150" key="GridCell.Tab.1.left/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
     <state width="1297" height="242" key="GridCell.Tab.1.right" timestamp="1669725965274">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="1587" height="242" key="GridCell.Tab.1.right/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
     <state width="1302" height="251" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867589" />
     <state width="1297" height="242" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965274" />
-    <state width="1047" height="150" key="GridCell.Tab.1.right/0.0.1280.680@0.0.1280.680" timestamp="1662975540437" />
+    <state x="2054" y="87" width="1685" height="846" key="MergeDialog" timestamp="1671351721792">
+      <screen x="1920" y="10" width="1920" height="1040" />
+    </state>
+    <state x="2054" y="87" width="1685" height="846" key="MergeDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1671351721792" />
+    <state x="2355" y="229" key="MultipleFileMergeDialog" timestamp="1671351726815">
+      <screen x="1920" y="10" width="1920" height="1040" />
+    </state>
+    <state x="2355" y="229" key="MultipleFileMergeDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1671351726815" />
     <state x="2310" y="164" key="SettingsEditor" timestamp="1670233636529">
       <screen x="1920" y="10" width="1920" height="1040" />
     </state>
     <state x="2310" y="164" key="SettingsEditor/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1670233636529" />
     <state x="2123" y="142" key="SettingsEditor/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669710837756" />
-    <state x="2414" y="255" key="Vcs.Push.Dialog.v2" timestamp="1671350078584">
+    <state x="2414" y="255" key="Vcs.Push.Dialog.v2" timestamp="1671351916944">
       <screen x="1920" y="10" width="1920" height="1040" />
     </state>
-    <state x="2414" y="255" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1671350078584" />
+    <state x="2414" y="255" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1671351916944" />
     <state x="2352" y="261" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668343324505" />
     <state width="848" height="513" key="XDebugger.FullValuePopup" timestamp="1668337077200">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state width="970" height="529" key="XDebugger.FullValuePopup/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666592966774" />
     <state width="848" height="513" key="XDebugger.FullValuePopup/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668337077200" />
+    <state x="2541" y="262" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1673170154488">
+      <screen x="1920" y="23" width="1680" height="1010" />
+    </state>
+    <state x="2541" y="262" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1673170154488" />
     <state x="2433" y="363" width="803" height="267" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration" timestamp="1668333165603">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
@@ -872,19 +923,15 @@
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state x="2596" y="420" key="publish.login/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668942336641" />
-    <state x="2318" y="24" width="882" height="1009" key="search.everywhere.popup" timestamp="1667658765825">
-      <screen x="1920" y="23" width="1680" height="1010" />
+    <state x="2375" y="11" width="1008" height="1039" key="search.everywhere.popup" timestamp="1671355542445">
+      <screen x="1920" y="10" width="1920" height="1040" />
     </state>
+    <state x="2375" y="11" width="1008" height="1039" key="search.everywhere.popup/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1671355542445" />
     <state x="2318" y="24" width="882" height="1009" key="search.everywhere.popup/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667658765825" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/DataPreprocessing/CellsCropper.py</url>
-          <line>146</line>
-          <option name="timeStamp" value="47" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Classifier/classifier.py</url>
           <line>24</line>
@@ -906,31 +953,6 @@
           <option name="timeStamp" value="484" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/DataPreprocessing/load_tracks_xml.py</url>
-          <line>39</line>
-          <option name="timeStamp" value="486" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/DataPreprocessing/load_tracks_xml.py</url>
-          <line>37</line>
-          <option name="timeStamp" value="489" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationValidations.py</url>
-          <line>39</line>
-          <option name="timeStamp" value="582" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationCalc.py</url>
-          <line>127</line>
-          <option name="timeStamp" value="624" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationCalc.py</url>
-          <line>107</line>
-          <option name="timeStamp" value="626" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/diff_tracker.py</url>
           <line>68</line>
           <option name="timeStamp" value="926" />
@@ -941,29 +963,9 @@
           <option name="timeStamp" value="968" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationGraphBuilder.py</url>
-          <line>116</line>
-          <option name="timeStamp" value="1484" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationGraphBuilder.py</url>
-          <line>136</line>
-          <option name="timeStamp" value="1486" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py</url>
           <line>160</line>
           <option name="timeStamp" value="1622" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationGraphBuilder.py</url>
-          <line>277</line>
-          <option name="timeStamp" value="1644" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Coordination/CoordinationCalc_mastodon.py</url>
-          <line>70</line>
-          <option name="timeStamp" value="1651" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py</url>
@@ -971,43 +973,28 @@
           <option name="timeStamp" value="1656" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py</url>
-          <line>108</line>
-          <option name="timeStamp" value="1671" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py</url>
-          <line>106</line>
-          <option name="timeStamp" value="1672" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py</url>
-          <line>285</line>
+          <line>304</line>
           <option name="timeStamp" value="1683" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py</url>
-          <line>247</line>
+          <line>262</line>
           <option name="timeStamp" value="1692" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py</url>
-          <line>36</line>
+          <line>39</line>
           <option name="timeStamp" value="1698" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py</url>
-          <line>55</line>
+          <line>56</line>
           <option name="timeStamp" value="1699" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py</url>
-          <line>105</line>
-          <option name="timeStamp" value="1705" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py</url>
-          <line>261</line>
+          <line>260</line>
           <option name="timeStamp" value="1706" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

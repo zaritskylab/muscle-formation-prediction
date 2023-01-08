@@ -5,7 +5,7 @@
       <paths name="Home">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/muscle-formation-regeneration" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
