@@ -18,7 +18,7 @@ if __name__ == '__main__':
     #                              diff_window=params.diff_window, feature_type=feature_type,
     #                              specific_feature_type=win_size)
 
-    win_size=16
+    win_size = 16
     build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density, window_size=win_size,
                              tracks_len=params.tracks_len, con_window=params.con_window,
                              diff_window=params.diff_window, feature_type=feature_type,

@@ -234,7 +234,6 @@ def get_single_cell_properties(track_coord_data_mot_score, track_score_int, trac
 
 if __name__ == '__main__':
     print("single_cell_properties_calc")
-    # os.chdir("/home/shakarch/muscle-formation-regeneration")
 
     print("\n"f"===== current working directory: {os.getcwd()} =====")
 

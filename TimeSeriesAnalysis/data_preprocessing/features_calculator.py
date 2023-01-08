@@ -53,8 +53,6 @@ class FeaturesCalculatorStrategy(object):
             print("data exists, returning an already built features dataframe")
             features_df = pd.read_csv(features_df_path, encoding="cp1252")
             features_df = features_df[features_df["Spot track ID"].isin(data["Spot track ID"].unique())]
-            # print(features_df.head(5))
-            # print(features_df.shape)
             print("data shape after calculate features: ", data.shape)
             return features_df
 
