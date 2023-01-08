@@ -23,10 +23,34 @@ if __name__ == '__main__':
 
     feature_type = sys.argv[2]
 
-    for win_size in params.feature_calc_types[feature_type]:
+# # build model by sensitive analysis on crop window size feature
+#     for win_size in params.feature_calc_types[feature_type]:
+#         feature_specific = win_size
+#         concat_data_portions(params.local_density, params.window_size, s_run, modality, feature_specific, feature_type)
 
-        concat_data_portions(params.local_density, win_size, s_run, modality, feature_type)
 
+# #build model by sensitive analysis on temporal_segment feature
+#     #array of arrays that each array is one of temporal segment array, differentiation_window array and control window array
+#     list_of_tempural_diff_win_con_win = params.feature_calc_types[feature_type]
+#     temporal_segment_array = list_of_tempural_diff_win_con_win[0][0]
+#     diff_wind_array = list_of_tempural_diff_win_con_win[0][1]
+#     con_wind_array = list_of_tempural_diff_win_con_win[0][2]
+#
+#     for temporal_segment, diff_wind, con_wind in zip(temporal_segment_array, diff_wind_array, con_wind_array):
+#         print(f"start_merge with feature_type: {feature_type}, temporal_segment: {temporal_segment}")
+#         print(f"diff_wind: {diff_wind}")
+#         print(f"con_wind: {con_wind}")
+#
+#         feature_specific = temporal_segment
+#
+#         concat_data_portions(params.local_density, params.window_size, s_run, modality, feature_specific, feature_type)
+
+
+# build model by sensitive analysis on diff_win feature
+    for diff_win in params.feature_calc_types[feature_type]:
+        feature_specific = diff_win
+
+        concat_data_portions(params.local_density, params.window_size, s_run, modality, feature_specific, feature_type)
 
 
 
