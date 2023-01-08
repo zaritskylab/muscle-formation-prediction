@@ -44,7 +44,7 @@ class FeaturesCalculatorStrategy(object):
         spot_frame = int(df.iloc[ind]["Spot frame"])
         return x, y, spot_frame
 
-    def calc_features(self, data, vid_path, window_size, local_density):
+    def calc_features(self, data, vid_path, temporal_seg, window_size, local_density):
         print("calculate features", flush=True)
         # check if a features dataframe already exist
         vid_num = os.path.basename(vid_path)[1]
@@ -58,11 +58,14 @@ class FeaturesCalculatorStrategy(object):
 
         im = io.imread(vid_path)
         features_df = pd.DataFrame()
-        data = remove_short_tracks(data, window_size)
+        #temporal_segment
+        data = remove_short_tracks(data, temporal_seg)
 
         for label, cell_df in tqdm(data.groupby("Spot track ID")):
+            #crop_window
             cell_features_df = self.get_single_cell_measures(label, cell_df, im, window_size)
-            if (not cell_features_df.empty) and (len(cell_features_df) >= window_size):
+            # temporal_segment
+            if (not cell_features_df.empty) and (len(cell_features_df) >= temporal_seg):
                 if local_density:
                     cell_features_df["local density"] = cell_df["local density"]
 

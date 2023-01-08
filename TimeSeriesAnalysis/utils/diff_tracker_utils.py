@@ -129,10 +129,10 @@ def add_features_df(df, df_s, local_density=True):
         return df
 
 
-def split_data_to_time_portions(data, window):
+def split_data_to_time_portions(data, track_len):
     data = data.drop_duplicates(subset=["Spot track ID", "Spot frame"])  # remove duplicates
     time_windows = data.sort_values("Spot frame")['Spot frame'].unique()
-    time_windows_strides = list(mit.windowed(time_windows, n=window, step=1))
+    time_windows_strides = list(mit.windowed(time_windows, n=track_len, step=1))
     t_portion_lst = [data[data["Spot frame"].isin(time_windows_strides[i])] for i in range(len(time_windows_strides))]
 
     return t_portion_lst

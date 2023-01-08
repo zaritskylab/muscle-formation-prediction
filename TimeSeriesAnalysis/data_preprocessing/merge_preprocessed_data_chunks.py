@@ -31,12 +31,13 @@ def downcast_df(data):
     return data_copy
 
 
-def concat_data_portions(local_density, window_size, s_run, modality, feature_type):
+def concat_data_portions(local_density, window_size, s_run, modality, specific_feature_type, feature_type):
     print(f"running: modality={modality}, video={s_run['name']}, local density={local_density}, "
           f"reg={params.registration_method}, impute_methodology={params.impute_methodology}, impute func= {params.impute_func},")
 
-    s_run_files_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{s_run['name']}/feature_type_{feature_type}/{window_size}/"
 
+    s_run_files_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{s_run['name']}/feature_type_{feature_type}/{specific_feature_type}/"
+    print(s_run_files_dir_path)
     # todo add by reut
 
     # concat dfs
