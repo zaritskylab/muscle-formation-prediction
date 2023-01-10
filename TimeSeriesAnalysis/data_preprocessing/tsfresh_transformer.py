@@ -104,7 +104,6 @@ class SingleCellTSFreshTransform(TSFreshTransformStrategy, ABC):
         for track in tqdm(tracks_list):
             track_transformed = self.ts_fresh_transform_single_cell(track, target, track_len)
             print(track_transformed.shape)
-            # self.impute_function(track_transformed)
             df_transformed = df_transformed.append(track_transformed, ignore_index=True)
         print(df_transformed.shape)
 
@@ -145,7 +144,7 @@ class TimeSplitsTSFreshTransform(TSFreshTransformStrategy, ABC):
                                                        column_sort="Spot frame",
                                                        show_warnings=False,
                                                        disable_progressbar=True,
-                                                       n_jobs=8)  # 12
+                                                       n_jobs=8)
 
                 portion_transformed["Spot track ID"] = portion_transformed.index
                 portion_transformed["Spot frame"] = time_portion["Spot frame"].max()

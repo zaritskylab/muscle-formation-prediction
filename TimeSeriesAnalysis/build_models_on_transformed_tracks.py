@@ -34,27 +34,21 @@ def clean_redundant_columns(df):
     return df
 
 
-def load_tsfresh_csv(path, modality, vid_num, feature_type, specific_feature_type, win_size, registration="no_reg_", local_density=False, impute_func="impute",
-                     impute_methodology="ImputeAllData"):
-    # path_prefix = path + f"/data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/"
-    # end = f"_reg={registration}, local_den={local_density}, win size {params.window_size}"
+def load_tsfresh_csv(path, modality, vid_num, feature_type, specific_feature_type, win_size, registration="no_reg_",
+                     local_density=False, impute_func="impute", impute_methodology="ImputeAllData"):
 
     path_prefix = path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/"
     end = f"/feature_type_{feature_type}/{specific_feature_type}/merged_chunks_reg={params.registration_method},local_den={local_density},win size={win_size}"
-
     print(f"read data from video number {vid_num}")
-    print("reading csv - load_tsfresh_csv function")
-    # df = pd.read_csv(path_prefix + f"S{vid_num}" + end, encoding="cp1252", index_col=[0])
     df = pickle.load(open(path_prefix + f"S{vid_num}" + end + ".pkl", 'rb'))
-    # print(df.info(memory_usage='deep'), flush=True)
-    df = downcast_df(df, fillna=False)  # todo check
+    df = downcast_df(df, fillna=False)
     df = clean_redundant_columns(df)
 
-    # print(df.info(memory_usage='deep'), flush=True)
     return df
 
 
-def get_to_run(path, modality, feature_type, specific_feature_type, win_size, con_train_num=None, con_test_num=None, diff_train_num=None,
+def get_to_run(path, modality, feature_type, specific_feature_type, win_size, con_train_num=None, con_test_num=None,
+               diff_train_num=None,
                diff_test_num=None, local_density=False):
     diff_df_train, con_df_train, con_df_test, diff_df_test = None, None, None, None
 
@@ -70,11 +64,11 @@ def get_to_run(path, modality, feature_type, specific_feature_type, win_size, co
 
     if con_test_num:
         con_df_test = load_tsfresh_csv(path, modality, con_test_num, feature_type, specific_feature_type, win_size,
-                                         registration_method, local_density, impute_func, impute_methodology)
+                                       registration_method, local_density, impute_func, impute_methodology)
 
     if diff_test_num:
         diff_df_test = load_tsfresh_csv(path, modality, diff_test_num, feature_type, specific_feature_type, win_size,
-                                         registration_method, local_density, impute_func, impute_methodology)
+                                        registration_method, local_density, impute_func, impute_methodology)
 
     return diff_df_train, con_df_train, con_df_test, diff_df_test
 
@@ -85,20 +79,15 @@ def prep_data(diff_df, con_df, diff_t_window, con_t_windows):
     df = concat_dfs(diff_df, con_df, diff_t_window, con_t_windows)
     df = df.sample(frac=1).reset_index(drop=True)
     print("\nshape after concat_dfs", df.shape)
-    # print(df.isna().sum())
 
     df = df.replace([np.inf], np.nan)
     df = df.dropna(axis=1)
     print("\nshape after dropna", df.shape)
 
-    # df = df.sample(frac=0.95)
-    # print("\nshape after sampling", df.shape)
-
     df.index = df['Spot track ID']
     y = pd.Series(df['target'])
     y.index = df['Spot track ID']
     df = df.drop(["target", "Spot frame", "Spot track ID"], axis=1)
-    # print(df.info(memory_usage='deep'))
     return df, y
 
 
@@ -134,7 +123,6 @@ def evaluate_clf(dir_path, clf, X_test, y_test, y_train, diff_window, con_window
 
 def remove_target_cols(df):
     remove_cols = []
-    cols_to_remove = ["target", "Spot track ID"]
     for col_name in df.columns:
         if col_name.startswith("target"):
             remove_cols.append(col_name)
@@ -179,14 +167,12 @@ def plot_avg_conf(df_con, df_diff, type_modality, path=""):
         p_std = np.asarray(avg_vals_diff) + np.asarray(std_vals_diff)
         m_std = np.asarray(avg_vals_diff) - np.asarray(std_vals_diff)
 
-        # plt.plot([i * 5 / 60 for i in range(len(avg_vals_diff))], avg_vals_diff, color=color1)
-
         plt.plot([(i + int(df.columns[0])) * 5 / 60 for i in range(len(avg_vals_diff))], avg_vals_diff,
                  color=color1, label="avg")
 
-        plt.fill_between([(i + int(df.columns[0])) * 5 / 60 for i in range(len(avg_vals_diff))], m_std, p_std, alpha=0.4,
+        plt.fill_between([(i + int(df.columns[0])) * 5 / 60 for i in range(len(avg_vals_diff))], m_std, p_std,
+                         alpha=0.4,
                          color=color2, label="std")
-        # plt.fill_between([i * 5 / 60 for i in range(len(avg_vals_diff))], m_std, p_std, alpha=0.5, color=color2)
 
     plot(df_diff, "DarkOrange", "Orange")
     plot(df_con, "blue", "blue")
@@ -229,7 +215,8 @@ def get_to_run_both_modalities(path, local_den, con_train_n=None, diff_train_n=N
     return diff_df, con_df
 
 
-def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_window, diff_window, feature_type, specific_feature_type, modality):
+def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_window, diff_window, feature_type,
+                             specific_feature_type, modality):
     print(f"\nrunning: build_models_on_transformed_tracks"
           f"\nmodality={modality}, local density={local_density}, reg={registration_method}, "
           f"impute func= {impute_func},impute_methodology= {impute_methodology}")
@@ -243,10 +230,11 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
                                                                      diff_test_n=None)
         else:
             diff_df_train, con_df_train, _, _ = get_to_run(path=path, modality=modality, local_density=local_density,
-                                                       feature_type=feature_type, specific_feature_type=specific_feature_type,
-                                                       win_size=window_size, con_train_num=con_train_n,
-                                                       diff_train_num=diff_train_n,
-                                                       con_test_num=None, diff_test_num=None)
+                                                           feature_type=feature_type,
+                                                           specific_feature_type=specific_feature_type,
+                                                           win_size=window_size, con_train_num=con_train_n,
+                                                           diff_train_num=diff_train_n,
+                                                           con_test_num=None, diff_test_num=None)
 
         path_by_feature = f"{consts.storage_path}{feature_type}/{specific_feature_type}"
 
@@ -266,14 +254,13 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
         del con_df_train
         print("\ndeleted diff_df_train, con_df_train")
 
-        X_train = select_features(X_train, y_train, n_jobs=10) #, chunksize=10
+        X_train = select_features(X_train, y_train, n_jobs=10)  # , chunksize=10
         print("\nDone feature selection", flush=True)
 
         filter_col = [col for col in X_train if col.startswith('mean')]
         print(filter_col)
 
         clf = train_model(X_train, y_train)
-        cols = list(X_train.columns)
         load_save_utils.save_data(dir_path, X_train=X_train)
         del X_train
         if modality == "both":
@@ -283,10 +270,11 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
 
         else:
             _, _, con_df_test, diff_df_test = get_to_run(path=path, modality=modality, local_density=local_density,
-                                                     feature_type=feature_type,
-                                                     specific_feature_type=specific_feature_type, win_size=window_size,
-                                                     con_train_num=None, diff_train_num=None,
-                                                     con_test_num=con_test_n, diff_test_num=diff_test_n)
+                                                         feature_type=feature_type,
+                                                         specific_feature_type=specific_feature_type,
+                                                         win_size=window_size,
+                                                         con_train_num=None, diff_train_num=None,
+                                                         con_test_num=con_test_n, diff_test_num=diff_test_n)
 
         print("X_test, y_test")
         X_test, y_test = prep_data(diff_df=diff_df_test, con_df=con_df_test, diff_t_window=diff_window,
@@ -309,9 +297,6 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
         pickle.dump(df_score_con, open(dir_path + f"data_frame_score_control_vid_num_{con_test_n}.pkl", 'wb'))
         pickle.dump(df_score_dif, open(dir_path + f"data_frame_score_differentiate_vid_num_{diff_test_n}.pkl", 'wb'))
 
-        # plot_avg_conf(df_score_con.drop("Spot track ID", axis=1), df_score_dif.drop("Spot track ID", axis=1),
-        #               modality, dir_path + f"/avg conf s{con_test_n}, s{diff_test_n}.eps")
-
         plot_avg_conf(df_score_con.drop("Spot track ID", axis=1),
                       df_score_dif.drop("Spot track ID", axis=1), modality, dir_path)
 
@@ -319,5 +304,8 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
 if __name__ == '__main__':
     modality = sys.argv[1]
 
-    build_model_trans_tracks(consts.storage_path, params.local_density, params.window_size, params.tracks_len,
-                             params.con_window, params.diff_window, modality)
+    build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density,
+                             window_size=params.window_size,
+                             tracks_len=params.tracks_len, con_window=params.con_window,
+                             diff_window=params.diff_window, feature_type="_",
+                             specific_feature_type="_", modality=modality)

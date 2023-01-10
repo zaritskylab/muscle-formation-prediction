@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod, ABC
 import sys
 import os
 
+sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -240,25 +241,30 @@ def video_registration_factory(registrator_name):
 
 
 if __name__ == '__main__':
-    os.chdir("/home/shakarch/muscle-formation-diff")
+    os.chdir("/home/shakarch/muscle-formation-regeneration")
     print("current working directory: ", os.getcwd())
 
-    # print("hello")
     s_run = consts.s_runs[sys.argv[1]]
     reg_name = sys.argv[2]
 
-    print(f"s_run name: {s_run['name']},"
-          f"registrator name: {reg_name}")
+    # check if video was not registrated already
+    registrated_csv_path = consts.storage_path + f"data/mastodon/{reg_name}_{s_run['name']} all detections.csv"
+    if not os.path.exists(registrated_csv_path):
+        print(f"s_run name: {s_run['name']},"
+              f"registrator name: {reg_name}")
 
-    im_nuc = io.imread(s_run["nuc_path"])
-    csv_path = consts.data_csv_path % ("no_reg_", s_run['name'])
-    data_to_reg, _ = get_tracks(csv_path, manual_tagged_list=False)
+        im_nuc = io.imread(s_run["nuc_path"])
+        csv_path = consts.data_csv_path % ("no_reg_", s_run['name'])
+        data_to_reg, _ = get_tracks(csv_path, manual_tagged_list=False)
 
-    print("data_to_reg.shape: ", data_to_reg.shape, flush=True)
-    print("data_to_reg # of tagged tracks: ", data_to_reg[data_to_reg["manual"] == 1]["Spot track ID"].nunique(),
-          flush=True)
+        print("data_to_reg.shape: ", data_to_reg.shape, flush=True)
+        print("data_to_reg # of tagged tracks: ", data_to_reg[data_to_reg["manual"] == 1]["Spot track ID"].nunique(),
+              flush=True)
 
-    registrator = video_registration_factory(reg_name)
-    corrections = registrator.calc_shifts(im_nuc)
-    reg_data = registrator.register_tracks(data_to_registrate=data_to_reg, flows=corrections)
-    reg_data.to_csv(consts.storage_path + f"data/mastodon/{registrator.name}_{s_run['name']} all detections.csv")
+        registrator = video_registration_factory(reg_name)
+        corrections = registrator.calc_shifts(im_nuc)
+        reg_data = registrator.register_tracks(data_to_registrate=data_to_reg, flows=corrections)
+        reg_data.to_csv(registrated_csv_path)
+
+    else:
+        print(f"video {s_run} was already registrated")

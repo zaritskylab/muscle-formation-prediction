@@ -7,7 +7,6 @@ import numpy as np
 
 
 def plot_roc(clf, X_test, y_test, path=None):
-    # plt.figure(figsize=(20, 6))
     # roc curve for models
     fpr1, tpr1, thresh1 = roc_curve(y_test, clf.predict_proba(X_test)[:, 1], pos_label=1)
 

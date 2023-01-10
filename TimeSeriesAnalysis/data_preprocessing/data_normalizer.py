@@ -84,15 +84,6 @@ class MotilityDataNormalizer(DataNormalizerStrategy, ABC):
             data.loc[data['Spot track ID'] == label, 'Spot position Y'] = label_df['Spot position Y'].apply(
                 lambda num: num - to_reduce_y)
 
-        #########################
-
-        # if 'delta Spot position X' in df.columns:
-        #     df['Spot position X'] = df['Spot position X'].diff()
-        #
-        # if 'delta Spot position Y' in df.columns:
-        #     df['Spot position Y'] = df['Spot position Y'].diff()
-        #
-        # df.fillna(0, inplace=True)
         return data
 
 
@@ -115,4 +106,23 @@ class NucleiIntensityDataNormalizer(DataNormalizerStrategy, ABC):
         columns = [e for e in list(data.columns) if e not in ('Spot frame', 'Spot track ID', 'target')]
         scaler = StandardScaler()
         data[columns] = scaler.fit_transform(data[columns])
+        return data
+
+
+class LocalDensityDataNormalizer(DataNormalizerStrategy, ABC):
+    '''
+    An ordinary least squares (OLS) linear regression model
+    '''
+
+    def __init__(self):
+        name = 'local_density'
+        super(LocalDensityDataNormalizer, self).__init__(name)
+
+    def drop_columns(self, data, added_features=None):
+        to_keep = ['local density', 'Spot track ID', 'Spot frame']
+        if added_features:
+            to_keep.extend(added_features)
+        return data[to_keep]
+
+    def normalize_data(self, data):
         return data

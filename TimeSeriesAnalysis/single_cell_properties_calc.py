@@ -99,12 +99,12 @@ def get_dir_path(modality, con_train_n, diff_train_n, ):
         f" win size {params.window_size}" if modality != "motility" else "")
     second_dir = f"track len {params.tracks_len}, impute_func-{params.impute_methodology}_{params.impute_func} reg {params.registration_method}"
     dir_path += "/" + second_dir
-    return dir_path
+
+    return consts.motility_model_path if modality == "motility" else consts.intensity_model_path
 
 
 def get_coordination_data(track_coord_data):
     try:
-        # coord = [np.nan for i in range(int(track_coord_data["t0"].max()))]
         coord = [np.nan for i in range(int(track_coord_data.dropna(axis=1).columns[0]))]
         coord.extend(list(track_coord_data["cos_theta"].values)[0][0])
     except:
@@ -115,7 +115,6 @@ def get_coordination_data(track_coord_data):
 def get_local_density(label_track, all_tracks, track_coord_data):
     local_den_df = add_features(label_track, local_density=True, df_s=all_tracks)
     local_den_df = local_den_df.sort_values("Spot frame")
-    # local_density = [np.nan for i in range(int(track_coord_data["t0"].max()))]
     local_density = [np.nan for i in range(int(local_den_df["Spot frame"].min()))]
     local_density.extend(local_den_df["local density"].values.tolist())
     return local_density
@@ -224,11 +223,9 @@ def get_single_cell_properties(track_coord_data_mot_score, track_score_int, trac
 
     properties_df = reduce(lambda df_left, df_right:
                            pd.merge(df_left, df_right, on=["Spot track ID", "Spot frame"]),
-                           # todo: I changed the order from ["Spot frame", "Spot track ID"] to ["Spot track ID", "Spot frame"]
                            [properties_df, actin_df, persistence_df, speed_df[
                                ["speed", "speed_change", "Spot frame", "Spot track ID", "Spot position X",
-                                "Spot position Y"]],
-                            ])
+                                "Spot position Y"]], ])
     return properties_df
 
 

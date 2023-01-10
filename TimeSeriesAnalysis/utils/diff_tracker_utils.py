@@ -27,10 +27,6 @@ def evaluate(clf, X_test, y_test):
 
 
 def train_model(X_train, y_train):
-    # from sklearn.linear_model import LogisticRegression
-    # from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-
-    # clf = LinearDiscriminantAnalysis()
     clf = RandomForestClassifier(max_depth=8)
     clf.fit(X_train, y_train)
     return clf
@@ -62,11 +58,12 @@ def get_single_cell_intensity_measures(label, df, im_actin, window_size):
         data = {"min": min_i, "max": max_i, "mean": mean_i, "sum": sum_i, "Spot track ID": label,
                 "Spot frame": spot_frame,
                 "x": x, "y": y}
-        df_measures = df_measures.append(data, ignore_index=True)
+        df_measures = pd.concat([df_measures, data], ignore_index=True)
+        # df_measures = df_measures.append(data, ignore_index=True)
     return df_measures
 
 
-def get_local_densities_df(df_s, tracks_s, neighboring_distance=100):
+def get_local_densities_df(df_s, tracks_s, neighboring_distance=50):
     local_densities = pd.DataFrame(columns=[i for i in range(df_s["Spot frame"].max() + 2)])
     for track in tracks_s:
         spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
@@ -77,7 +74,9 @@ def get_local_densities_df(df_s, tracks_s, neighboring_distance=100):
                                  t=t,
                                  neighboring_distance=neighboring_distance)
             for t in spot_frames}
-        local_densities = local_densities.append(track_local_density, ignore_index=True)
+        # local_densities = local_densities.append(track_local_density, ignore_index=True)
+        local_densities = pd.concat([local_densities, track_local_density], ignore_index=True)
+
     return local_densities
 
 
@@ -123,7 +122,8 @@ def add_features_df(df, df_s, local_density=True):
         for label, track in df.groupby("Spot track ID"):
             track = track.sort_values("Spot frame")
             track = add_features(track, local_density=local_density, df_s=df_s)
-            new_df = new_df.append(track, ignore_index=True)
+            # new_df = new_df.append(track, ignore_index=True)
+            new_df = pd.concat([new_df, track], ignore_index=True)
         return new_df
     else:
         return df
@@ -152,10 +152,10 @@ def calc_prob(transformed_tracks_df, clf, n_frames=260):
         try:
             for t in spot_frames:
                 probs = clf.predict_proba(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1))
-
                 diff_score[t] = pd.to_numeric(probs[0][1], downcast='float')
 
-            df_score = df_score.append(diff_score, ignore_index=True, sort=False)
+            # df_score = df_score.append(diff_score, ignore_index=True, sort=False)
+            df_score = pd.concat([df_score, diff_score], ignore_index=True)
         except Exception as e:
             print(e)
             print(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1).size)
@@ -177,34 +177,24 @@ def concat_dfs(diff_df, con_df, diff_t_window=None, con_t_windows=None):
     # Erk video
     # Cut the needed time window
     new_diff_df = pd.DataFrame()
-    # Todo I might have a bug in here. Each record holds a transformation of the former 30 frames,
-    #  so in this way i take too many time frames, with duplicates
-    # diff_df = diff_df[(diff_df["Spot frame"] >= diff_start) & (diff_df["Spot frame"] < diff_end)]
-    # todo: the correction:
     diff_df = diff_df[diff_df["Spot frame"] == diff_end]
     print("size of diff_df: ", diff_df.shape)
 
     for label, label_df in diff_df.groupby('Spot track ID'):
-        # if len(
-        # label_df) == window_size:  # todo: i removed that row, since I already know that each record holds the transformation of the last 30 frames
-        new_diff_df = new_diff_df.append(label_df)
+        # new_diff_df = new_diff_df.append(label_df)
+        new_diff_df = pd.concat([new_diff_df, label_df], ignore_index=True)
 
     # control video
     # Cut the needed time window
     control_df = pd.DataFrame()
     new_label = max(con_df['Spot track ID'].unique()) + 1
     for start, end in con_t_windows:
-        # Todo I might have a bug in here. Each record holds a transformation of the former 30 frames,
-        #  so in this way i take too many time frames, with duplicates
-        # tmp_df = con_df[(con_df["Spot frame"] >= start) & (con_df["Spot frame"] < end)]
-        # todo: the correction:
         tmp_df = con_df[con_df["Spot frame"] == end]
         for label, label_df in tmp_df.groupby('Spot track ID'):
-            # if len(
-            #         label_df) == window_size:  # todo: i removed that row, since I already know that each record holds the transformation of the last 30 frames
             new_label += 1
             label_df["Spot track ID"] = new_label
-            control_df = control_df.append(label_df)
+            # control_df = control_df.append(label_df)
+            control_df = pd.concat([control_df, label_df], ignore_index=True)
     con_df = control_df.copy()
     print("size of con_df: ", con_df.shape)
 

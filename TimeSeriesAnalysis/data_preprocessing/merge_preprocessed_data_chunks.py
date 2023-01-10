@@ -38,7 +38,6 @@ def concat_data_portions(local_density, window_size, s_run, modality, specific_f
 
     s_run_files_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{s_run['name']}/feature_type_{feature_type}/{specific_feature_type}/"
     print(s_run_files_dir_path)
-    # todo add by reut
 
     # concat dfs
     df_all_chunks = pd.DataFrame()
@@ -46,7 +45,7 @@ def concat_data_portions(local_density, window_size, s_run, modality, specific_f
     data_files = read_txt_file(txt_path_file)
     for file in data_files:
         try:
-            chunk_df = pickle.load(open(file, 'rb'))  # + ".pkl"
+            chunk_df = pickle.load(open(file, 'rb'))
             chunk_df = downcast_df(chunk_df)
             print(chunk_df.shape)
             if chunk_df.shape[0] > 0:
@@ -90,4 +89,4 @@ if __name__ == '__main__':
     modality = sys.argv[1]
     s_run = consts.s_runs[os.getenv('SLURM_ARRAY_TASK_ID')]
 
-    concat_data_portions(params.local_density, params.window_size)
+    concat_data_portions(params.local_density, params.window_size, s_run, modality, "_", "_")

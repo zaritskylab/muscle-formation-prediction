@@ -25,6 +25,7 @@ class DataPreprocessor:
 def data_preprocessor_factory(modality, transformer_name, impute_func, impute_methodology):
     """Factory Method"""
     data_operators = {
+        "local_density": (LocalDensityFeaturesCalculator, LocalDensityDataNormalizer),
         "motility": (MotilityFeaturesCalculator, MotilityDataNormalizer),
         "actin_intensity": (ActinIntensityFeaturesCalculator, ActinIntensityDataNormalizer),
         "nuclei_intensity": (NucleiIntensityFeaturesCalculator, NucleiIntensityDataNormalizer),

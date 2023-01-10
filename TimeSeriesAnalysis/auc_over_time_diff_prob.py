@@ -51,14 +51,12 @@ def plot_auc_over_time(aucs_lst, path=None, time=(0, 25)):
         auc_scores = pd.DataFrame({"time": aucs.keys(), "auc": aucs.values()})
         auc_scores = auc_scores[(auc_scores["time"] >= time[0]) & (auc_scores["time"] <= time[1])]
         plt.plot(auc_scores["time"], auc_scores["auc"], label=label)
-        # x, y = zip(*auc_scores)
-        # plt.plot(x, y, label=label)
 
     plt.axhline(0.5, color='gray', linestyle='dashed')
     plt.xlabel("time (h)")
     plt.ylabel("auc")
     plt.title("auc over time")
-    plt.ylim((0.2 , 1))
+    plt.ylim((0.2, 1))
     plt.legend()
     if path:
         plt.savefig(path, format="eps")
@@ -89,7 +87,6 @@ if __name__ == '__main__':
     print("diff prob auc over time bitch", flush=True)
     modality = sys.argv[1]
     s_run = consts.s_runs[sys.argv[2]]
-
     local_density = False
 
     for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3), (2, 3, 1, 5), ]:
@@ -102,18 +99,6 @@ if __name__ == '__main__':
         clf, _, _, _, _ = load_data(dir_path, load_clf=True, load_x_train=False, load_x_test=False,
                                     load_y_test=False, load_y_train=False)
 
-        # todo I removed since I load data as pkl and not csv
-        # cols = list(X_test.columns)
-        # del X_test
-        # cols = [re.sub('[^A-Za-z0-9 _]+', '', col) for col in cols]
-        # cols = [col.replace("Spot position X m", "Spot position X") for col in cols]
-        # cols = [col.replace("Spot position Y m", "Spot position Y") for col in cols]
-        # cols.remove("Unnamed 0")
-        # if "Spot track ID" not in cols:
-        #     cols.extend(["Spot track ID"])
-        # if "Spot frame" not in cols:
-        #     cols.extend(["Spot frame"])
-
         print(f"loading vid {s_run['name']}", flush=True)
         tsfresh_transform_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}_reg=" \
                                                        f"{registration_method}, local_den={local_density}, win size {params.window_size}.pkl"
@@ -122,12 +107,6 @@ if __name__ == '__main__':
 
         print(f"calc avg prob vid {s_run['name']}", flush=True)
 
-        # todo I removed since I load data as pkl and not csv
-        # df_s = df_s.rename(columns=lambda x: re.sub('[^A-Za-z0-9 _]+', '', x))
-
-        # df_s = df_s.loc[:, ~df_s.columns.duplicated()]
-        # cols_to_check = list(set(cols) & set(df_s.columns))
-        # df_s = df_s[cols_to_check]
         cols_to_check = list(clf.feature_names_in_) + ["Spot track ID", "Spot frame"]
         df_s = df_s[cols_to_check]
         print(df_s.shape)

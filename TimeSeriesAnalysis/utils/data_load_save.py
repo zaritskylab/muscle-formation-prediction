@@ -4,7 +4,6 @@ import pandas as pd
 import joblib
 import re
 import numpy as np
-import sys
 
 import sys, os
 
@@ -16,33 +15,25 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-import TimeSeriesAnalysis.params as params
-import TimeSeriesAnalysis.consts as consts
+# import TimeSeriesAnalysis.params as params
+# import TimeSeriesAnalysis.consts as consts
+import params
+import consts
 
 
 def load_clean_rows(file_path):
-    # df = pd.read_csv(file_path, encoding="cp1252")
-
     df = pd.DataFrame()
     chunksize = 10 ** 3
     with pd.read_csv(file_path, encoding="cp1252",
                      chunksize=chunksize) as reader:  # , dtype=np.float32,  index_col=[0],
         for chunk in reader:
-            # try:
-            #     chunk = chunk.drop(labels=range(0, 2), axis=0)
-            # except Exception as e:
-            #     continue
-
             chunk = downcast_df(chunk)
             df = df.append(chunk)
-
-    # df = df.drop(labels=range(0, 2), axis=0)
     try:
         df = df.drop(labels=range(0, 2), axis=0)
     except Exception as e:
         print(e)
-    print(df.info(memory_usage='deep'), flush=True)
-    # print(df.head())
+    # print(df.info(memory_usage='deep'), flush=True)
 
     return df
 
@@ -80,7 +71,6 @@ def save_data(dir_name, clf=None, X_train=None, X_test=None, y_train=None, y_tes
 
 
 def downcast_df(data_copy, fillna=True):
-    # data_copy = data.copy()
     if fillna:
         data_copy = data_copy.fillna(0)
     data_copy = data_copy.dropna(axis=1)
@@ -97,8 +87,6 @@ def downcast_df(data_copy, fillna=True):
                 data_copy[col] = data_copy[col]
         except:
             continue
-
-    # print(data_copy.info(memory_usage='deep'))
     return data_copy
 
 
@@ -129,7 +117,7 @@ def get_tracks(file_path, tagged_only=False, manual_tagged_list=True, target=1):
 
 def get_all_properties_df(modality, con_train_vid_num, diff_train_vid_num, scores_vid_num,
                           reg_method=params.registration_method):
-    properties_data_path = fr"/storage/users/assafzar/Muscle_Differentiation_AvinoamLab/13-11-2022-{modality} local dens-False, s{con_train_vid_num}, s{diff_train_vid_num} train" + (
-        " win size 16" if modality != "motility" else "") + fr"/track len 30, impute_func-{params.impute_methodology}_{params.impute_func} reg {reg_method}/S{scores_vid_num}_properties_{reg_method}"
-    properties_df = pickle.load(open(properties_data_path + ".pkl", 'rb'))
+    properties_data_path = consts.intensity_model_path if modality == "actin_intensity" else consts.motility_model_path
+
+    properties_df = pickle.load(open(properties_data_path + f"/S{scores_vid_num}_properties_{reg_method}" + ".pkl", 'rb'))
     return properties_df

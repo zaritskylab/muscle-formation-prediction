@@ -44,7 +44,7 @@ class FeaturesCalculatorStrategy(object):
         spot_frame = int(df.iloc[ind]["Spot frame"])
         return x, y, spot_frame
 
-    def calc_features(self, data, vid_path, temporal_seg, window_size, local_density):
+    def calc_features(self, data, vid_path, temporal_seg_size, window_size, local_density):
         print("calculate features", flush=True)
         # check if a features dataframe already exist
         vid_num = os.path.basename(vid_path)[1]
@@ -54,23 +54,28 @@ class FeaturesCalculatorStrategy(object):
             features_df = pd.read_csv(features_df_path, encoding="cp1252")
             features_df = features_df[features_df["Spot track ID"].isin(data["Spot track ID"].unique())]
             print("data shape after calculate features: ", data.shape)
-            return features_df
 
-        im = io.imread(vid_path)
-        features_df = pd.DataFrame()
-        #temporal_segment
-        data = remove_short_tracks(data, temporal_seg)
+        else:  # features df does not exist
+            im = io.imread(vid_path)
+            features_df = pd.DataFrame()
+            data = remove_short_tracks(data, temporal_seg_size)
 
-        for label, cell_df in tqdm(data.groupby("Spot track ID")):
-            #crop_window
-            cell_features_df = self.get_single_cell_measures(label, cell_df, im, window_size)
-            # temporal_segment
-            if (not cell_features_df.empty) and (len(cell_features_df) >= temporal_seg):
-                if local_density:
-                    cell_features_df["local density"] = cell_df["local density"]
+            for label, cell_df in tqdm(data.groupby("Spot track ID")):
+                # crop_window
+                cell_features_df = self.get_single_cell_measures(label, cell_df, im, window_size, vid_num)
+                # temporal_segment
+                if (not cell_features_df.empty) and (len(cell_features_df) >= temporal_seg_size):
+                    if local_density:
+                        cell_features_df["local density"] = cell_df["local density"]
 
-                cell_features_df["manual"] = 1
-                features_df = pd.concat([features_df, cell_features_df], axis=0)
+                    cell_features_df["manual"] = 1
+                    features_df = pd.concat([features_df, cell_features_df], axis=0)
+
+            # save the new features df
+            if not features_df.empty:
+                outfile = open(consts.storage_path + f"data/mastodon/features/S{vid_num}_{self.name}", 'wb')
+                features_df.to_csv(outfile, index=False, header=True, sep=',', encoding='utf-8')
+                outfile.close()
 
         return features_df
 
@@ -88,7 +93,7 @@ class ActinIntensityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
         name = 'actin_intensity'
         super(ActinIntensityFeaturesCalculator, self).__init__(name)
 
-    def get_single_cell_measures(self, label, df, im_actin, window_size):
+    def get_single_cell_measures(self, label, df, im_actin, window_size, vid_num):
         features_df = pd.DataFrame(columns=["min", "max", "mean", "sum", "Spot track ID", "Spot frame", "x", "y"])
 
         for i in range(len(df)):
@@ -130,7 +135,6 @@ class NucleiIntensityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
             return
 
     def get_segmentation(self, cropped_img, val_location_ind):
-        # _, threshold = cv2.threshold(cropped_img, 0, np.max(cropped_img), cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         self.activate_segmentor()
         pre_seg = self.segmentor.preprocess_image(cropped_img)
         segmented_crop = self.segmentor.segment_image(pre_seg)
@@ -142,12 +146,12 @@ class NucleiIntensityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
 
         return segmented_crop
 
-    def get_single_cell_measures(self, label, df, im_actin, window_size):
+    def get_single_cell_measures(self, label, df, im_actin, window_size, vid_num):
         feature_calculator = segmentor.NucleiFeatureCalculator
         df_measures = pd.DataFrame()
         win_size_3 = window_size * 4
         missed_segmentation_counter = 0
-        for i in range(len(df)):  # len(df)
+        for i in range(len(df)):
             x, y, spot_frame = self.get_position(i, df)
             crop = self.get_centered_image(i, df, im_actin, win_size_3)
             try:
@@ -175,19 +179,49 @@ class MotilityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
         name = 'motility'
         super(MotilityFeaturesCalculator, self).__init__(name)
 
-    def get_single_cell_measures(self, label, df, im_actin, window_size):
+    def get_single_cell_measures(self, label, df, im_actin, window_size, vid_num):
         return df
 
 
+class LocalDensityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
+    """
+    An ordinary least squares (OLS) linear regression model
+    """
+
+    def __init__(self):
+        name = 'local_density'
+        super(LocalDensityFeaturesCalculator, self).__init__(name)
+        self.neighboring_distance = 50
+        self.all_tracks_df_dict = {}
+        for vid_name in ["S1", "S2", "S3", "S5", "S6", "S8"]:
+            self.all_tracks_df_dict[vid_name], _ = get_tracks(
+                consts.data_csv_path % (params.registration_method, vid_name), manual_tagged_list=False)
+
+    def get_single_cell_measures(self, label, tagged_df, im_actin, window_size, vid_num):
+        all_tracks_df = self.all_tracks_df_dict.get(f"S{vid_num}")
+        if all_tracks_df is None:
+            tracks_csv_path = consts.data_csv_path % (params.registration_method, f"S{vid_num}")
+            all_tracks_df, _ = get_tracks(tracks_csv_path, manual_tagged_list=False)
+        track = tagged_df[tagged_df["Spot track ID"] == label]
+        spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
+        track_local_density = [get_local_density(df=all_tracks_df,
+                                                 x=track[track["Spot frame"] == t]["Spot position X"].values[0],
+                                                 y=track[track["Spot frame"] == t]["Spot position Y"].values[0],
+                                                 t=t,
+                                                 neighboring_distance=self.neighboring_distance)
+                               for t in spot_frames]
+        track["local density"] = track_local_density
+
+        return track[["local density", "Spot frame", "Spot track ID"]]
+
+
 if __name__ == '__main__':
-    os.chdir("/home/shakarch/muscle-formation-diff")
-    # os.chdir(r'C:\Users\Amit\PycharmProjects\muscle-formation-diff')
+    os.chdir("/home/shakarch/muscle-formation-regeneration")
     print("\n"
           f"===== current working directory: {os.getcwd()} =====", flush=True)
     print("running: calc_features")
 
     s_run = consts.s_runs[os.getenv('SLURM_ARRAY_TASK_ID')[0]]
-    # s_run = consts.s_runs['1']
     modality = "nuclei_intensity"
 
     feature_creator = NucleiIntensityFeaturesCalculator()
@@ -206,7 +240,6 @@ if __name__ == '__main__':
     df_all, _ = get_tracks(csv_path, manual_tagged_list=True)
     df_tagged = df_all[df_all["manual"] == 1]
     del df_all
-
 
     vid_path = s_run["actin_path"] if modality == "actin_intensity" else s_run["nuc_path"]
     calculated_features = feature_creator.calc_features(df_tagged,
