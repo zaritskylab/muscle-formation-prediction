@@ -63,5 +63,3 @@ if __name__ == '__main__':
                         win_size=params.window_size, local_den=params.local_density,
                         diff_win=diff_win, con_win=params.con_window,
                         track_len=params.tracks_len, feature_type=feature_type, specific_feature_calc=feature_specific)
-
-

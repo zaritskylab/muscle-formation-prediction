@@ -94,15 +94,16 @@ if __name__ == '__main__':
               f"con_test_n {con_test_n}, diff_test_n {diff_test_n}", flush=True)
 
         print(consts)
-        dir_path = consts.motility_model_path if modality == "motility" else consts.intensity_model_path
+        dir_path = consts.intensity_model_path if modality == "actin_intensity" else consts.motility_model_path
+        dir_path = dir_path % (con_train_n, diff_train_n)
 
         clf, _, _, _, _ = load_data(dir_path, load_clf=True, load_x_train=False, load_x_test=False,
                                     load_y_test=False, load_y_train=False)
 
         print(f"loading vid {s_run['name']}", flush=True)
-        tsfresh_transform_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}_reg=" \
-                                                       f"{registration_method}, local_den={local_density}, win size {params.window_size}.pkl"
-
+        tsfresh_file_name = f"merged_chunks_reg=MeanOpticalFlowReg_,local_den=False,win size={params.window_size}.pkl"
+        tsfresh_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}/"
+        tsfresh_transform_path = tsfresh_dir_path + tsfresh_file_name
         df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
 
         print(f"calc avg prob vid {s_run['name']}", flush=True)
@@ -111,4 +112,5 @@ if __name__ == '__main__':
         df_s = df_s[cols_to_check]
         print(df_s.shape)
         df_score = calc_prob(df_s, clf, n_frames=260)
-        pickle.dump(df_score, open(dir_path + f"/df_prob_w={params.tracks_len}, video_num={s_run['name']}", 'wb'))
+        pickle.dump(df_score, open(dir_path + f"/df_score_vid_num_{s_run['name']}.pkl", 'wb'))
+

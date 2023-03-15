@@ -29,6 +29,8 @@ def load_clean_rows(file_path):
         for chunk in reader:
             chunk = downcast_df(chunk)
             df = df.append(chunk)
+            df = pd.concat([df, chunk], ignore_index=True)
+
     try:
         df = df.drop(labels=range(0, 2), axis=0)
     except Exception as e:
@@ -118,6 +120,6 @@ def get_tracks(file_path, tagged_only=False, manual_tagged_list=True, target=1):
 def get_all_properties_df(modality, con_train_vid_num, diff_train_vid_num, scores_vid_num,
                           reg_method=params.registration_method):
     properties_data_path = consts.intensity_model_path if modality == "actin_intensity" else consts.motility_model_path
-
+    properties_data_path = properties_data_path % (con_train_vid_num, diff_train_vid_num)
     properties_df = pickle.load(open(properties_data_path + f"/S{scores_vid_num}_properties_{reg_method}" + ".pkl", 'rb'))
     return properties_df

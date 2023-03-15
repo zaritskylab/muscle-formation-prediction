@@ -27,7 +27,7 @@ def plot_roc(clf, X_test, y_test, path=None):
 
     plt.legend(loc='best')
     if path:
-        plt.savefig(path + "/" + 'ROC', dpi=300)
+        plt.savefig(path + "/" + 'ROC.eps', format="eps")
     plt.show()
     plt.close()
     plt.clf()

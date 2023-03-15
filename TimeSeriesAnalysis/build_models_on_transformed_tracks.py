@@ -36,7 +36,6 @@ def clean_redundant_columns(df):
 
 def load_tsfresh_csv(path, modality, vid_num, feature_type, specific_feature_type, win_size, registration="no_reg_",
                      local_density=False, impute_func="impute", impute_methodology="ImputeAllData"):
-
     path_prefix = path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/"
     end = f"/feature_type_{feature_type}/{specific_feature_type}/merged_chunks_reg={params.registration_method},local_den={local_density},win size={win_size}"
     print(f"read data from video number {vid_num}")
@@ -187,20 +186,29 @@ def plot_avg_conf(df_con, df_diff, type_modality, path=""):
     plt.clf()
 
 
-def get_to_run_both_modalities(path, local_den, con_train_n=None, diff_train_n=None, con_test_n=None, diff_test_n=None):
-    diff_df_train_mot, con_df_train_mot, con_df_test_mot, diff_df_test_mot = get_to_run(path=path, modality="motility",
+def get_to_run_both_modalities(path, local_den, modality1, modality2, con_train_n=None, diff_train_n=None,
+                               con_test_n=None, diff_test_n=None, feature_type="", specific_feature_type="",
+                               window_size=params.window_size):
+    diff_df_train_mot, con_df_train_mot, con_df_test_mot, diff_df_test_mot = get_to_run(path=path, modality=modality1,
                                                                                         local_density=local_den,
                                                                                         con_train_num=con_train_n,
                                                                                         diff_train_num=diff_train_n,
                                                                                         con_test_num=con_test_n,
-                                                                                        diff_test_num=diff_test_n)
+                                                                                        diff_test_num=diff_test_n,
+                                                                                        feature_type=feature_type,
+                                                                                        specific_feature_type=specific_feature_type,
+                                                                                        win_size=window_size)
+
     diff_df_train_int, con_df_train_int, con_df_test_int, diff_df_test_int = get_to_run(path=path,
-                                                                                        modality="actin_intensity",
+                                                                                        modality=modality2,
                                                                                         local_density=local_den,
                                                                                         con_train_num=con_train_n,
                                                                                         diff_train_num=diff_train_n,
                                                                                         con_test_num=con_test_n,
-                                                                                        diff_test_num=diff_test_n)
+                                                                                        diff_test_num=diff_test_n,
+                                                                                        feature_type=feature_type,
+                                                                                        specific_feature_type=specific_feature_type,
+                                                                                        win_size=window_size)
 
     if (con_train_n is not None) and (diff_train_n is not None):
         diff_df = diff_df_train_mot.merge(diff_df_train_int, on=["Spot track ID", "Spot frame"], how="left")
@@ -212,6 +220,7 @@ def get_to_run_both_modalities(path, local_den, con_train_n=None, diff_train_n=N
 
     diff_df = diff_df.dropna(axis=0)
     con_df = con_df.dropna(axis=0)
+
     return diff_df, con_df
 
 
@@ -224,10 +233,18 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
     for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3), (2, 3, 1, 5), ]:
         print(f"\n train: con_n-{con_train_n},dif_n-{diff_train_n}; test: con_n-{con_test_n},dif_n-{diff_test_n}")
 
-        if modality == "both":
-            diff_df_train, con_df_train = get_to_run_both_modalities(path, local_density, con_train_n=con_train_n,
-                                                                     diff_train_n=diff_train_n, con_test_n=None,
-                                                                     diff_test_n=None)
+        if len(modality.split("-")) == 2:
+            first_modality, second_modality = modality.split("-")[0], modality.split("-")[1]
+            diff_df_train, con_df_train = get_to_run_both_modalities(path, local_density, first_modality,
+                                                                     second_modality,
+                                                                     con_train_n=con_train_n,
+                                                                     diff_train_n=diff_train_n,
+                                                                     con_test_n=None,
+                                                                     diff_test_n=None,
+                                                                     feature_type=feature_type,
+                                                                     specific_feature_type=specific_feature_type,
+                                                                     window_size=window_size
+                                                                     )
         else:
             diff_df_train, con_df_train, _, _ = get_to_run(path=path, modality=modality, local_density=local_density,
                                                            feature_type=feature_type,
@@ -260,13 +277,20 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
         filter_col = [col for col in X_train if col.startswith('mean')]
         print(filter_col)
 
-        clf = train_model(X_train, y_train)
+        clf = train_model(X_train, y_train, modality)
         load_save_utils.save_data(dir_path, X_train=X_train)
-        del X_train
-        if modality == "both":
-            diff_df_test, con_df_test = get_to_run_both_modalities(path, local_density, con_train_n=None,
+        # del X_train
+        if len(modality.split("-")) == 2:
+            first_modality, second_modality = modality.split("-")[0], modality.split("-")[1]
+            diff_df_test, con_df_test = get_to_run_both_modalities(path, local_density, first_modality,
+                                                                   second_modality,
+                                                                   con_train_n=None,
                                                                    diff_train_n=None, con_test_n=con_test_n,
-                                                                   diff_test_n=diff_test_n)
+                                                                   diff_test_n=diff_test_n,
+                                                                   feature_type=feature_type,
+                                                                   specific_feature_type=specific_feature_type,
+                                                                   window_size=window_size
+                                                                   )
 
         else:
             _, _, con_df_test, diff_df_test = get_to_run(path=path, modality=modality, local_density=local_density,
@@ -285,8 +309,11 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
         cols.extend(["Spot track ID", "Spot frame"])
         print(cols)
 
-        load_save_utils.save_data(dir_path, y_train=y_train, X_test=X_test, y_test=y_test, clf=clf)
         evaluate_clf(dir_path, clf, X_test, y_test, y_train, diff_window, con_window)
+
+        train_model_compare_algorithms(X_train, y_train, X_test, y_test, dir_path)
+
+        load_save_utils.save_data(dir_path, y_train=y_train, X_test=X_test, y_test=y_test, clf=clf)
         del X_test
         del y_test
 
@@ -294,8 +321,8 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
         df_score_con = calc_prob(con_df_test[cols].dropna(axis=1), clf, n_frames=260)
         df_score_dif = calc_prob(diff_df_test[cols].dropna(axis=1), clf, n_frames=260)
 
-        pickle.dump(df_score_con, open(dir_path + f"data_frame_score_control_vid_num_{con_test_n}.pkl", 'wb'))
-        pickle.dump(df_score_dif, open(dir_path + f"data_frame_score_differentiate_vid_num_{diff_test_n}.pkl", 'wb'))
+        pickle.dump(df_score_con, open(dir_path + f"df_score_vid_num_S{con_test_n}.pkl", 'wb'))
+        pickle.dump(df_score_dif, open(dir_path + f"df_score_vid_num_S{diff_test_n}.pkl", 'wb'))
 
         plot_avg_conf(df_score_con.drop("Spot track ID", axis=1),
                       df_score_dif.drop("Spot track ID", axis=1), modality, dir_path)

@@ -1,9 +1,15 @@
 import os
 import sys
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, roc_curve
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, roc_curve, brier_score_loss
 from sklearn import metrics
+from sklearn.calibration import CalibratedClassifierCV, calibration_curve
+from sklearn.model_selection import train_test_split
+import seaborn as sns
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 from tsfresh import extract_features
@@ -25,11 +31,307 @@ def evaluate(clf, X_test, y_test):
     print(auc_score)
     return report, auc_score
 
+def train_model_compare_algorithms(X_train, y_train, X_test, y_test, dir_path):
+    models = []
+    models.append(('RF', RandomForestClassifier())) #**{'max_depth': 12, 'min_samples_leaf': 1, 'n_estimators': 100}
+    models.append(('GB', GradientBoostingClassifier()))
+    models.append(('LR', LogisticRegression()))
+    models.append(('KNN', KNeighborsClassifier()))
+    models.append(('SVM', SVC(probability=True)))
 
-def train_model(X_train, y_train):
-    clf = RandomForestClassifier(max_depth=8)
+    txt_file = open(dir_path + '/clf_comparison.txt', 'a')
+    for name, model in models:
+        model.fit(X_train, y_train)
+        report, auc_score = evaluate(model, X_test, y_test)
+
+        # save AUC score
+        txt_file.write(f"classifier: {name}, auc score: {auc_score}\n")
+        print(f"classifier: {name}, auc score: {auc_score}")
+    txt_file.close()
+
+
+def train_model(X_train, y_train, modality):
+    params_dict = {"motility":
+                       {'max_depth': 12, 'min_samples_leaf': 1, 'n_estimators': 100}, #'class_weight': 'balanced',
+                   "actin_intensity": {'class_weight': None, 'max_depth': 20, 'min_samples_leaf': 1,
+                                       'n_estimators': 200}}
+    params = params_dict.get(modality) if params_dict.get(modality) is not None else {}
+    clf = RandomForestClassifier(**params)
     clf.fit(X_train, y_train)
     return clf
+
+
+def plot_calibration_curve(y_true, not_calibrated_probs, calibrated_probs_sigmoid, calibrated_probs_isotonic, save_path,
+                           clf_score, clf_sigmoid_score, clf_isotonic_score):
+    plt.figure(figsize=(10, 4))
+    plt.plot([0, 1], [0, 1], linestyle='--', color='gray')
+
+    x, y = calibration_curve(y_true, not_calibrated_probs, n_bins=10, normalize=False)
+    plt.plot(y, x, marker='.', label=f'original, brier={round(clf_score, 3)}')
+
+    x, y = calibration_curve(y_true, calibrated_probs_sigmoid, n_bins=10, normalize=False)
+    plt.plot(y, x, marker='.', label=f'sigmoid calibration, brier={round(clf_sigmoid_score, 3)}')
+
+    x, y = calibration_curve(y_true, calibrated_probs_isotonic, n_bins=10, normalize=False)
+    plt.plot(y, x, marker='.', label=f'isotonic calibration, brier={round(clf_isotonic_score, 3)}')
+
+    plt.title("calibrated vs not calibrated curves", fontsize=20)
+    plt.xlabel('Mean predicted probability for each bin', fontsize=14)
+    plt.ylabel('fraction of positive classes in each bin', fontsize=14)
+    plt.legend()
+    plt.savefig(save_path + "/calibration_curve.eps", format="eps")
+    plt.show()
+    plt.clf()
+
+
+def plot_predicted_vs_empirical_probs(x_data, y_data, not_calibrated_clf, calibrated_clf, save_path):
+    # Plot Predicted Probabilities vs Empirical Probabilities
+    plt.figure(figsize=(20, 10))
+
+    plt.subplot(3, 1, 1)
+    sns.histplot(data=not_calibrated_clf.predict_proba(x_data)[:, 1])
+    plt.title(f"test predicted probabilities (not calibrated)", fontsize=20)
+
+    plt.subplot(3, 1, 2)
+    sns.histplot(data=calibrated_clf.predict_proba(x_data)[:, 1])
+    plt.title(f"test predicted probabilities (calibrated)", fontsize=20)
+
+    plt.subplot(3, 1, 3)
+    sns.histplot(data=y_data.astype(int))
+    plt.title(f"test true values", fontsize=20)
+    plt.tight_layout()
+    plt.savefig(save_path + "/calibration predicted probabilities.eps", format="eps")
+    plt.show()
+    plt.clf()
+
+
+def calibrate_model(x_train, y_train, x_test, y_test, clf, path, modality):
+    # from imblearn.under_sampling import RandomUnderSampler
+    # undersample = RandomUnderSampler(random_state=42)
+    # print(y_train.value_counts(), y_test.value_counts())
+    # x_train, y_train = undersample.fit_resample(x_train, y_train)  # todo remove
+    # x_test, y_test = undersample.fit_resample(x_test, y_test)  # todo remove
+    #
+    # print(y_train.value_counts(),y_test.value_counts() )
+    # params_dict = {"motility":
+    #                    {'bootstrap': False, 'class_weight': 'balanced', 'max_depth': 24, 'max_features': 'auto',
+    #                     'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200},
+    #                "actin_intensity": {'bootstrap': False, 'class_weight': 'balanced', 'max_depth': 40, 'max_features': 'auto',
+    #                                    'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 100}
+    #                }
+    # params = params_dict.get(modality) if params_dict.get(modality) is not None else {}
+    # base_clf = RandomForestClassifier(**params)
+    # base_clf.fit(x_train, y_train)
+    #
+    # not_calibrated_probs = base_clf.predict_proba(x_test)[:, 1]
+    #
+    # calibrated_model_sigmoid = CalibratedClassifierCV(base_clf, cv=5, method="sigmoid")
+    # calibrated_model_sigmoid.fit(x_train, y_train)
+    # calibrated_probs_sigmoid = calibrated_model_sigmoid.predict_proba(x_test)[:, 1]
+    #
+    # calibrated_model_isotonic = CalibratedClassifierCV(base_clf, cv=5, method="isotonic")
+    # calibrated_model_isotonic.fit(x_train, y_train)
+    # calibrated_probs_isotonic = calibrated_model_isotonic.predict_proba(x_test)[:, 1]
+    #
+    # # calculate brier score:
+    # clf_score = brier_score_loss(y_test, not_calibrated_probs)
+    # print("With no calibration: %1.3f" % clf_score, flush=True)
+    # clf_sigmoid_score = brier_score_loss(y_test, calibrated_probs_sigmoid)
+    # print("With sigmoid calibration: %1.3f" % clf_sigmoid_score, flush=True)
+    # clf_isotonic_score = brier_score_loss(y_test, calibrated_probs_isotonic)
+    # print("With isotonic calibration: %1.3f" % clf_isotonic_score, flush=True)
+    #
+    # # calibrate with best calibration method
+    # # calibrated_model = calibrated_model_isotonic if clf_isotonic_score <= clf_sigmoid_score else calibrated_model_sigmoid
+    # calibrated_model = calibrated_model_sigmoid
+    # print(calibrated_model)
+    #
+    # plot_calibration_curve(y_test, not_calibrated_probs, calibrated_probs_sigmoid, calibrated_probs_isotonic, path,
+    #                        clf_score, clf_sigmoid_score, clf_isotonic_score)
+    # plot_predicted_vs_empirical_probs(x_test, y_test, base_clf, calibrated_model, path)
+    from imblearn.under_sampling import RandomUnderSampler
+    undersample = RandomUnderSampler(random_state=42)
+    print("train", y_train.value_counts())
+    print("test", y_test.value_counts())
+    x_train, y_train = undersample.fit_resample(x_train, y_train)  # todo remove
+    x_test, y_test = undersample.fit_resample(x_test, y_test)  # todo remove
+    print("train", y_train.value_counts())
+    print("test", y_test.value_counts())
+
+    params_dict = {"motility":
+                       {'class_weight': 'balanced', 'max_depth': 12, 'min_samples_leaf': 1, 'n_estimators': 100},
+                   "actin_intensity": {'class_weight': None, 'max_depth': 20, 'min_samples_leaf': 1,
+                                       'n_estimators': 200}}
+
+    params = params_dict.get(modality) if params_dict.get(modality) is not None else {}
+    base_clf = RandomForestClassifier(**params)
+    base_clf.fit(x_train, y_train)
+    not_calibrated_probs = base_clf.predict_proba(x_test)[:, 1]
+
+    calibrated_model_sigmoid = CalibratedClassifierCV(base_clf, cv=5, method="sigmoid")
+    calibrated_model_sigmoid.fit(x_train, y_train)
+    calibrated_probs_sigmoid = calibrated_model_sigmoid.predict_proba(x_test)[:, 1]
+    calibrated_model_isotonic = CalibratedClassifierCV(base_clf, cv=5, method="isotonic")
+    calibrated_model_isotonic.fit(x_train, y_train)
+    calibrated_probs_isotonic = calibrated_model_isotonic.predict_proba(x_test)[:, 1]
+
+    # calculate brier score:
+    clf_score = brier_score_loss(y_test, not_calibrated_probs)
+    print("With no calibration: %1.3f" % clf_score, flush=True)
+    clf_sigmoid_score = brier_score_loss(y_test, calibrated_probs_sigmoid)
+    print("With sigmoid calibration: %1.3f" % clf_sigmoid_score, flush=True)
+    clf_isotonic_score = brier_score_loss(y_test, calibrated_probs_isotonic)
+    print("With isotonic calibration: %1.3f" % clf_isotonic_score, flush=True)
+
+    # calibrate with best calibration method
+    calibrated_model = calibrated_model_sigmoid
+    print(calibrated_model)
+    plot_calibration_curve(y_test, not_calibrated_probs, calibrated_probs_sigmoid, calibrated_probs_isotonic, path,
+                           clf_score, clf_sigmoid_score, clf_isotonic_score)
+    plot_predicted_vs_empirical_probs(x_test, y_test, base_clf, calibrated_model, path)
+    return calibrated_model
+
+
+def calibrate_model2(x_train, y_train, x_test, y_test, clf, path, modality):
+    from imblearn.under_sampling import RandomUnderSampler
+    undersample = RandomUnderSampler(random_state=42)
+    x_train, y_train = undersample.fit_resample(x_train, y_train)  # todo remove
+
+    params_dict = {"motility":
+                       {'bootstrap': False, 'max_depth': 24, 'max_features': 'auto',
+                        'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200},
+                   "actin_intensity": {'bootstrap': False, 'max_depth': 40, 'max_features': 'auto',
+                                       'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 100}
+                   }
+    new_x_train, x_calib, new_y_train, y_calib = train_test_split(x_train, y_train, test_size=0.3, random_state=42)
+
+    params = params_dict.get(modality) if params_dict.get(modality) is not None else {}
+    base_clf = RandomForestClassifier(**params)
+    base_clf.fit(new_x_train, new_y_train)
+    not_calibrated_probs = base_clf.predict_proba(x_test)[:, 1]
+
+    # get best calibrated model:
+    calibrated_model_sigmoid = CalibratedClassifierCV(base_clf, cv="prefit", method="sigmoid")
+    calibrated_model_sigmoid.fit(x_calib, y_calib)
+    calibrated_probs_sigmoid = calibrated_model_sigmoid.predict_proba(x_test)[:, 1]
+
+    calibrated_model_isotonic = CalibratedClassifierCV(base_clf, cv="prefit", method="isotonic")
+    calibrated_model_isotonic.fit(x_calib, y_calib)
+    calibrated_probs_isotonic = calibrated_model_isotonic.predict_proba(x_test)[:, 1]
+
+    # calculate brier score:
+    clf_score = brier_score_loss(y_test, not_calibrated_probs)
+    print("With no calibration: %1.3f" % clf_score, flush=True)
+    clf_sigmoid_score = brier_score_loss(y_test, calibrated_probs_sigmoid)
+    print("With sigmoid calibration: %1.3f" % clf_sigmoid_score, flush=True)
+    clf_isotonic_score = brier_score_loss(y_test, calibrated_probs_isotonic)
+    print("With isotonic calibration: %1.3f" % clf_isotonic_score, flush=True)
+
+    # calibrate with best calibration method
+    calibrated_model = calibrated_model_sigmoid
+    print(calibrated_model)
+
+    plot_calibration_curve(y_test, not_calibrated_probs, calibrated_probs_sigmoid, calibrated_probs_isotonic, path,
+                           clf_score, clf_sigmoid_score, clf_isotonic_score)
+    plot_predicted_vs_empirical_probs(x_test, y_test, base_clf, calibrated_model, path)
+
+    return calibrated_model
+
+
+# def calibrate_model(x_train, y_train, x_test, y_test, clf, path, modality):
+#     from imblearn.under_sampling import RandomUnderSampler
+#     undersample = RandomUnderSampler(random_state=42)
+#     # x_test, y_test = undersample.fit_resample(x_test, y_test)
+#
+#     # x_test, x_val, y_test, y_val = train_test_split(x_test, y_test, test_size=0.2, random_state=42)
+#     # not_calibrated_probs = clf.predict_proba(x_val)[:, 1]
+#
+#     # get best calibrated model:
+#     # calibrated_model_sigmoid = CalibratedClassifierCV(clf, cv="prefit", method="sigmoid")
+#     # calibrated_model_sigmoid.fit(x_test, y_test)
+#     # calibrated_probs_sigmoid = calibrated_model_sigmoid.predict_proba(x_val)[:, 1]
+#     #
+#     # calibrated_model_isotonic = CalibratedClassifierCV(clf, cv="prefit", method="isotonic")
+#     # calibrated_model_isotonic.fit(x_test, y_test)
+#     # calibrated_probs_isotonic = calibrated_model_isotonic.predict_proba(x_val)[:, 1]
+#
+#     params_dict = {"motility": {'bootstrap': True, 'max_depth': 8, 'max_features': 'auto', 'min_samples_leaf': 1,
+#                                 'min_samples_split': 10, 'n_estimators': 100},
+#                    # {'bootstrap': False, 'max_depth': 60, 'max_features': 'auto', 'min_samples_leaf': 1,
+#                    #          'min_samples_split': 2,
+#                    #          'n_estimators': 100},
+#                    "actin_intensity": {'bootstrap': False, 'max_depth': 40, 'max_features': 'auto',
+#                                        'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 100}
+#                    }
+#     params = params_dict.get(modality) if params_dict.get(modality) is not None else {}
+#     base_clf = RandomForestClassifier(**params)
+#
+#     x_test, y_test = undersample.fit_resample(x_test, y_test)  # todo remove
+#
+#     not_calibrated_probs = clf.predict_proba(x_test)[:, 1]
+#
+#     calibrated_model_sigmoid = CalibratedClassifierCV(base_clf, cv=5, method="sigmoid")
+#     calibrated_model_sigmoid.fit(x_train, y_train)
+#     calibrated_probs_sigmoid = calibrated_model_sigmoid.predict_proba(x_test)[:, 1]
+#
+#     calibrated_model_isotonic = CalibratedClassifierCV(base_clf, cv=5, method="isotonic")
+#     calibrated_model_isotonic.fit(x_train, y_train)
+#     calibrated_probs_isotonic = calibrated_model_isotonic.predict_proba(x_test)[:, 1]
+#
+#     y_val = y_test
+#
+#     # calculate brier score:
+#     clf_score = brier_score_loss(y_val, not_calibrated_probs)
+#     print("With no calibration: %1.4f" % clf_score, flush=True)
+#     clf_sigmoid_score = brier_score_loss(y_val, calibrated_probs_sigmoid)
+#     print("With sigmoid calibration: %1.4f" % clf_sigmoid_score, flush=True)
+#     clf_isotonic_score = brier_score_loss(y_val, calibrated_probs_isotonic)
+#     print("With isotonic calibration: %1.4f" % clf_isotonic_score, flush=True)
+#
+#     # calibrate with best calibration method
+#     calibrated_model = calibrated_model_isotonic if clf_isotonic_score <= clf_sigmoid_score else calibrated_model_sigmoid
+#
+#     # plot calibration curve
+#     plt.figure(figsize=(10, 4))
+#     plt.plot([0, 1], [0, 1], linestyle='--', color='gray')
+#
+#     x, y = calibration_curve(y_val, not_calibrated_probs, n_bins=10, normalize=True)
+#     plt.plot(y, x, marker='.', label=f'original, brier={round(clf_score, 3)}')
+#
+#     x, y = calibration_curve(y_val, calibrated_probs_sigmoid, n_bins=10, normalize=True)
+#     plt.plot(y, x, marker='.', label=f'sigmoid calibration, brier={round(clf_sigmoid_score, 3)}')
+#
+#     x, y = calibration_curve(y_val, calibrated_probs_isotonic, n_bins=10, normalize=True)
+#     plt.plot(y, x, marker='.', label=f'isotonic calibration, brier={round(clf_isotonic_score, 3)}')
+#
+#     plt.title("calibrated vs not calibrated curves", fontsize=20)
+#     plt.xlabel('Mean predicted probability for each bin', fontsize=14)
+#     plt.ylabel('fraction of positive classes in each bin', fontsize=14)
+#     plt.legend()
+#     plt.savefig(path + "/calibration_curve.eps", format="eps")
+#     plt.show()
+#     plt.clf()
+#
+#     # Plot Predicted Probabilities vs Empirical Probabilities
+#     plt.figure(figsize=(20, 10))
+#
+#     plt.subplot(3, 1, 1)
+#     sns.histplot(data=clf.predict_proba(x_test)[:, 1])
+#     plt.title(f"test predicted probabilities (not calibrated)", fontsize=20)
+#
+#     plt.subplot(3, 1, 2)
+#     sns.histplot(data=calibrated_model.predict_proba(x_test)[:, 1])
+#     plt.title(f"test predicted probabilities (calibrated)", fontsize=20)
+#
+#     plt.subplot(3, 1, 3)
+#     sns.histplot(data=y_test.astype(int))
+#     plt.title(f"test true values", fontsize=20)
+#     plt.tight_layout()
+#     plt.savefig(path + "/calibration predicted probabilities.eps", format="eps")
+#     plt.show()
+#     plt.clf()
+#
+#     return calibrated_model
 
 
 def get_position(ind, df):
@@ -58,7 +360,7 @@ def get_single_cell_intensity_measures(label, df, im_actin, window_size):
         data = {"min": min_i, "max": max_i, "mean": mean_i, "sum": sum_i, "Spot track ID": label,
                 "Spot frame": spot_frame,
                 "x": x, "y": y}
-        df_measures = pd.concat([df_measures, data], ignore_index=True)
+        df_measures = pd.concat([df_measures, pd.DataFrame(data, index=[0])], ignore_index=True)
         # df_measures = df_measures.append(data, ignore_index=True)
     return df_measures
 
@@ -154,8 +456,9 @@ def calc_prob(transformed_tracks_df, clf, n_frames=260):
                 probs = clf.predict_proba(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1))
                 diff_score[t] = pd.to_numeric(probs[0][1], downcast='float')
 
+            diff_score_df = pd.DataFrame(diff_score, index=[0])
+            df_score = pd.concat([df_score, diff_score_df], ignore_index=True, sort=False)
             # df_score = df_score.append(diff_score, ignore_index=True, sort=False)
-            df_score = pd.concat([df_score, diff_score], ignore_index=True)
         except Exception as e:
             print(e)
             print(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1).size)

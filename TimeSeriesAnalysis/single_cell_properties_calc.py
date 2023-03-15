@@ -43,7 +43,9 @@ def calc_properties_df(score_df_mot, score_df_int, tagged_df, all_tracks, save_d
                                                      tagged_df[tagged_df["Spot track ID"] == label],
                                                      all_tracks, actin_vid, actin_win_size=params.window_size,
                                                      local_density=local_density, coordination=coordination)
-        all_correlations_df = all_correlations_df.append(correlations_df, ignore_index=True)
+
+        all_correlations_df = pd.concat([all_correlations_df, correlations_df], ignore_index=True)
+        # all_correlations_df = all_correlations_df.append(correlations_df, ignore_index=True)
     print(f"saving into {save_dir}")
     print(f"size {all_correlations_df.shape}")
 
@@ -64,7 +66,7 @@ def load_correlations_data(s_run, dir_path_score, coordination_df_path, tracks_c
     """
     print(f"load correlations data: {s_run['name']}", flush=True)
     # get single cells score df
-    df_score = pickle.load(open(dir_path_score + f"/df_prob_w=30, video_num={s_run['name']}", 'rb'))
+    df_score = pickle.load(open(dir_path_score + f"/df_score_vid_num_{s_run['name']}.pkl", 'rb'))
 
     # get tagged tracks
     df_all_tracks, _ = get_tracks(tracks_csv_path, manual_tagged_list=False)
@@ -95,11 +97,6 @@ def load_correlations_data(s_run, dir_path_score, coordination_df_path, tracks_c
 
 
 def get_dir_path(modality, con_train_n, diff_train_n, ):
-    dir_path = consts.storage_path + f"13-11-2022-{modality} local dens-{params.local_density}, s{con_train_n}, s{diff_train_n} train" + (
-        f" win size {params.window_size}" if modality != "motility" else "")
-    second_dir = f"track len {params.tracks_len}, impute_func-{params.impute_methodology}_{params.impute_func} reg {params.registration_method}"
-    dir_path += "/" + second_dir
-
     return consts.motility_model_path if modality == "motility" else consts.intensity_model_path
 
 
