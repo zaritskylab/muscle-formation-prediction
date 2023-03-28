@@ -272,11 +272,11 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.auc_over_time_diff_prob" />
-      <item itemvalue="Python.build_models_on_transformed_tracks" />
       <item itemvalue="Python.main" />
-      <item itemvalue="Python.merge_preprocessed_data_chunks" />
+      <item itemvalue="Python.auc_over_time_diff_prob" />
       <item itemvalue="Python.single_cell_properties_calc" />
+      <item itemvalue="Python.build_models_on_transformed_tracks" />
+      <item itemvalue="Python.merge_preprocessed_data_chunks" />
       <item itemvalue="Python.vid_tracking_cell" />
     </list>
     <recent_temporary>
