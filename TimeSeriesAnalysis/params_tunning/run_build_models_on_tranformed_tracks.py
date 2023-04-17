@@ -13,18 +13,15 @@ if __name__ == '__main__':
     feature_type = sys.argv[2]
 
     # build model by original features - not sensitive analysis
-    if feature_type == "original":
-
-        feature_specific = 'original'
+    if feature_type is None:
         build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density,
                                  window_size=params.window_size,
                                  tracks_len=params.tracks_len, con_window=params.con_window,
-                                 diff_window=params.diff_window, feature_type=feature_type,
-                                 specific_feature_type=feature_specific, modality=modality)
+                                 diff_window=params.diff_window, modality=modality)
 
     # build model by sensitive analysis on temporal_segment feature
     elif feature_type == "temporal_segment_arr":
-        #array of arrays that each array is one of temporal segment array, differentiation_window array and control window array
+        # array of arrays that each array is one of temporal segment array, differentiation_window array and control window array
         list_of_tempural_diff_win_con_win = params.feature_calc_types[feature_type]
 
         temporal_segment_array = list_of_tempural_diff_win_con_win[0][0]
@@ -63,4 +60,3 @@ if __name__ == '__main__':
                                      tracks_len=params.tracks_len, con_window=params.con_window,
                                      diff_window=params.diff_window, feature_type=feature_type,
                                      specific_feature_type=win_size, modality=modality)
-

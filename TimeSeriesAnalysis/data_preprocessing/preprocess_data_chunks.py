@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 
@@ -23,7 +22,8 @@ warnings.simplefilter('ignore', pd.errors.DtypeWarning)
 
 
 def preprocess_data_chunk(prep, data, vid_path, local_den, win_size, track_len, s_run) -> pd.DataFrame:
-    data = prep.feature_creator.calc_features(data, vid_path=vid_path, temporal_seg_size=track_len, window_size=win_size, local_density=local_den)
+    data = prep.feature_creator.calc_features(data, vid_path=vid_path, temporal_seg_size=track_len,
+                                              window_size=win_size, local_density=local_den)
     preprocessed_data = prep.data_normalizer.preprocess_data(data)
     transformed_data = prep.tsfresh_transformer.ts_fresh_transform_df(
         df_to_transform=preprocessed_data, target=s_run["target"], track_len=track_len)  # window_size=win_size,
@@ -36,13 +36,13 @@ def preprocess_data_chunk(prep, data, vid_path, local_den, win_size, track_len, 
     return transformed_data
 
 
-def preprocess_data(n_tasks, job_id, s_run, modality, win_size, local_den, diff_win, con_win, track_len, feature_type,
-                    specific_feature_calc):
+def preprocess_data(n_tasks, job_id, s_run, modality, win_size, local_den, track_len,
+                    feature_type="", specific_feature_calc=""):
     print(
         f"\nrunning: modality={modality},\nvideo={s_run['name']},\nreg={registration_method}, \njob_id={job_id}, \nwin_size={win_size}")
 
     # set paths for saving transformed data
-    transformed_data_dir = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}/feature_type_{feature_type}/{specific_feature_calc}"
+    transformed_data_dir = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}/{feature_type}/{specific_feature_calc}"
     save_transformed_data_path = transformed_data_dir + \
                                  f"/{s_run['name']}_reg={registration_method},local_den={local_den}" + \
                                  (f"win size {win_size}" if modality != "motility" else "")
@@ -96,5 +96,4 @@ if __name__ == '__main__':
 
     preprocess_data(n_tasks=n_tasks, job_id=task_id, s_run=s_run, modality=modality,
                     win_size=params.window_size, local_den=params.local_density,
-                    diff_win=params.diff_window, con_win=params.con_window,
-                    track_len=params.tracks_len, feature_type="_", specific_feature_calc="_")
+                    track_len=params.tracks_len)

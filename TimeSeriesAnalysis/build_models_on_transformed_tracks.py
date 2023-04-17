@@ -37,7 +37,7 @@ def clean_redundant_columns(df):
 def load_tsfresh_csv(path, modality, vid_num, feature_type, specific_feature_type, win_size, registration="no_reg_",
                      local_density=False, impute_func="impute", impute_methodology="ImputeAllData"):
     path_prefix = path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/"
-    end = f"/feature_type_{feature_type}/{specific_feature_type}/merged_chunks_reg={params.registration_method},local_den={local_density},win size={win_size}"
+    end = f"/{feature_type}/{specific_feature_type}/merged_chunks_reg={params.registration_method},local_den={local_density},win size={win_size}"
     print(f"read data from video number {vid_num}")
     df = pickle.load(open(path_prefix + f"S{vid_num}" + end + ".pkl", 'rb'))
     df = downcast_df(df, fillna=False)
@@ -224,8 +224,8 @@ def get_to_run_both_modalities(path, local_den, modality1, modality2, con_train_
     return diff_df, con_df
 
 
-def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_window, diff_window, feature_type,
-                             specific_feature_type, modality):
+def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_window, diff_window, modality,
+                             feature_type="", specific_feature_type=""):
     print(f"\nrunning: build_models_on_transformed_tracks"
           f"\nmodality={modality}, local density={local_density}, reg={registration_method}, "
           f"impute func= {impute_func},impute_methodology= {impute_methodology}")

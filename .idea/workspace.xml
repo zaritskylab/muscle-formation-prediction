@@ -23,16 +23,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="cosmetic changes">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/consts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/params.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/params.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/data_normalizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/data_normalizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/data_preprocessor.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/data_preprocessor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/features_calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/features_calculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/imputer_strategy.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/imputer_strategy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/run_build_models_on_tranformed_tracks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/run_build_models_on_tranformed_tracks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/run_preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/run_preprocess_data_chunks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/data_load_save.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/data_load_save.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/plots_functions_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/plots_functions_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -485,6 +487,12 @@
       <workItem from="1675060166691" duration="3671000" />
       <workItem from="1675593980566" duration="890000" />
       <workItem from="1675668542991" duration="9059000" />
+      <workItem from="1679986862286" duration="831000" />
+      <workItem from="1679987899436" duration="1604000" />
+      <workItem from="1679989542680" duration="5354000" />
+      <workItem from="1681110605844" duration="12597000" />
+      <workItem from="1681380121793" duration="119000" />
+      <workItem from="1681535843395" duration="3602000" />
     </task>
     <task id="LOCAL-00001" summary="Added aae files">
       <created>1617796329153</created>
@@ -780,7 +788,14 @@
       <option name="project" value="LOCAL" />
       <updated>1673337560657</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="cosmetic changes">
+      <created>1679986925575</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1679986925575</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -818,147 +833,39 @@
     <state x="1953" y="23" width="1510" height="854" key="#Deployment" timestamp="1673251322023">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="-31" y="0" key="#Deployment/0.0.1280.680/1920.10.1920.1040@0.0.1280.680" timestamp="1666078221223" />
-    <state x="2318" y="117" key="#Deployment/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1670233620835" />
     <state x="2130" y="306" key="#Deployment/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1671959317124" />
     <state x="1953" y="23" width="1510" height="854" key="#Deployment/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1673251322023" />
-    <state x="265" y="19" key="#Deployment/0.0.1280.680@0.0.1280.680" timestamp="1667197271977" />
-    <state x="398" y="107" key="#Deployment/0.0.1920.1040@0.0.1920.1040" timestamp="1670237250114" />
     <state x="318" y="22" key="#Options" timestamp="1671959166910">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="318" y="22" key="#Options/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1671959166910" />
-    <state x="295" y="330" key="#SSH_Configurations" timestamp="1670237208043">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="121" y="0" key="#SSH_Configurations/0.0.1280.680/1920.10.1920.1040@0.0.1280.680" timestamp="1666078220671" />
-    <state x="2102" y="10" key="#SSH_Configurations/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1670233587387" />
-    <state x="295" y="330" key="#SSH_Configurations/0.0.1920.1040@0.0.1920.1040" timestamp="1670237208043" />
-    <state x="2297" y="125" width="1181" height="526" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1669711169584">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2297" y="125" width="1181" height="526" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669711169584" />
     <state x="2547" y="335" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1673174701496">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="2637" y="331" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666080193555" />
     <state x="2547" y="335" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1673174701496" />
-    <state x="717" y="321" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1670238346158" />
-    <state x="2565" y="244" key="#com.intellij.ide.util.MemberChooser" timestamp="1668072840988">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2565" y="244" key="#com.intellij.ide.util.MemberChooser/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668072840988" />
-    <state x="2157" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1668075760282">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2157" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668075760282" />
-    <state x="2409" y="388" width="960" height="456" key="#xdebugger.evaluate" timestamp="1669725611273">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2235" y="496" width="831" height="554" key="#xdebugger.evaluate/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666593002559" />
-    <state x="2409" y="388" width="960" height="456" key="#xdebugger.evaluate/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725611273" />
-    <state width="1620" height="511" key="DebuggerActiveHint" timestamp="1668348825225">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1852" height="527" key="DebuggerActiveHint/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666592996711" />
-    <state width="1620" height="511" key="DebuggerActiveHint/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668348825225" />
-    <state x="2012" y="115" width="1496" height="826" key="DiffContextDialog" timestamp="1667462298455">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2012" y="115" width="1496" height="826" key="DiffContextDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1667462298455" />
-    <state x="2376" y="483" width="382" height="465" key="EnvironmentVariablesDialog" timestamp="1668336720109">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2376" y="483" width="382" height="465" key="EnvironmentVariablesDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668336720109" />
-    <state width="1297" height="242" key="GridCell.Tab.0.bottom" timestamp="1669725965274">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1587" height="242" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
-    <state width="1302" height="251" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867589" />
-    <state width="1297" height="242" key="GridCell.Tab.0.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965274" />
-    <state width="1297" height="242" key="GridCell.Tab.0.center" timestamp="1669725965273">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1587" height="242" key="GridCell.Tab.0.center/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
-    <state width="1302" height="251" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867588" />
-    <state width="1297" height="242" key="GridCell.Tab.0.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965273" />
-    <state width="1297" height="242" key="GridCell.Tab.0.left" timestamp="1669725965273">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1587" height="242" key="GridCell.Tab.0.left/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
-    <state width="1302" height="251" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867587" />
-    <state width="1297" height="242" key="GridCell.Tab.0.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965273" />
-    <state width="1297" height="242" key="GridCell.Tab.0.right" timestamp="1669725965273">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1587" height="242" key="GridCell.Tab.0.right/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
-    <state width="1302" height="251" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867588" />
-    <state width="1297" height="242" key="GridCell.Tab.0.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965273" />
-    <state width="1297" height="242" key="GridCell.Tab.1.bottom" timestamp="1669725965274">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1587" height="242" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
-    <state width="1302" height="251" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867589" />
-    <state width="1297" height="242" key="GridCell.Tab.1.bottom/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965274" />
-    <state width="1297" height="242" key="GridCell.Tab.1.center" timestamp="1669725965274">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1587" height="242" key="GridCell.Tab.1.center/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
-    <state width="1302" height="251" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867589" />
-    <state width="1297" height="242" key="GridCell.Tab.1.center/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965274" />
-    <state width="1297" height="242" key="GridCell.Tab.1.left" timestamp="1669725965274">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1587" height="242" key="GridCell.Tab.1.left/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
-    <state width="1302" height="251" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867589" />
-    <state width="1297" height="242" key="GridCell.Tab.1.left/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965274" />
-    <state width="1297" height="242" key="GridCell.Tab.1.right" timestamp="1669725965274">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="1587" height="242" key="GridCell.Tab.1.right/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666595860716" />
-    <state width="1302" height="251" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@0.0.1280.680" timestamp="1668456867589" />
-    <state width="1297" height="242" key="GridCell.Tab.1.right/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1669725965274" />
     <state x="2037" y="98" width="1333" height="814" key="MergeDialog" timestamp="1673170627274">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state x="2054" y="87" width="1685" height="846" key="MergeDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1671351721792" />
     <state x="2037" y="98" width="1333" height="814" key="MergeDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1673170627274" />
-    <state x="2301" y="236" key="MultipleFileMergeDialog" timestamp="1673170627304">
-      <screen x="1920" y="23" width="1680" height="1010" />
+    <state x="2301" y="234" key="MultipleFileMergeDialog" timestamp="1679986943364">
+      <screen x="1920" y="23" width="1680" height="1002" />
     </state>
+    <state x="2301" y="234" key="MultipleFileMergeDialog/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1679986943364" />
     <state x="2355" y="229" key="MultipleFileMergeDialog/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1671351726815" />
     <state x="2301" y="236" key="MultipleFileMergeDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1673170627304" />
     <state x="2123" y="142" key="SettingsEditor" timestamp="1673251327879">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
-    <state x="2310" y="164" key="SettingsEditor/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1670233636529" />
     <state x="2123" y="142" key="SettingsEditor/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1673251327879" />
     <state x="2414" y="255" key="Vcs.Push.Dialog.v2" timestamp="1671351916944">
       <screen x="1920" y="10" width="1920" height="1040" />
     </state>
     <state x="2414" y="255" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1671351916944" />
-    <state x="2352" y="261" key="Vcs.Push.Dialog.v2/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668343324505" />
-    <state width="848" height="513" key="XDebugger.FullValuePopup" timestamp="1668337077200">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state width="970" height="529" key="XDebugger.FullValuePopup/0.0.1280.680/1920.10.1920.1040@1920.10.1920.1040" timestamp="1666592966774" />
-    <state width="848" height="513" key="XDebugger.FullValuePopup/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668337077200" />
     <state x="2541" y="262" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1673170154488">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
     <state x="2541" y="262" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1673170154488" />
-    <state x="2433" y="363" width="803" height="267" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration" timestamp="1668333165603">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2433" y="363" width="803" height="267" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668333165603" />
-    <state x="2012" y="216" width="623" height="539" key="ftp.server.browser" timestamp="1668320866530">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2012" y="216" width="623" height="539" key="ftp.server.browser/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668320866530" />
-    <state x="2596" y="420" key="publish.login" timestamp="1668942336641">
-      <screen x="1920" y="23" width="1680" height="1010" />
-    </state>
-    <state x="2596" y="420" key="publish.login/0.0.1280.680/1920.23.1680.1010@1920.23.1680.1010" timestamp="1668942336641" />
     <state x="2318" y="24" width="882" height="1009" key="search.everywhere.popup" timestamp="1673173673598">
       <screen x="1920" y="23" width="1680" height="1010" />
     </state>
@@ -1007,11 +914,6 @@
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py</url>
           <line>267</line>
           <option name="timeStamp" value="1692" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py</url>
-          <line>56</line>
-          <option name="timeStamp" value="1699" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py</url>

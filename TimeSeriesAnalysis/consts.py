@@ -6,6 +6,9 @@ motility_model_path = storage_path + r"15-12-2022-motility local dens-False, s%s
 cluster_path = "muscle-formation-diff"
 local_path = ".."
 
+PIXEL_SIZE = 0.462
+FEATURES_DIR_PATH = f"data/mastodon/features/"
+
 s1 = {"name": "S1",
       "target": 0,
       "actin_path": storage_path + r"data/videos/train/S1_Actin.tif",

@@ -36,7 +36,7 @@ def concat_data_portions(local_density, window_size, s_run, modality, specific_f
           f"reg={params.registration_method}, impute_methodology={params.impute_methodology}, impute func= {params.impute_func},")
 
 
-    s_run_files_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{s_run['name']}/feature_type_{feature_type}/{specific_feature_type}/"
+    s_run_files_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{s_run['name']}/{feature_type}/{specific_feature_type}/"
     print(s_run_files_dir_path)
 
     # concat dfs
