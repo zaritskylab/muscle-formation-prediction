@@ -6,17 +6,15 @@ import os
 from tqdm import tqdm
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
-sys.path.append(os.path.abspath('../..'))
+sys.path.append(os.path.abspath('../../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-import consts
-import params
-from utils.data_load_save import get_tracks, downcast_df
-from utils.diff_tracker_utils import *
+from configuration import params, consts
+from data_layer.utils import get_tracks
+from model_layer.utils import *
 
-import cv2
 import numpy as np
 import nuc_segmentor as segmentor
 import time
@@ -60,16 +58,15 @@ class FeaturesCalculatorStrategy(object):
 
         return x, y, spot_frame
 
-    def calc_features(self, data, temporal_seg_size=30, window_size=16, vid_path=None, local_density=False):
+    def calc_features(self, data, temporal_seg_size=30, window_size=16, vid_path=None):
         """
         Calculates single cell trajectories of needed measurements (features) for all trajectories, and saves it to a designated
         directory. Features are calculated using the subclass function get_single_cell_measures, ibherited by each
         modality class. :param data: (pd.DataFrame) single cells trajectories dataframe. :param temporal_seg_size:
         size of temporal segment (number of frames of the video) to calculate features upon. :param window_size: (
         int) half of the size of the wanted cropped image. Default is 16. :param vid_path: (Str) path of the video to
-        crop single cell images from (for intensity features). Default is None. :param local_density: (bool) weather
-        to calculate local density features or not. Default is False. :return: (pd.DataFrame) single cell
-        trajectories of needed measurements (features).
+        crop single cell images from (for intensity features). Default is None. :param
+        :return: (pd.DataFrame) single cell trajectories of needed measurements (features).
         """
 
         # check if a features dataframe already exist
@@ -90,8 +87,6 @@ class FeaturesCalculatorStrategy(object):
                 cell_features_df = self.get_single_cell_measures(label, cell_df, im, window_size, vid_num)
                 # temporal_segment
                 if (not cell_features_df.empty) and (len(cell_features_df) >= temporal_seg_size):
-                    if local_density:
-                        cell_features_df["local density"] = cell_df["local density"]
 
                     cell_features_df["manual"] = 1
                     features_df = pd.concat([features_df, cell_features_df], axis=0)
@@ -294,7 +289,7 @@ if __name__ == '__main__':
     features_df_save_path = consts.FEATURES_DIR_PATH + f"{s_run['name']}_{feature_creator.name}"
 
     print(f"\n== running: modality={modality}, \nvideo={s_run['name']}, "
-          f"\nlocal density={params.local_density}, \nreg={params.registration_method}, "
+          f"\nnreg={params.registration_method}, "
           f"\nimpute func= {params.impute_func}, \nfeature_calc={feature_creator.name} ==", flush=True)
 
     print("\n===== loading data =====", flush=True)
@@ -306,8 +301,7 @@ if __name__ == '__main__':
     vid_path = s_run["actin_path"] if modality == "actin_intensity" else s_run["nuc_path"]
     calculated_features = feature_creator.calc_features(df_tagged,
                                                         vid_path=vid_path,
-                                                        window_size=params.window_size,
-                                                        local_density=False)
+                                                        window_size=params.window_size)
     print(calculated_features.shape)
 
     if not calculated_features.empty:

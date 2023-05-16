@@ -93,18 +93,18 @@ def plot_feature_importance(clf, feature_names, path):
     plt.close()
     plt.clf()
 
-
-def convert_score_df(score_df, modality):
-    """converts the scores dataframe from horizontal to vertical view"""
-    df = pd.DataFrame()
-    for i in range(len(score_df)):
-        track = score_df.iloc[i, :]
-        tmp_df = pd.DataFrame({f"score {modality}": track.drop(index="Spot track ID")})
-        if "time" not in tmp_df.columns:
-            tmp_df["time"] = tmp_df.index * 5 / 60
-        tmp_df["Spot track ID"] = track["Spot track ID"]
-        df = df.append(tmp_df, ignore_index=True)
-    return df
+#
+# def convert_score_df(score_df, modality):
+#     """converts the scores dataframe from horizontal to vertical view"""
+#     df = pd.DataFrame()
+#     for i in range(len(score_df)):
+#         track = score_df.iloc[i, :]
+#         tmp_df = pd.DataFrame({f"score {modality}": track.drop(index="Spot track ID")})
+#         if "time" not in tmp_df.columns:
+#             tmp_df["time"] = tmp_df.index * 5 / 60
+#         tmp_df["Spot track ID"] = track["Spot track ID"]
+#         df = df.append(tmp_df, ignore_index=True)
+#     return df
 
 
 def plot_avg_conf(conf_data, modality, path=None, plot_std=True):

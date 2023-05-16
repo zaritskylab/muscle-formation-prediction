@@ -1,20 +1,20 @@
 from collections import Counter
-import os, sys
+import os
+import sys
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
-sys.path.append(os.path.abspath('..'))
-
 sys.path.append(os.path.abspath('../..'))
+
+sys.path.append(os.path.abspath('../../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from TimeSeriesAnalysis.params import impute_methodology, impute_func, registration_method
-import TimeSeriesAnalysis.consts as consts
-from TimeSeriesAnalysis.utils.diff_tracker_utils import *
-from TimeSeriesAnalysis.utils.data_load_save import *
-from TimeSeriesAnalysis.utils.plots_functions_utils import *
-from TimeSeriesAnalysis.utils import data_load_save as load_save_utils
+from configuration.params import impute_methodology, impute_func, registration_method
+from model_layer.utils import *
+from data_layer.utils import *
+from analysis.plots_functions_utils import *
+from data_layer import utils as load_save_utils
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -42,7 +42,6 @@ def load_tsfresh_csv(path, modality, vid_num, feature_type, specific_feature_typ
     df = pickle.load(open(path_prefix + f"S{vid_num}" + end + ".pkl", 'rb'))
     df = downcast_df(df, fillna=False)
     df = clean_redundant_columns(df)
-
     return df
 
 
@@ -54,12 +53,12 @@ def get_to_run(path, modality, feature_type, specific_feature_type, win_size, co
     if diff_train_num:
         diff_df_train = load_tsfresh_csv(path, modality, diff_train_num, feature_type, specific_feature_type, win_size,
                                          registration_method, local_density, impute_func, impute_methodology)
-        print("diff train len", diff_df_train.shape)
+        print(f"diff train len: {diff_df_train.shape}", flush=True)
 
     if con_train_num:
         con_df_train = load_tsfresh_csv(path, modality, con_train_num, feature_type, specific_feature_type, win_size,
                                         registration_method, local_density, impute_func, impute_methodology)
-        print("con_df_train len", con_df_train.shape)
+        print(f"con_df_train len: {con_df_train.shape}", flush=True)
 
     if con_test_num:
         con_df_test = load_tsfresh_csv(path, modality, con_test_num, feature_type, specific_feature_type, win_size,
@@ -73,9 +72,11 @@ def get_to_run(path, modality, feature_type, specific_feature_type, win_size, co
 
 
 def prep_data(diff_df, con_df, diff_t_window, con_t_windows):
-    print("\n preparing data")
+    print("\n preparing data", flush=True)
     print("\nconcatenating control data & ERKi data")
     df = concat_dfs(diff_df, con_df, diff_t_window, con_t_windows)
+    del diff_df
+    del con_df
     df = df.sample(frac=1).reset_index(drop=True)
     print("\nshape after concat_dfs", df.shape)
 
@@ -198,7 +199,6 @@ def get_to_run_both_modalities(path, local_den, modality1, modality2, con_train_
                                                                                         feature_type=feature_type,
                                                                                         specific_feature_type=specific_feature_type,
                                                                                         win_size=window_size)
-
     diff_df_train_int, con_df_train_int, con_df_test_int, diff_df_test_int = get_to_run(path=path,
                                                                                         modality=modality2,
                                                                                         local_density=local_den,
@@ -209,7 +209,6 @@ def get_to_run_both_modalities(path, local_den, modality1, modality2, con_train_
                                                                                         feature_type=feature_type,
                                                                                         specific_feature_type=specific_feature_type,
                                                                                         win_size=window_size)
-
     if (con_train_n is not None) and (diff_train_n is not None):
         diff_df = diff_df_train_mot.merge(diff_df_train_int, on=["Spot track ID", "Spot frame"], how="left")
         con_df = con_df_train_mot.merge(con_df_train_int, on=["Spot track ID", "Spot frame"], how="left")
@@ -224,37 +223,48 @@ def get_to_run_both_modalities(path, local_den, modality1, modality2, con_train_
     return diff_df, con_df
 
 
+def get_data(modality, path, local_density, con_train_n, diff_train_n, con_test_n, diff_test_n, feature_type,
+             specific_feature_type, window_size):
+    if len(modality.split("-")) == 2:
+        first_modality, second_modality = modality.split("-")[0], modality.split("-")[1]
+        diff_df, con_df = get_to_run_both_modalities(path, local_density, first_modality,
+                                                     second_modality,
+                                                     con_train_n=con_train_n,
+                                                     diff_train_n=diff_train_n,
+                                                     con_test_n=con_test_n,
+                                                     diff_test_n=diff_test_n,
+                                                     feature_type=feature_type,
+                                                     specific_feature_type=specific_feature_type,
+                                                     window_size=window_size)
+    else:
+        diff_df_train, con_df_train, con_df_test, diff_df_test = get_to_run(path=path, modality=modality,
+                                                                            local_density=local_density,
+                                                                            feature_type=feature_type,
+                                                                            specific_feature_type=specific_feature_type,
+                                                                            win_size=window_size,
+                                                                            con_train_num=con_train_n,
+                                                                            diff_train_num=diff_train_n,
+                                                                            con_test_num=con_test_n,
+                                                                            diff_test_num=diff_test_n)
+        if (con_train_n is not None) and (diff_train_n is not None):
+            diff_df = diff_df_train
+            con_df = con_df_train
+
+        elif (con_test_n is not None) and (diff_test_n is not None):
+            diff_df = diff_df_test
+            con_df = con_df_test
+    print("ended loading", flush=True)
+    return diff_df, con_df
+
+
 def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_window, diff_window, modality,
                              feature_type="", specific_feature_type=""):
-    print(f"\nrunning: build_models_on_transformed_tracks"
-          f"\nmodality={modality}, local density={local_density}, reg={registration_method}, "
-          f"impute func= {impute_func},impute_methodology= {impute_methodology}")
+    print(f"\nrunning: build_models_on_transformed_tracks; modality={modality}")
 
     for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3), (2, 3, 1, 5), ]:
         print(f"\n train: con_n-{con_train_n},dif_n-{diff_train_n}; test: con_n-{con_test_n},dif_n-{diff_test_n}")
 
-        if len(modality.split("-")) == 2:
-            first_modality, second_modality = modality.split("-")[0], modality.split("-")[1]
-            diff_df_train, con_df_train = get_to_run_both_modalities(path, local_density, first_modality,
-                                                                     second_modality,
-                                                                     con_train_n=con_train_n,
-                                                                     diff_train_n=diff_train_n,
-                                                                     con_test_n=None,
-                                                                     diff_test_n=None,
-                                                                     feature_type=feature_type,
-                                                                     specific_feature_type=specific_feature_type,
-                                                                     window_size=window_size
-                                                                     )
-        else:
-            diff_df_train, con_df_train, _, _ = get_to_run(path=path, modality=modality, local_density=local_density,
-                                                           feature_type=feature_type,
-                                                           specific_feature_type=specific_feature_type,
-                                                           win_size=window_size, con_train_num=con_train_n,
-                                                           diff_train_num=diff_train_n,
-                                                           con_test_num=None, diff_test_num=None)
-
         path_by_feature = f"{consts.storage_path}{feature_type}/{specific_feature_type}"
-
         today = datetime.datetime.now()
         dir_path = f"{path_by_feature}/{today.strftime('%d-%m-%Y')}-{modality} local dens-{local_density}, s{con_train_n}, s{diff_train_n} train" + (
             f" win size {window_size}" if modality != "motility" else "")
@@ -263,13 +273,17 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
         os.makedirs(os.path.join(dir_path, second_dir), exist_ok=True)
         dir_path += "/" + second_dir + "/"
 
+        diff_df_train, con_df_train = get_data(modality, path, local_density, con_train_n, diff_train_n,
+                                               None, None, feature_type, specific_feature_type, window_size)
+        print("loaded data, now start prep data", flush=True)
         X_train, y_train = prep_data(diff_df=diff_df_train, con_df=con_df_train, diff_t_window=diff_window,
                                      con_t_windows=con_window)
+
         X_train = downcast_df(X_train)
 
         del diff_df_train
         del con_df_train
-        print("\ndeleted diff_df_train, con_df_train")
+        print("\ndeleted diff_df_train, con_df_train", flush=True)
 
         X_train = select_features(X_train, y_train, n_jobs=10)  # , chunksize=10
         print("\nDone feature selection", flush=True)
@@ -280,25 +294,9 @@ def build_model_trans_tracks(path, local_density, window_size, tracks_len, con_w
         clf = train_model(X_train, y_train, modality)
         load_save_utils.save_data(dir_path, X_train=X_train)
         # del X_train
-        if len(modality.split("-")) == 2:
-            first_modality, second_modality = modality.split("-")[0], modality.split("-")[1]
-            diff_df_test, con_df_test = get_to_run_both_modalities(path, local_density, first_modality,
-                                                                   second_modality,
-                                                                   con_train_n=None,
-                                                                   diff_train_n=None, con_test_n=con_test_n,
-                                                                   diff_test_n=diff_test_n,
-                                                                   feature_type=feature_type,
-                                                                   specific_feature_type=specific_feature_type,
-                                                                   window_size=window_size
-                                                                   )
 
-        else:
-            _, _, con_df_test, diff_df_test = get_to_run(path=path, modality=modality, local_density=local_density,
-                                                         feature_type=feature_type,
-                                                         specific_feature_type=specific_feature_type,
-                                                         win_size=window_size,
-                                                         con_train_num=None, diff_train_num=None,
-                                                         con_test_num=con_test_n, diff_test_num=diff_test_n)
+        diff_df_test, con_df_test = get_data(modality, path, local_density, None, None, con_test_n, diff_test_n,
+                                             feature_type, specific_feature_type, window_size)
 
         print("X_test, y_test")
         X_test, y_test = prep_data(diff_df=diff_df_test, con_df=con_df_test, diff_t_window=diff_window,
@@ -334,5 +332,4 @@ if __name__ == '__main__':
     build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density,
                              window_size=params.window_size,
                              tracks_len=params.tracks_len, con_window=params.con_window,
-                             diff_window=params.diff_window, feature_type="_",
-                             specific_feature_type="_", modality=modality)
+                             diff_window=params.diff_window, modality=modality)

@@ -1,12 +1,10 @@
-from collections import Counter
 import os, sys
 
 sys.path.append('/sise/home/reutme/muscle-formation-regeneration')
-sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath('../..'))
 
-import TimeSeriesAnalysis.consts as consts
-from TimeSeriesAnalysis.utils.data_load_save import *
-from TimeSeriesAnalysis.build_models_on_transformed_tracks import build_model_trans_tracks
+from data_layer.utils import *
+from model_layer import build_model_trans_tracks
 
 if __name__ == '__main__':
     modality = sys.argv[1]

@@ -1,17 +1,14 @@
 from abc import ABCMeta, abstractmethod, ABC
-
-from tsfresh.utilities.dataframe_functions import impute
-import pandas as pd
 import sys, os
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
-sys.path.append(os.path.abspath('../..'))
+sys.path.append(os.path.abspath('../../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from utils.diff_tracker_utils import *
-import params
+from model_layer.utils import *
+from configuration import params
 
 
 class ImputerStrategy(object):

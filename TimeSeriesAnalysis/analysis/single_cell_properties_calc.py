@@ -1,17 +1,68 @@
-import pickle
 from functools import reduce
 
 import sys, os
-import numpy as np
-import pandas as pd
 from skimage import io
 
 ROLLING_VAL = 30
 sys.path.append('/sise/home/shakarch/muscle-formation-regeneration')
-sys.path.append(os.path.abspath('..'))
-from TimeSeriesAnalysis import consts
-from TimeSeriesAnalysis.utils.diff_tracker_utils import *
-from TimeSeriesAnalysis.utils.data_load_save import *
+sys.path.append(os.path.abspath('../..'))
+from data_layer.utils import *
+
+
+def get_density(df, experiment):
+    densities = pd.DataFrame()
+    for t, t_df in df.groupby("Spot frame"):
+        densities = densities.append({"Spot frame": t, "density": len(t_df)}, ignore_index=True)
+    densities["experiment"] = experiment
+    return densities
+
+
+def get_local_densities_df(df_s, tracks_s, neighboring_distance=50):
+    local_densities = pd.DataFrame(columns=[i for i in range(df_s["Spot frame"].max() + 2)])
+    for track in tracks_s:
+        spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
+        track_local_density = {
+            t: get_local_density(df=df_s,
+                                 x=track[track["Spot frame"] == t]["Spot position X"].values[0],
+                                 y=track[track["Spot frame"] == t]["Spot position Y"].values[0],
+                                 t=t,
+                                 neighboring_distance=neighboring_distance)
+            for t in spot_frames}
+        # local_densities = local_densities.append(track_local_density, ignore_index=True)
+        local_densities = pd.concat([local_densities, track_local_density], ignore_index=True)
+
+    return local_densities
+
+
+def get_position(ind, df):
+    x = int(df.iloc[ind]["Spot position X"] / 0.462)
+    y = int(df.iloc[ind]["Spot position Y"] / 0.462)
+    spot_frame = int(df.iloc[ind]["Spot frame"])
+    return x, y, spot_frame
+
+
+def get_centered_image(ind, df, im_actin, window_size):
+    x, y, spot_frame = get_position(ind, df)
+    cropped = im_actin[spot_frame][x - window_size:x + window_size, y - window_size: y + window_size]
+    return cropped
+
+
+def get_single_cell_intensity_measures(label, df, im_actin, window_size):
+    # try:
+    df_measures = pd.DataFrame(columns=["min", "max", "mean", "sum", "Spot track ID", "Spot frame", "x", "y", ])
+    for i in range(len(df)):
+        img = get_centered_image(i, df, im_actin, window_size)
+        try:
+            min_i, max_i, mean_i, sum_i = img.min(), img.max(), img.mean(), img.sum()
+        except:
+            continue
+        x, y, spot_frame = get_position(i, df)
+        data = {"min": min_i, "max": max_i, "mean": mean_i, "sum": sum_i, "Spot track ID": label,
+                "Spot frame": spot_frame,
+                "x": x, "y": y}
+        df_measures = pd.concat([df_measures, pd.DataFrame(data, index=[0])], ignore_index=True)
+        # df_measures = df_measures.append(data, ignore_index=True)
+    return df_measures
 
 
 def calc_properties_df(score_df_mot, score_df_int, tagged_df, all_tracks, save_dir_path, s_run, local_density,

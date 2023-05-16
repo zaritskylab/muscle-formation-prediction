@@ -2,23 +2,21 @@
 import sys, os
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
-sys.path.append(os.path.abspath('..'))
-
 sys.path.append(os.path.abspath('../..'))
+
+sys.path.append(os.path.abspath('../../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
-import TimeSeriesAnalysis.consts as consts
-from TimeSeriesAnalysis.params import impute_methodology, impute_func, registration_method
-from TimeSeriesAnalysis.utils.diff_tracker_utils import *
-from TimeSeriesAnalysis.utils.data_load_save import *
+from configuration.params import impute_methodology, impute_func
+from data_layer.utils import *
 import matplotlib.pyplot as plt
 from sklearn import metrics
 from warnings import simplefilter
 
 simplefilter(action='ignore', category=FutureWarning)
 
-from TimeSeriesAnalysis.build_models_on_transformed_tracks import load_tsfresh_csv, clean_redundant_columns
+from model_layer import clean_redundant_columns
 
 
 def auc_over_time(df_con, df_diff, clf):
@@ -89,7 +87,7 @@ if __name__ == '__main__':
     s_run = consts.s_runs[sys.argv[2]]
     local_density = False
 
-    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3), (2, 3, 1, 5), ]:
+    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(2, 3, 1, 5), (1, 5, 2, 3)]:
         print(f"con_train_n {con_train_n}, diff_train_n {diff_train_n}, "
               f"con_test_n {con_test_n}, diff_test_n {diff_test_n}", flush=True)
 

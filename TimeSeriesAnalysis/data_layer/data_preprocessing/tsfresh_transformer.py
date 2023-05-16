@@ -6,8 +6,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from utils.diff_tracker_utils import *
-from utils.data_load_save import *
+from model_layer.utils import *
+from data_layer.utils import *
 from tsfresh import extract_features
 from tsfresh.utilities.dataframe_functions import impute
 import more_itertools as mit
@@ -66,6 +66,12 @@ class SingleCellTSFreshTransform(TSFreshTransformStrategy, ABC):
         super(SingleCellTSFreshTransform, self).__init__(name, impute_func=impute_func)
 
     def split_data_for_parallel_run(self, data, n_splits, current_split_ind, track_len):
+        def split_data_by_tracks(data, n_tasks):
+            ids_list = data["Spot track ID"].unique()
+            n = len(ids_list) // n_tasks
+            ids_chunks = [ids_list[i:i + n] for i in range(0, len(ids_list), n)]
+            return ids_chunks
+
         ids_chunks = split_data_by_tracks(data, n_splits)
         data_chunks = [data[data["Spot track ID"].isin(chunk)] for chunk in ids_chunks]
         return data_chunks

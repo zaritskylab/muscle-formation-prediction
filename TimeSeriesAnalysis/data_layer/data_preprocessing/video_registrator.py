@@ -3,7 +3,7 @@ import sys
 import os
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
-sys.path.append(os.path.abspath('../..'))
+sys.path.append(os.path.abspath('../../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
@@ -12,11 +12,10 @@ import image_registration
 from pystackreg import StackReg
 from skimage import io
 from skimage import registration
-from utils.diff_tracker_utils import *
-from utils.data_load_save import *
+from data_layer.utils import *
 from skimage.transform import warp
 import cv2
-import consts
+from configuration import consts
 from tqdm import tqdm
 
 

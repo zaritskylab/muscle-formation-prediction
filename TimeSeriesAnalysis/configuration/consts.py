@@ -4,7 +4,7 @@ data_csv_path = storage_path + r"data/mastodon/%s%s all detections.csv"
 intensity_model_path = storage_path + r"15-12-2022-actin_intensity local dens-False, s%s, s%s train [130, 160] diff window win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg MeanOpticalFlowReg_/"
 motility_model_path = storage_path + r"15-12-2022-motility local dens-False, s%s, s%s train [130, 160] diff window/track len 30, impute_func-ImputeAllData_impute_zeroes reg MeanOpticalFlowReg_/"
 cluster_path = "muscle-formation-diff"
-local_path = ".."
+local_path = "../.."
 
 PIXEL_SIZE = 0.462
 FEATURES_DIR_PATH = f"data/mastodon/features/"
