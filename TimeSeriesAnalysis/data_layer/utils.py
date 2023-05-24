@@ -7,6 +7,7 @@ import numpy as np
 
 import sys, os
 
+
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('..'))
 
@@ -15,8 +16,33 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from configuration import params, consts
+from TimeSeriesAnalysis.configuration import params, consts
 
+def convert_score_df(score_df, modality):
+    """converts the scores dataframe from horizontal to vertical view"""
+    df = pd.DataFrame()
+    for i in range(len(score_df)):
+        track = score_df.iloc[i, :]
+        tmp_df = pd.DataFrame({f"score_{modality}": track.drop(index="Spot track ID")})
+        tmp_df["time"] = tmp_df.index * 5 / 60
+        tmp_df["Spot frame"] = tmp_df.index
+        tmp_df["Spot track ID"] = int(track["Spot track ID"])
+        df = df.append(tmp_df, ignore_index=True)
+    return df
+
+
+def get_scores_df(scores_motility_path, scores_intensity_path):
+    """
+    The method receives paths of motility & actin intensity differentiation scores, rotates them vertically and merges them into one dataframe.
+    :param scores_motility_path: (Str) paths of motility differentiation scores' dataframe
+    :param scores_intensity_path: (Str) paths of actin intensity differentiation scores' dataframe
+    :return: (pd.DataFrame) differntiation scores by motility & actin intensity models
+    """
+    scores_df_mot = convert_score_df(pickle.load(open(scores_motility_path, 'rb')), "motility")
+    scores_df_int = convert_score_df(pickle.load(open(scores_intensity_path, 'rb')), "intensity")
+    scores_df = pd.merge(left=scores_df_mot, right=scores_df_int, on=["Spot track ID", "Spot frame", "time"])
+
+    return scores_df
 
 def load_data(dir_path, load_clf=True, load_x_train=True, load_x_test=True, load_y_train=True, load_y_test=True):
     """
@@ -150,18 +176,59 @@ def get_tracks(file_path, tagged_only=False, manual_tagged_list=True, target=1):
     return df_s, tracks_s
 
 
-def get_all_properties_df(modality, con_train_vid_num, diff_train_vid_num, vid_num):
-    """
-    Loads and returns the DataFrame containing all properties previously calculated for data from a specific video
-    and a specific modality.
-    :param modality: (str) The modality of the properties ("actin_intensity" or "motility").
-    :param con_train_vid_num: (int) The DMSO (control) train video number.
-    :param diff_train_vid_num: (int) The differentiated (ERKi) train video number.
-    :param vid_num: (int): The video number to get its properties.
-    :return: (pd.DataFrame) The DataFrame containing all properties.
-    """
-    properties_data_path = consts.intensity_model_path if modality == "actin_intensity" else consts.motility_model_path
-    properties_data_path = properties_data_path % (con_train_vid_num, diff_train_vid_num)
-    properties_df = pickle.load(
-        open(properties_data_path + f"/S{vid_num}_properties_{params.registration_method}" + ".pkl", 'rb'))
-    return properties_df
+def load_tsfresh_transformed_df(modality, vid_num, cols=None):
+    modalities = ["motility", "actin_intensity"] if modality == "combined" else [modality]
+    df = pd.DataFrame(columns=["Spot track ID", "Spot frame"])
+    for modal in modalities:
+        tsfresh_transform_path = consts.storage_path + f"data/mastodon/ts_transformed/{modal}/{params.impute_methodology}_{params.impute_func}/S{vid_num}/" \
+                                                       f"merged_chunks_reg={params.registration_method},local_den=False,win size={params.window_size}.pkl"
+        df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
+        if cols is not None:
+            df_s = df_s[set(cols).intersection(set(df_s.columns))]
+        df = df.merge(df_s, on=["Spot track ID", "Spot frame"], how="right")
+    return df
+
+def load_fusion_data(path=consts.storage_path + r"data/mastodon/no_reg_S3 all detections.csv"):
+   # load the raw data with fusion tags
+    chunksize = 200000
+    df = pd.DataFrame()
+    for chunk in pd.read_csv(path, chunksize=chunksize, encoding="cp1252", header=[0, 1], iterator=True):
+        chunk.columns = ['_'.join(col) for col in chunk.columns]
+        chunk = chunk[chunk["manual_manual"] == 1]
+        df = df.append(chunk, ignore_index=True)
+
+    df.rename(columns=lambda x: x.replace("_", " ").strip(), inplace=True)
+    fusion_cols = ['Spot track ID', 'Spot frame', 'Spot position X', 'Spot position Y', 'manual manual'] + [col for col in df.columns if "First" in col]
+    df = df[fusion_cols]
+    df.rename(columns=lambda x: x.split(" ")[3] if "First" in x else x, inplace=True)
+    df = df[1:]
+    df = df.astype(float)
+
+    c = df.iloc[:,5:].idxmax(axis=1)
+    is_valid = df.iloc[:,5:].sum(axis=1) > 0
+    c[~is_valid] = np.nan
+    df["fusion_frame"] = c
+    df = df.dropna(subset=["fusion_frame"])
+    df = df.drop_duplicates(subset=['fusion_frame', 'Spot track ID'])
+    fusion_time_df = df[['Spot track ID' ,'fusion_frame']] #,'manual manual'
+    fusion_time_df["fusion_time"] = fusion_time_df["fusion_frame"].astype(float) * 5 / 60
+    return fusion_time_df
+
+
+def get_scores_df_with_fusion():
+    # load & merge fusion timing data with spot positions data
+    fusion_time_df = load_fusion_data(
+        path=consts.storage_path + r"data/mastodon/no_reg_S3 all detections.csv")
+    tagged_tracks_s3, _ = get_tracks(consts.data_csv_path % (params.registration_method, "S3"),
+                                                tagged_only=True)
+    fusion_spot_frames = fusion_time_df.merge(tagged_tracks_s3.drop(columns="manual"), on=["Spot track ID"], how="left")
+
+    # merge fusion timing data with differentiation scores created by motility and actin intensity models
+    scores_df_s3 = get_scores_df(
+        scores_motility_path=consts.motility_model_path % (1, 5) + fr"df_score_vid_num_S3.pkl",
+        scores_intensity_path=consts.intensity_model_path % (1, 5) + fr"df_score_vid_num_S3.pkl")
+    scores_df_s3 = scores_df_s3.merge(fusion_spot_frames, on=["Spot track ID", "Spot frame"], how="right")
+    scores_df_s3 = scores_df_s3.drop_duplicates(subset=["Spot track ID", "Spot frame"])
+    scores_df_s3 = scores_df_s3.astype("float")
+
+    return scores_df_s3

@@ -22,47 +22,16 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="styling">
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/differentiation_analysis_utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/params_tunning/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/merge_preprocessed_data_chunks.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/model_layer/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/model_layer/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="package reorganization">
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_auc_over_time.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_single_cell_properties.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/auc_over_time_diff_prob.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_diff_score.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/build_models_on_transformed_tracks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/model_layer/build_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/consts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/data_normalizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/data_normalizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/data_preprocessor.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/data_preprocessor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/features_calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/features_calculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/imputer_strategy.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/imputer_strategy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/merge_preprocessed_data_chunks.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/preprocess_data_chunks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/tsfresh_transformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/tsfresh_transformer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_preprocessing/video_registrator.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/video_registrator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/params.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/params.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/run_build_models_on_tranformed_tracks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/params_tunning/run_build_models_on_tranformed_tracks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/run_merge_preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/params_tunning/run_merge_preprocess_data_chunks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/params_tunning/run_preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/params_tunning/run_preprocess_data_chunks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/single_cell_properties_calc.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/single_cell_properties_calc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/data_load_save.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/diff_tracker_utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/utils/plots_functions_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/plots_functions_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sbatchs/sbatch_cpu.run_main_builed_model" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_main_builed_model" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sbatchs/sbatch_cpu.run_main_merge_with_array" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_main_merge_with_array" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sbatchs/sbatch_cpu.run_main_preprocess_data_chunks" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_main_preprocess_data_chunks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sbatchs/sbatch_cpu.run_preprocess_data_chunks" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_preprocess_data_chunks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sbatchs/sbatch_cpu.run_second_merge_with_array" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_second_merge_with_array" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sbatchs/sbatch_cpu.run_second_preprocess_data_chunks" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_second_preprocess_data_chunks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sbatchs/sbatch_cpu.vid_to_tsfresh_data" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.vid_to_tsfresh_data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sbatchs/sbatch_cpu.vid_tracking_cell" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.vid_tracking_cell" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sbatchs/sbatch_gpu.single_cell_properties_calc" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_gpu.single_cell_properties_calc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_diff_score.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_diff_score.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/differentiation_analysis_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/plots_functions_utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/single_cell_properties_calc.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/features_calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/features_calculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +112,7 @@
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\data\videos\BrightField_pixel_ratio_1" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.build_models_on_transformed_tracks">
+  <component name="RunManager" selected="Python.main">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="muscle-formation-diff" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -212,6 +181,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="calc_single_cell_properties" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="muscle-formation-diff" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TimeSeriesAnalysis" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\analysis\calc_single_cell_properties.py" />
+      <option name="PARAMETERS" value="1" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="muscle-formation-diff" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -257,28 +248,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="single_cell_properties_calc" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="muscle-formation-diff" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TimeSeriesAnalysis" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\analysis\single_cell_properties_calc.py" />
-      <option name="PARAMETERS" value="1" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="vid_tracking_cell" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="muscle-formation-diff" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -303,17 +272,16 @@
     </configuration>
     <list>
       <item itemvalue="Python.main" />
-      <item itemvalue="Python.build_models_on_transformed_tracks" />
+      <item itemvalue="Python.build_model" />
       <item itemvalue="Python.calc_diff_score" />
       <item itemvalue="Python.merge_preprocessed_data_chunks" />
-      <item itemvalue="Python.single_cell_properties_calc" />
       <item itemvalue="Python.vid_tracking_cell" />
+      <item itemvalue="Python.calc_single_cell_properties" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.build_models_on_transformed_tracks" />
         <item itemvalue="Python.vid_tracking_cell" />
-        <item itemvalue="Python.single_cell_properties_calc" />
+        <item itemvalue="Python.calc_single_cell_properties" />
         <item itemvalue="Python.calc_diff_score" />
         <item itemvalue="Python.merge_preprocessed_data_chunks" />
       </list>
@@ -529,7 +497,8 @@
       <workItem from="1683876431290" duration="17196000" />
       <workItem from="1683955184992" duration="6173000" />
       <workItem from="1684038775158" duration="2328000" />
-      <workItem from="1684216456662" duration="7329000" />
+      <workItem from="1684216456662" duration="34977000" />
+      <workItem from="1684819281496" duration="7605000" />
     </task>
     <task id="LOCAL-00001" summary="Added aae files">
       <created>1617796329153</created>
@@ -839,7 +808,14 @@
       <option name="project" value="LOCAL" />
       <updated>1681723040158</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="package reorganization">
+      <created>1684231771851</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1684231771851</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -872,7 +848,8 @@
     <MESSAGE value="re-packaged data-preprocessing code" />
     <MESSAGE value="cosmetic changes" />
     <MESSAGE value="styling" />
-    <option name="LAST_COMMIT_MESSAGE" value="styling" />
+    <MESSAGE value="package reorganization" />
+    <option name="LAST_COMMIT_MESSAGE" value="package reorganization" />
   </component>
   <component name="WindowStateProjectService">
     <state x="393" y="181" key="#Deployment" timestamp="1683609937968">
@@ -887,22 +864,27 @@
       <screen x="0" y="0" width="1680" height="1002" />
     </state>
     <state x="555" y="303" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1680.1002@0.0.1680.1002" timestamp="1683698838962" />
+    <state x="2490" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1684234493408">
+      <screen x="1920" y="23" width="1680" height="1002" />
+    </state>
+    <state x="2490" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1684234493408" />
     <state x="2301" y="234" key="MultipleFileMergeDialog" timestamp="1679986943364">
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="2301" y="234" key="MultipleFileMergeDialog/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1679986943364" />
-    <state x="432" y="221" key="Vcs.Push.Dialog.v2" timestamp="1681723041476">
-      <screen x="0" y="0" width="1680" height="1002" />
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1684231779522">
+      <screen x="1920" y="23" width="1680" height="1002" />
     </state>
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1684231779522" />
     <state x="432" y="221" key="Vcs.Push.Dialog.v2/0.0.1680.1002@0.0.1680.1002" timestamp="1681723041476" />
     <state x="710" y="393" key="publish.login" timestamp="1683740580290">
       <screen x="0" y="0" width="1680" height="1002" />
     </state>
     <state x="710" y="393" key="publish.login/0.0.1680.1002@0.0.1680.1002" timestamp="1683740580290" />
-    <state x="503" y="215" width="672" height="678" key="search.everywhere.popup" timestamp="1683991693591">
-      <screen x="0" y="0" width="1680" height="1002" />
+    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup" timestamp="1684830450858">
+      <screen x="1920" y="23" width="1680" height="1002" />
     </state>
-    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1682849503328" />
+    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1684830450858" />
     <state x="503" y="215" width="672" height="678" key="search.everywhere.popup/0.0.1680.1002@0.0.1680.1002" timestamp="1683991693591" />
   </component>
   <component name="XDebuggerManager">
@@ -934,7 +916,7 @@
           <option name="timeStamp" value="1692" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/analysis/single_cell_properties_calc.py</url>
+          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_single_cell_properties.py</url>
           <line>305</line>
           <option name="timeStamp" value="1706" />
         </line-breakpoint>

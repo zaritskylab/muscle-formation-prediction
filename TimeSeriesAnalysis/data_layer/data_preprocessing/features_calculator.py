@@ -11,12 +11,12 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from configuration import params, consts
-from data_layer.utils import get_tracks
-from model_layer.utils import *
+from TimeSeriesAnalysis.configuration import params, consts
+from TimeSeriesAnalysis.data_layer.utils import get_tracks
+from TimeSeriesAnalysis.model_layer.utils import *
 
 import numpy as np
-import nuc_segmentor as segmentor
+# import nuc_segmentor as segmentor
 import time
 
 
