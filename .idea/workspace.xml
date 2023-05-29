@@ -23,9 +23,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="package reorganization">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_single_cell_properties.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_single_cell_properties.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -265,12 +264,12 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.main" />
       <item itemvalue="Python.build_model" />
       <item itemvalue="Python.calc_diff_score" />
-      <item itemvalue="Python.calc_single_cell_properties" />
-      <item itemvalue="Python.main" />
       <item itemvalue="Python.merge_preprocessed_data_chunks" />
       <item itemvalue="Python.vid_tracking_cell" />
+      <item itemvalue="Python.calc_single_cell_properties" />
     </list>
     <recent_temporary>
       <list>
@@ -493,6 +492,7 @@
       <workItem from="1684038775158" duration="2328000" />
       <workItem from="1684216456662" duration="34977000" />
       <workItem from="1684819281496" duration="13179000" />
+      <workItem from="1685340882339" duration="140000" />
     </task>
     <task id="LOCAL-00001" summary="Added aae files">
       <created>1617796329153</created>
@@ -816,7 +816,14 @@
       <option name="project" value="LOCAL" />
       <updated>1684906592769</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="package reorganization">
+      <created>1685340900276</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1685340900276</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -873,10 +880,10 @@
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="2301" y="234" key="MultipleFileMergeDialog/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1679986943364" />
-    <state x="432" y="221" key="Vcs.Push.Dialog.v2" timestamp="1684906594358">
-      <screen x="0" y="0" width="1680" height="1002" />
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1685340902981">
+      <screen x="1920" y="23" width="1680" height="1002" />
     </state>
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1684231779522" />
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685340902981" />
     <state x="432" y="221" key="Vcs.Push.Dialog.v2/0.0.1680.1002@0.0.1680.1002" timestamp="1684906594358" />
     <state x="710" y="393" key="publish.login" timestamp="1683740580290">
       <screen x="0" y="0" width="1680" height="1002" />
