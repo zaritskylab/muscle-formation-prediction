@@ -358,6 +358,16 @@ def get_mannkendall(scores_df, modality):
 
     return scores_df
 
+
+def get_property(scores_df, feature_name, modality, func, func_args):
+    def map_value(x, lst):
+        return lst[x.iloc[0]]
+
+    lst = scores_df.groupby(['Spot track ID']).apply(lambda x: func(x, *func_args))
+    scores_df[f"{feature_name}_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(lambda x: map_value(x, lst))
+
+    return scores_df
+
 if __name__ == '__main__':
     print("single_cell_properties_calc")
 

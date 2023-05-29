@@ -1,5 +1,3 @@
-import pandas as pd
-import pickle
 import numpy as np
 from sklearn.metrics import roc_curve
 import sklearn.metrics as metrics
@@ -8,8 +6,6 @@ import matplotlib as mpl
 
 from TimeSeriesAnalysis.analysis.calc_auc_over_time import auc_over_time, plot_auc_over_time
 from TimeSeriesAnalysis.data_layer.utils import load_tsfresh_transformed_df
-
-
 
 
 def plot_roc(clf, X_test, y_test, path=None):
@@ -39,7 +35,8 @@ def plot_roc(clf, X_test, y_test, path=None):
     plt.clf()
 
 
-def plot_avg_conf(conf_data, modality, path="", plot_std=True, frames=(0, 260), xlim=(2.5, 24)):
+def plot_avg_conf(conf_data, modality, path="", plot_std=True, time=(0, 24), xlim=(2.5, 24), ylim=(-0.1, 1.1),
+                  axhline_val=0.5):
     """
     :param conf_data: [(df_score_dif.drop("Spot track ID", axis=1), "ERK", "DarkOrange","Orange"),(df_score_con.drop("Spot track ID", axis=1), "Control", "blue", "blue")]
     :param mot_int: modality name
@@ -49,7 +46,7 @@ def plot_avg_conf(conf_data, modality, path="", plot_std=True, frames=(0, 260), 
     """
     fig = plt.figure(figsize=(6, 4))
 
-    def plot(df, modality, avg_color, std_color, label, plot_std, frames):
+    def plot(df, modality, avg_color, std_color, label, plot_std):
         time = np.arange(0, df["Spot frame"].max() + 1) * 1 / 12
         avg_vals_diff = df.groupby("time")[f"score_{modality}"].mean()
         std_vals_diff = df.groupby("time")[f"score_{modality}"].std()
@@ -64,15 +61,15 @@ def plot_avg_conf(conf_data, modality, path="", plot_std=True, frames=(0, 260), 
     plt.xlabel("time (h)")
     plt.ylabel("avg score")
     plt.title(f"avg differentiation score over time ({modality})")
-    plt.axhline(0.5, color='gray', linestyle='dashed')
-    plt.axvspan(frames[0] * 5 / 60, frames[1] * 5 / 60, alpha=0.6, color='lightgray')
-    plt.axvline(frames[0] * 5 / 60, color='gray', linestyle='dashed')
-    plt.axvline(frames[1] * 5 / 60, color='gray', linestyle='dashed')
+    plt.axhline(axhline_val, color='gray', linestyle='dashed')
+    plt.axvspan(time[0], time[1], alpha=0.6, color='lightgray')
+    plt.axvline(time[0], color='gray', linestyle='dashed')
+    plt.axvline(time[1], color='gray', linestyle='dashed')
 
     for (df, label, avg_color, std_color) in conf_data:
-        plot(df, modality, avg_color, std_color, label, plot_std, frames)
+        plot(df, modality, avg_color, std_color, label, plot_std)
 
-    plt.ylim((-0.1, 1.1))
+    plt.ylim(ylim)
     plt.xlim(xlim)
     plt.savefig(path + '.eps', format='eps')
     plt.show()
@@ -153,5 +150,4 @@ def evaluate_model(clf, x_test, y_test, modality, con_test_n, diff_test_n):
     df_diff = load_tsfresh_transformed_df(modality, diff_test_n, cols)
     aucs = auc_over_time(df_con[cols], df_diff[cols], clf)
     plot_auc_over_time([(aucs, modality)],
-                                      path=consts.storage_path + f"eps_figs/auc_over_time s{con_test_n}, s{diff_test_n} {modality}.eps")
-
+                       path=consts.storage_path + f"eps_figs/auc_over_time s{con_test_n}, s{diff_test_n} {modality}.eps")
