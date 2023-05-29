@@ -1,9 +1,10 @@
-import os
 import sys
-
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, roc_curve
 from sklearn import metrics
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 from tsfresh import extract_features
@@ -26,67 +27,33 @@ def evaluate(clf, X_test, y_test):
     return report, auc_score
 
 
-def train_model(X_train, y_train):
-    # from sklearn.linear_model import LogisticRegression
-    # from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+def train_model_compare_algorithms(X_train, y_train, X_test, y_test, dir_path):
+    models = []
+    models.append(('RF', RandomForestClassifier()))  # **{'max_depth': 12, 'min_samples_leaf': 1, 'n_estimators': 100}
+    models.append(('GB', GradientBoostingClassifier()))
+    models.append(('LR', LogisticRegression()))
+    models.append(('KNN', KNeighborsClassifier()))
+    models.append(('SVM', SVC(probability=True)))
 
-    # clf = LinearDiscriminantAnalysis()
-    clf = RandomForestClassifier(max_depth=8)
+    txt_file = open(dir_path + '/clf_comparison.txt', 'a')
+    for name, model in models:
+        model.fit(X_train, y_train)
+        report, auc_score = evaluate(model, X_test, y_test)
+
+        # save AUC score
+        txt_file.write(f"classifier: {name}, auc score: {auc_score}\n")
+        print(f"classifier: {name}, auc score: {auc_score}")
+    txt_file.close()
+
+
+def train_model(X_train, y_train, modality):
+    params_dict = {"motility": {'max_depth': 12, 'min_samples_leaf': 1, 'n_estimators': 100},
+                   "actin_intensity": {'max_depth': 20, 'min_samples_leaf': 1, 'n_estimators': 200}}
+    params = params_dict.get(modality) if params_dict.get(modality) is not None else {}
+
+    clf = RandomForestClassifier(**params)
     clf.fit(X_train, y_train)
     return clf
-
-
-def get_position(ind, df):
-    x = int(df.iloc[ind]["Spot position X"] / 0.462)
-    y = int(df.iloc[ind]["Spot position Y"] / 0.462)
-    spot_frame = int(df.iloc[ind]["Spot frame"])
-    return x, y, spot_frame
-
-
-def get_centered_image(ind, df, im_actin, window_size):
-    x, y, spot_frame = get_position(ind, df)
-    cropped = im_actin[spot_frame][x - window_size:x + window_size, y - window_size: y + window_size]
-    return cropped
-
-
-def get_single_cell_intensity_measures(label, df, im_actin, window_size):
-    # try:
-    df_measures = pd.DataFrame(columns=["min", "max", "mean", "sum", "Spot track ID", "Spot frame", "x", "y", ])
-    for i in range(len(df)):  # len(df)
-        img = get_centered_image(i, df, im_actin, window_size)
-        try:
-            min_i, max_i, mean_i, sum_i = img.min(), img.max(), img.mean(), img.sum()
-        except:
-            continue
-        x, y, spot_frame = get_position(i, df)
-        data = {"min": min_i, "max": max_i, "mean": mean_i, "sum": sum_i, "Spot track ID": label,
-                "Spot frame": spot_frame,
-                "x": x, "y": y}
-        df_measures = df_measures.append(data, ignore_index=True)
-    return df_measures
-
-
-def get_local_densities_df(df_s, tracks_s, neighboring_distance=100):
-    local_densities = pd.DataFrame(columns=[i for i in range(df_s["Spot frame"].max() + 2)])
-    for track in tracks_s:
-        spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
-        track_local_density = {
-            t: get_local_density(df=df_s,
-                                 x=track[track["Spot frame"] == t]["Spot position X"].values[0],
-                                 y=track[track["Spot frame"] == t]["Spot position Y"].values[0],
-                                 t=t,
-                                 neighboring_distance=neighboring_distance)
-            for t in spot_frames}
-        local_densities = local_densities.append(track_local_density, ignore_index=True)
-    return local_densities
-
-
-def get_density(df, experiment):
-    densities = pd.DataFrame()
-    for t, t_df in df.groupby("Spot frame"):
-        densities = densities.append({"Spot frame": t, "density": len(t_df)}, ignore_index=True)
-    densities["experiment"] = experiment
-    return densities
 
 
 def get_local_density(df, x, y, t, neighboring_distance):
@@ -123,7 +90,8 @@ def add_features_df(df, df_s, local_density=True):
         for label, track in df.groupby("Spot track ID"):
             track = track.sort_values("Spot frame")
             track = add_features(track, local_density=local_density, df_s=df_s)
-            new_df = new_df.append(track, ignore_index=True)
+            # new_df = new_df.append(track, ignore_index=True)
+            new_df = pd.concat([new_df, track], ignore_index=True)
         return new_df
     else:
         return df
@@ -152,10 +120,11 @@ def calc_prob(transformed_tracks_df, clf, n_frames=260):
         try:
             for t in spot_frames:
                 probs = clf.predict_proba(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1))
-
                 diff_score[t] = pd.to_numeric(probs[0][1], downcast='float')
 
-            df_score = df_score.append(diff_score, ignore_index=True, sort=False)
+            diff_score_df = pd.DataFrame(diff_score, index=[0])
+            df_score = pd.concat([df_score, diff_score_df], ignore_index=True, sort=False)
+            # df_score = df_score.append(diff_score, ignore_index=True, sort=False)
         except Exception as e:
             print(e)
             print(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1).size)
@@ -177,34 +146,24 @@ def concat_dfs(diff_df, con_df, diff_t_window=None, con_t_windows=None):
     # Erk video
     # Cut the needed time window
     new_diff_df = pd.DataFrame()
-    # Todo I might have a bug in here. Each record holds a transformation of the former 30 frames,
-    #  so in this way i take too many time frames, with duplicates
-    # diff_df = diff_df[(diff_df["Spot frame"] >= diff_start) & (diff_df["Spot frame"] < diff_end)]
-    # todo: the correction:
     diff_df = diff_df[diff_df["Spot frame"] == diff_end]
     print("size of diff_df: ", diff_df.shape)
 
     for label, label_df in diff_df.groupby('Spot track ID'):
-        # if len(
-        # label_df) == window_size:  # todo: i removed that row, since I already know that each record holds the transformation of the last 30 frames
-        new_diff_df = new_diff_df.append(label_df)
+        # new_diff_df = new_diff_df.append(label_df)
+        new_diff_df = pd.concat([new_diff_df, label_df], ignore_index=True)
 
     # control video
     # Cut the needed time window
     control_df = pd.DataFrame()
     new_label = max(con_df['Spot track ID'].unique()) + 1
     for start, end in con_t_windows:
-        # Todo I might have a bug in here. Each record holds a transformation of the former 30 frames,
-        #  so in this way i take too many time frames, with duplicates
-        # tmp_df = con_df[(con_df["Spot frame"] >= start) & (con_df["Spot frame"] < end)]
-        # todo: the correction:
         tmp_df = con_df[con_df["Spot frame"] == end]
         for label, label_df in tmp_df.groupby('Spot track ID'):
-            # if len(
-            #         label_df) == window_size:  # todo: i removed that row, since I already know that each record holds the transformation of the last 30 frames
             new_label += 1
             label_df["Spot track ID"] = new_label
-            control_df = control_df.append(label_df)
+            # control_df = control_df.append(label_df)
+            control_df = pd.concat([control_df, label_df], ignore_index=True)
     con_df = control_df.copy()
     print("size of con_df: ", con_df.shape)
 
@@ -212,28 +171,6 @@ def concat_dfs(diff_df, con_df, diff_t_window=None, con_t_windows=None):
     con_df, _ = set_indexes(con_df, target=False, max_val=max_val)
     total_df = pd.concat([new_diff_df, con_df], ignore_index=True)
     return total_df
-
-
-def get_unique_indexes(y):
-    idxs = y.index.unique()
-    lst = [y[idx] if isinstance(y[idx], np.bool_) else y[idx].iloc[0] for idx in idxs]
-    y_new = pd.Series(lst, index=idxs).sort_index()
-    return y_new
-
-
-def open_dirs(main_dir, inner_dir):
-    if not os.path.exists(main_dir):
-        os.mkdir(main_dir)
-    print(main_dir + "/" + inner_dir)
-    if not os.path.exists(main_dir + "/" + inner_dir):
-        os.mkdir(main_dir + "/" + inner_dir)
-
-
-def split_data_by_tracks(data, n_tasks):
-    ids_list = data["Spot track ID"].unique()
-    n = len(ids_list) // n_tasks
-    ids_chunks = [ids_list[i:i + n] for i in range(0, len(ids_list), n)]
-    return ids_chunks
 
 
 if __name__ == '__main__':

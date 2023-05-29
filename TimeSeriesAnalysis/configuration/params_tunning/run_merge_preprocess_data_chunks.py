@@ -1,15 +1,13 @@
-import glob
-import pickle
 import os, sys
 
 sys.path.append('/sise/home/reutme/muscle-formation-regeneration')
-sys.path.append(os.path.abspath('../..'))
+sys.path.append(os.path.abspath('../../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
-from TimeSeriesAnalysis.data_preprocessing.merge_preprocessed_data_chunks import concat_data_portions
-import TimeSeriesAnalysis.params as params
-import TimeSeriesAnalysis.consts as consts
+from data_layer.data_preprocessing import concat_data_portions
+import configuration.params as params
+import configuration.consts as consts
 
 
 
@@ -26,7 +24,7 @@ if __name__ == '__main__':
     # if this is the original model - not sensitive analysis
     if feature_type == "original":
         feature_specific = 'original'
-        concat_data_portions(params.local_density, params.window_size, s_run, modality, feature_specific, feature_type)
+        concat_data_portions(params.window_size, s_run, modality, feature_specific, feature_type)
 
     # build model by sensitive analysis on temporal_segment feature
     elif feature_type == "temporal_segment_arr":
@@ -43,7 +41,7 @@ if __name__ == '__main__':
 
             feature_specific = temporal_segment
 
-            concat_data_portions(params.local_density, params.window_size, s_run, modality, feature_specific, feature_type)
+            concat_data_portions(params.window_size, s_run, modality, feature_specific, feature_type)
 
     # build model by sensitive analysis on diff_win feature
     elif feature_type == "diff_window_arr":
@@ -51,14 +49,14 @@ if __name__ == '__main__':
         for diff_win in params.feature_calc_types[feature_type]:
             feature_specific = diff_win
 
-            concat_data_portions(params.local_density, params.window_size, s_run, modality, feature_specific, feature_type)
+            concat_data_portions(params.window_size, s_run, modality, feature_specific, feature_type)
 
     # build model by sensitive analysis on crop window size feature
     elif feature_type == "window_size_arr":
 
         for win_size in params.feature_calc_types[feature_type]:
             feature_specific = win_size
-            concat_data_portions(params.local_density, params.window_size, s_run, modality, feature_specific, feature_type)
+            concat_data_portions(params.window_size, s_run, modality, feature_specific, feature_type)
 
 
 
