@@ -23,10 +23,6 @@ See our paper (linked below) for more details and extensive resources.
 
 ## Data collection, processing and model training procedures
 
-<p align="center">
-<img src="figures/Figure_2A.png" width=60%>
-</p>
-
 > **Semi-manual single-cell tracking:** Time-lapse images were converted to XML/hdf5 format, and Mastodon's FIJI plugin was used for single-cell tracking and manual correction. Cells that fused into multinucleated fibers and cells that did not fuse within the experimental timeframe were included.
 
 > **Preprocessing trajectories:** Image registration using OpenCV's CalcOpticalFlowFarneback was performed to correct erroneous offsets in the tracked cells' trajectories.
@@ -38,6 +34,9 @@ See our paper (linked below) for more details and extensive resources.
 >   d. Extracting hundreds of single-cell time series features: Features encoding properties of the temporal segments were extracted using the "tsfresh" Python package.
 >   e. Training classifiers: Random forest classifiers were trained to distinguish between differentiated and undifferentiated cells.
 
+<p align="center">
+<img src="figures/Figure_2A.png" width=100%>
+</p>
 
 ---
 
