@@ -18,48 +18,24 @@ between the dynamic single-cell state and virtually any other functional readout
 
 ## Data collection, processing and model training procedures
 
-![our workflow](6.paper_figures/figures/supplementary/figureS3_workflowpipeline.png)
+<p align="center">
+<img src="figures/figure_2A.png" width=60%>
+</p>
 
-> Semi-manual single-cell tracking: Time-lapse images were converted to XML/hdf5 format, and Mastodon's FIJI plufing was used for 
-> single-cell tracking and manual correction. Cells that fused into multinucleated fibers and cells that did not fuse within the experimental timeframe were included.
+> **Semi-manual single-cell tracking:** Time-lapse images were converted to XML/hdf5 format, and Mastodon's FIJI plugin was used for single-cell tracking and manual correction. Cells that fused into multinucleated fibers and cells that did not fuse within the experimental timeframe were included.
 
-Preprocessing trajectories: Image registration using OpenCV's CalcOpticalFlowFarneback was performed to correct erroneous offsets in the tracked cells' trajectories.
+> **Preprocessing trajectories:** Image registration using OpenCV's CalcOpticalFlowFarneback was performed to correct erroneous offsets in the tracked cells' trajectories.
 
-Models training: The training pipeline involved the following steps:
-
-a. Determining labels for training: ERKi-treated cells were labeled as "differentiated" in a specific time segment before the first fusion event was observed, while DMSO-treated cells were labeled as "undifferentiated" in specific time segments based on their differentiation timeline.
-
-b. Partitioning single-cell trajectories to temporal segments: Trajectories of DMSO- and ERKi-treated cells were divided into overlapping temporal segments of equal lengths. The specific time segment where ERKi-treated cells were considered "differentiated" was used for training.
-
-c. Extracting motility and actin features: Single-cell motility and actin intensity time series were extracted from each temporal segment.
-
-d. Extracting hundreds of single-cell time series features: Features encoding properties of the temporal segments were extracted using the "tsfresh" Python package.
-
-e. Training classifiers: Random forest classifiers were trained to distinguish between differentiated and undifferentiated cells. Grid search and cross-validation were used for hyperparameter tuning.
-
-Evaluating classifier performance: The trained classifiers' performance was evaluated on an independent experiment. Time series were partitioned into temporal segments, and the corresponding trained models were used to assess discrimination performance.
-> 
-> 
-> 
-> 
-> 
-> 
-> Data collection and data processing workflows, related to Figure 1.
-(a) We cultured A549 lung cancer cells and exposed them to 1,327 different compound perturbations in about six doses per compound.
-We plated these cells in 384 well plates, and, using the same plate layout, measured gene expression (using the L1000 assay) and morphology (using the Cell Painting assay) in compound-perturbed A549 cells.
-(b) Our image-based profiling pipeline we used to process the Cell Painting images.
-We used pycytominer to process the single cell profiles.
-All processing code and profile data are available at https://github.com/broadinstitute/lincs-cell-painting. Image data available at Image Data Resource (accession: idr0125).
+> **Models training:** The training pipeline involved the following steps:
+>   a. Determining labels for training: ERKi-treated cells were labeled as "differentiated" in a specific time segment before the first fusion event was observed, while DMSO-treated cells were labeled as "undifferentiated".
+>   b. Partitioning single-cell trajectories to temporal segments: Trajectories of DMSO- and ERKi-treated cells were divided into overlapping temporal segments of equal lengths.
+>   c. Extracting motility and actin features: Single-cell motility and actin intensity time series were extracted from each temporal segment.
+>   d. Extracting hundreds of single-cell time series features: Features encoding properties of the temporal segments were extracted using the "tsfresh" Python package.
+>   e. Training classifiers: Random forest classifiers were trained to distinguish between differentiated and undifferentiated cells.
 
 ## Findings summary
 
-We find that each assay provides complementary information for mapping cell state.
-Cell Painting has generally higher reproducibility, but suffers from more technical artifacts.
-L1000 has a more diverse feature space, but contains less diverse samples.
-In general Cell Painting captures more MOAs by an unsupervised analysis, but L1000 performs better in deep learning predictions.
-
-**Importantly, each assay captures complementary cell states.**
-By combining each data type, one can capture more mechanisms than either alone.
+We used live cell imaging and machine learning to track the differentiation state of muscle cells during muscle fiber formation. Our findings include identifying the time frame of myoblast differentiation and its link to fusion events. We also validated that inhibiting fusion did not significantly affect the differentiation process. This approach has potential applications in identifying new factors and screening compounds for muscle regeneration. Our study highlights the importance of supervised machine learning in accurately inferring cell state and its broader applicability to studying other dynamic cellular processes.
 
 See our paper (linked below) for more details and extensive resources.
 
