@@ -56,45 +56,10 @@ def train_model(X_train, y_train, modality):
     return clf
 
 
-def get_local_density(df, x, y, t, neighboring_distance):
-    neighbors = df[(np.sqrt(
-        (df["Spot position X"] - x) ** 2 + (df["Spot position Y"] - y) ** 2) <= neighboring_distance) &
-                   (df['Spot frame'] == t) &
-                   (0 < np.sqrt((df["Spot position X"] - x) ** 2 + (df["Spot position Y"] - y) ** 2))]
-    return len(neighbors)
-
-
 def extract_distinct_features(df, feature_list, column_id="Spot track ID", column_sort="Spot frame"):
     df = extract_features(df, column_id=column_id, column_sort=column_sort)  # , show_warnings=False
     impute(df)
     return df[feature_list]
-
-
-def add_features(track, df_s, local_density=True, neighboring_distance=50):
-    if local_density:
-        spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
-        track_local_density = [
-            get_local_density(df=df_s,
-                              x=track[track["Spot frame"] == t]["Spot position X"].values[0],
-                              y=track[track["Spot frame"] == t]["Spot position Y"].values[0],
-                              t=t,
-                              neighboring_distance=neighboring_distance)
-            for t in spot_frames]
-        track["local density"] = track_local_density
-    return track
-
-
-def add_features_df(df, df_s, local_density=True):
-    if local_density:
-        new_df = pd.DataFrame()
-        for label, track in df.groupby("Spot track ID"):
-            track = track.sort_values("Spot frame")
-            track = add_features(track, local_density=local_density, df_s=df_s)
-            # new_df = new_df.append(track, ignore_index=True)
-            new_df = pd.concat([new_df, track], ignore_index=True)
-        return new_df
-    else:
-        return df
 
 
 def split_data_to_time_portions(data, track_len):
@@ -104,12 +69,6 @@ def split_data_to_time_portions(data, track_len):
     t_portion_lst = [data[data["Spot frame"].isin(time_windows_strides[i])] for i in range(len(time_windows_strides))]
 
     return t_portion_lst
-
-
-def remove_short_tracks(df_to_transform, len_threshold):
-    counts = df_to_transform.groupby("Spot track ID")["Spot track ID"].transform(len)
-    mask = (counts >= len_threshold)
-    return df_to_transform[mask]
 
 
 def calc_prob(transformed_tracks_df, clf, n_frames=260):

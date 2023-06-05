@@ -5,6 +5,8 @@ import os
 import pandas as pd
 from tqdm import tqdm
 
+from data_layer.utils import get_tracks, remove_short_tracks
+
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('..'))
 current = os.path.dirname(os.path.realpath(__file__))
@@ -12,7 +14,6 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from configuration import consts, params
-from data_layer import get_tracks
 
 import numpy as np
 # import nuc_segmentor as segmentor
@@ -70,7 +71,7 @@ class FeaturesCalculatorStrategy(object):
 
         # check if a features dataframe already exist
         vid_num = os.path.basename(vid_path)[1]
-        features_df_path = consts.FEATURES_DIR_PATH + "S{vid_num}_{self.name}"
+        features_df_path = consts.FEATURES_DIR_PATH + f"S{vid_num}_{self.name}"
         if os.path.exists(features_df_path):
             print("data exists, returning an already built features dataframe")
             features_df = pd.read_csv(features_df_path, encoding="cp1252")
@@ -86,7 +87,6 @@ class FeaturesCalculatorStrategy(object):
                 cell_features_df = self.get_single_cell_measures(label, cell_df, im, window_size, vid_num)
                 # temporal_segment
                 if (not cell_features_df.empty) and (len(cell_features_df) >= temporal_seg_size):
-
                     cell_features_df["manual"] = 1
                     features_df = pd.concat([features_df, cell_features_df], axis=0)
 
@@ -251,6 +251,13 @@ class LocalDensityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
             self.all_tracks_df_dict[vid_name], _ = get_tracks(
                 consts.data_csv_path % (params.registration_method, vid_name), manual_tagged_list=False)
 
+    def get_local_density(self, df, x, y, t, neighboring_distance):
+        neighbors = df[(np.sqrt(
+            (df["Spot position X"] - x) ** 2 + (df["Spot position Y"] - y) ** 2) <= neighboring_distance) &
+                       (df['Spot frame'] == t) &
+                       (0 < np.sqrt((df["Spot position X"] - x) ** 2 + (df["Spot position Y"] - y) ** 2))]
+        return len(neighbors)
+
     def get_single_cell_measures(self, track_id, tagged_df, vid_arr, window_size, vid_num):
         """
         Calculates single cell trajectory of local density measurement. Local density: the number of nuclei within a
@@ -266,11 +273,11 @@ class LocalDensityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
             all_tracks_df, _ = get_tracks(tracks_csv_path, manual_tagged_list=False)
         track = tagged_df[tagged_df["Spot track ID"] == track_id]
         spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
-        track_local_density = [get_local_density(df=all_tracks_df,
-                                                 x=track[track["Spot frame"] == t]["Spot position X"].values[0],
-                                                 y=track[track["Spot frame"] == t]["Spot position Y"].values[0],
-                                                 t=t,
-                                                 neighboring_distance=self.neighboring_distance)
+        track_local_density = [self.get_local_density(df=all_tracks_df,
+                                                      x=track[track["Spot frame"] == t]["Spot position X"].values[0],
+                                                      y=track[track["Spot frame"] == t]["Spot position Y"].values[0],
+                                                      t=t,
+                                                      neighboring_distance=self.neighboring_distance)
                                for t in spot_frames]
         track["local density"] = track_local_density
 
