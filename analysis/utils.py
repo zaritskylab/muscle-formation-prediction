@@ -7,8 +7,8 @@ import matplotlib as mpl
 import seaborn as sns
 import pandas as pd
 
-from analysis import auc_over_time, plot_auc_over_time
-from data_layer import load_tsfresh_transformed_df
+from analysis.calc_auc_over_time import auc_over_time, plot_auc_over_time
+from data_layer.utils import load_tsfresh_transformed_df
 from configuration import consts
 
 

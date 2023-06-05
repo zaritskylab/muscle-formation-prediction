@@ -1,8 +1,22 @@
 storage_path = r"/storage/users/assafzar/Muscle_Differentiation_AvinoamLab/"
 data_csv_path = storage_path + r"data/mastodon/%s%s all detections.csv"
-
 intensity_model_path = storage_path + r"15-12-2022-actin_intensity local dens-False, s%s, s%s train [130, 160] diff window win size 16/track len 30, impute_func-ImputeAllData_impute_zeroes reg MeanOpticalFlowReg_/"
 motility_model_path = storage_path + r"15-12-2022-motility local dens-False, s%s, s%s train [130, 160] diff window/track len 30, impute_func-ImputeAllData_impute_zeroes reg MeanOpticalFlowReg_/"
+
+
+
+window_size = 16  # window crop on actin intensity measurements
+
+registration_method = "MeanOpticalFlowReg_"
+impute_func = "impute_zeroes"
+impute_methodology = "ImputeAllData"
+
+transformed_data_path = storage_path + f"data/mastodon/ts_transformed/%s/{impute_methodology}_{impute_func}/S%s/merged_chunks_reg={registration_method},local_den=False,win size={window_size}.pkl"
+
+
+
+
+
 cluster_path = "muscle-formation-diff"
 local_path = ".."
 

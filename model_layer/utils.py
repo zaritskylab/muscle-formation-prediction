@@ -29,7 +29,7 @@ def evaluate(clf, X_test, y_test):
 
 def train_model_compare_algorithms(X_train, y_train, X_test, y_test, dir_path):
     models = []
-    models.append(('RF', RandomForestClassifier()))  # **{'max_depth': 12, 'min_samples_leaf': 1, 'n_estimators': 100}
+    models.append(('RF', RandomForestClassifier()))
     models.append(('GB', GradientBoostingClassifier()))
     models.append(('LR', LogisticRegression()))
     models.append(('KNN', KNeighborsClassifier()))
@@ -71,7 +71,7 @@ def split_data_to_time_portions(data, track_len):
     return t_portion_lst
 
 
-def calc_prob(transformed_tracks_df, clf, n_frames=260):
+def calc_state_trajectory(transformed_tracks_df, clf, n_frames=260):
     df_score = pd.DataFrame(columns=[i for i in range(n_frames)])
     for track_id, track in transformed_tracks_df.groupby("Spot track ID"):
         spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
