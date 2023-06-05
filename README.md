@@ -39,7 +39,7 @@ We used live cell imaging and machine learning to track the differentiation stat
 
 See our paper (linked below) for more details and extensive resources.
 
-## Reproduce computational environment
+<!-- ## Reproduce computational environment
 
 We use a combination of conda and pip to manage the proper python packages for data assessment and model predictions.
 To reproduce our environment run the following:
@@ -71,7 +71,7 @@ python3 -m pip install -r tensorflow_requirements.txt
 # Step 2 - Pytorch
 python3 -m venv pytorch_env
 source pytorch_env/bin/activate
-python3 -m pip install -r pytorch_requirements.txt && python3 setup.py
+python3 -m pip install -r pytorch_requirements.txt && python3 setup.py -->
 ```
 
 ## Citation
