@@ -151,7 +151,7 @@ plot_avg_score(df_score_con.drop("Spot track ID", axis=1), df_score_dif.drop("Sp
 ```
 an example for possible output of the method "plot_avg_score":
 <p align="center">
-<img src="figures/Figure_2D.png" width=100%>
+<img src="figures/Figure_2D.png" width=40%>
 </p>
 
 ## Citation
