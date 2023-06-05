@@ -7,7 +7,6 @@ import numpy as np
 
 import sys, os
 
-
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('../TimeSeriesAnalysis'))
 
@@ -44,6 +43,7 @@ def get_scores_df(scores_motility_path, scores_intensity_path):
     scores_df = pd.merge(left=scores_df_mot, right=scores_df_int, on=["Spot track ID", "Spot frame", "time"])
 
     return scores_df
+
 
 def load_data(dir_path, load_clf=True, load_x_train=True, load_x_test=True, load_y_train=True, load_y_test=True):
     """
@@ -154,6 +154,12 @@ def load_clean_rows(file_path):
     return df
 
 
+def remove_short_tracks(df_to_transform, len_threshold):
+    counts = df_to_transform.groupby("Spot track ID")["Spot track ID"].transform(len)
+    mask = (counts >= len_threshold)
+    return df_to_transform[mask]
+
+
 def get_tracks(file_path, tagged_only=False, manual_tagged_list=True, target=1):
     """
     Loads and processes singe cells tracks from a csv file, returning theire DataFrame and a list of tracks.
@@ -189,8 +195,9 @@ def load_tsfresh_transformed_df(modality, vid_num, cols=None):
         df = df.merge(df_s, on=["Spot track ID", "Spot frame"], how="right")
     return df
 
+
 def load_fusion_data(path=consts.storage_path + r"data/mastodon/no_reg_S3 all detections.csv"):
-   # load the raw data with fusion tags
+    # load the raw data with fusion tags
     chunksize = 200000
     df = pd.DataFrame()
     for chunk in pd.read_csv(path, chunksize=chunksize, encoding="cp1252", header=[0, 1], iterator=True):
@@ -199,19 +206,23 @@ def load_fusion_data(path=consts.storage_path + r"data/mastodon/no_reg_S3 all de
         df = df.append(chunk, ignore_index=True)
 
     df.rename(columns=lambda x: x.replace("_", " ").strip(), inplace=True)
-    fusion_cols = ['Spot track ID', 'Spot frame', 'Spot position X', 'Spot position Y', 'manual manual'] + [col for col in df.columns if "First" in col]
+    fusion_cols = ['Spot track ID', 'Spot frame', 'Spot position X', 'Spot position Y', 'manual manual'] + [col for col
+                                                                                                            in
+                                                                                                            df.columns
+                                                                                                            if
+                                                                                                            "First" in col]
     df = df[fusion_cols]
     df.rename(columns=lambda x: x.split(" ")[3] if "First" in x else x, inplace=True)
     df = df[1:]
     df = df.astype(float)
 
-    c = df.iloc[:,5:].idxmax(axis=1)
-    is_valid = df.iloc[:,5:].sum(axis=1) > 0
+    c = df.iloc[:, 5:].idxmax(axis=1)
+    is_valid = df.iloc[:, 5:].sum(axis=1) > 0
     c[~is_valid] = np.nan
     df["fusion_frame"] = c
     df = df.dropna(subset=["fusion_frame"])
     df = df.drop_duplicates(subset=['fusion_frame', 'Spot track ID'])
-    fusion_time_df = df[['Spot track ID' ,'fusion_frame']] #,'manual manual'
+    fusion_time_df = df[['Spot track ID', 'fusion_frame']]  # ,'manual manual'
     fusion_time_df["fusion_time"] = fusion_time_df["fusion_frame"].astype(float) * 5 / 60
     return fusion_time_df
 
@@ -233,3 +244,6 @@ def get_scores_df_with_fusion():
     scores_df_s3 = scores_df_s3.astype("float")
 
     return scores_df_s3
+
+
+

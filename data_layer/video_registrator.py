@@ -1,22 +1,24 @@
+"""
+This module defines video registration strategies and a factory method to create instances of video registrators.
+"""
+
 from abc import ABCMeta, abstractmethod, ABC
 import sys
 import os
+from tqdm import tqdm
+import cv2
+from skimage.transform import warp
+from skimage import io
+from skimage import registration
+import image_registration
+from pystackreg import StackReg
 
-sys.path.append('/sise/home/shakarch/muscle-formation-diff')
-sys.path.append(os.path.abspath('..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-import image_registration
-from pystackreg import StackReg
-from skimage import io
-from skimage import registration
 from data_layer.utils import *
-from skimage.transform import warp
-import cv2
 from configuration import consts
-from tqdm import tqdm
 
 
 class VideoRegistratorStrategy(object):
@@ -256,7 +258,7 @@ if __name__ == '__main__':
     reg_name = sys.argv[2]  # default is "MeanOpticalFlowReg"
     nuclei_vid_path = vid_info["nuc_path"]
     no_reg_csv_path = consts.data_csv_path % ("no_reg_", vid_info['name'])
-    registrated_csv_save_path = consts.data_csv_path % (f"{reg_name}_tmpmpmp", vid_info['name'])
+    registrated_csv_save_path = consts.data_csv_path % (f"{reg_name}_", vid_info['name'])
 
     # check if video was not registrated already
     if os.path.exists(registrated_csv_save_path):

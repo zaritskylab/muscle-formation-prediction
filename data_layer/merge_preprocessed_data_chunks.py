@@ -49,14 +49,12 @@ def delete_temporery_files(data_files, txt_path_file):
         print(e)
 
 
-def concat_data_portions(window_size, s_run, modality, specific_feature_type="", feature_type=""):
+def concat_data_portions(files_location_path, saving_path):
     """
     Concatenates data portions of transformed tsfresh data from multiple files into a single DataFrame.
-    :param window_size: (int) half of the size of the wanted cropped image. Default is 16.
-    :param s_run: (dict) containing information about the video's data.
-    :param modality: (str) "motility"/"intensity".
-    :param specific_feature_type: (str, optional) Specific feature type for parameter tuning. Default is an empty string.
-    :param feature_type: (str, optional) Feature type for parameter tuning.. Default is an empty string.
+    :param files_location_path: (str) location of data portaions.
+    :param saving_path: (str) path to save the new concatenated file to.
+
     :return: None
     :prints:
         - Running information, including the modality and video name.
@@ -69,20 +67,14 @@ def concat_data_portions(window_size, s_run, modality, specific_feature_type="",
             data_files = f.read().splitlines()
         return data_files
 
-    print(f"running: modality={modality}, video={s_run['name']}")
-
-    s_run_files_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{s_run['name']}/{feature_type}/{specific_feature_type}/ "
-    txt_path_file = f"{s_run_files_path}files_dict.txt"
-    print(s_run_files_path)
-
     # concat dfs
+    txt_path_file = f"{files_location_path}files_dict.txt"
     data_files = read_txt_file(txt_path_file)
     df_all_chunks = concat_files(data_files)
 
     # save data
     if not df_all_chunks.empty:
-        data_save_csv_path = s_run_files_path + f"merged_chunks_reg={params.registration_method},local_den=False,win size={window_size}"
-        pickle.dump(df_all_chunks, open(data_save_csv_path + ".pkl", 'wb'))
+        pickle.dump(df_all_chunks, open(saving_path, 'wb'))
     else:
         print("no data to save")
 
@@ -91,6 +83,8 @@ def concat_data_portions(window_size, s_run, modality, specific_feature_type="",
 
 if __name__ == '__main__':
     modality = sys.argv[1]
-    s_run = consts.vid_info_dict[os.getenv('SLURM_ARRAY_TASK_ID')]
+    vid_info = consts.vid_info_dict[os.getenv('SLURM_ARRAY_TASK_ID')]
+    files_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{vid_info['name']}/"
+    data_save_csv_path = files_path + f"merged_chunks_reg={params.registration_method},local_den=False,win size={params.window_size}.pkl"
 
-    concat_data_portions(params.window_size, s_run, modality)
+    concat_data_portions(files_path, data_save_csv_path)

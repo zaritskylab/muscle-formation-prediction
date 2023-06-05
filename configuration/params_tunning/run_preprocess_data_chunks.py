@@ -7,59 +7,89 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from preprocess_data_chunks import preprocess_data
+from data_preparation import prepare_data_in_parallel_chunks
 from data_layer.utils import *
 
 if __name__ == '__main__':
     print("running prepare_data")
 
     # get arguments from sbatch
+    task_id = int(os.getenv('SLURM_ARRAY_TASK_ID')[1:])
+
     modality = sys.argv[1]
     n_tasks = int(sys.argv[2])
-    s_run = consts.vid_info_dict[sys.argv[3]]
+    vid_info = consts.vid_info_dict[sys.argv[3]]
 
     # feature type is the name of the feature that we change
     feature_type = sys.argv[4]
-    task_id = int(os.getenv('SLURM_ARRAY_TASK_ID')[1:])
 
-    # if this is the original model - not sensitive analysis
+    base_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{vid_info['name']} "
+    vid_path = vid_info["actin_path"] if modality == "actin_intensity" else vid_info["nuc_path"]
+
+    # set paths for saving transformed data
+    save_data_path = f"/{vid_info['name']}_reg={params.registration_method},local_den=False" + \
+                     (f"win size {params.window_size}" if modality != "motility" else "")
+
+    print("\n===== load data =====")
+    tracks_csv_path = consts.data_csv_path % (params.registration_method, vid_info['name'])
+    tracks_df, _ = get_tracks(tracks_csv_path, tagged_only=True)
+
+    # if this is the original model - not sensitivity analysis
     if feature_type is None:
-        # build model by original feature
-        preprocess_data(n_tasks=n_tasks, job_id=task_id, s_run=s_run, modality=modality,
-                        win_size=params.window_size, track_len=params.tracks_len)
+        save_data_dir_path = base_dir_path
+        os.makedirs(save_data_dir_path, exist_ok=True)
 
+        # build model by original feature
+        prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality,
+                                        target=vid_info["target"], n_tasks=n_tasks,
+                                        job_id=task_id, win_size=params.window_size,
+                                        segment_length=params.tracks_len,
+                                        save_data_dir_path=save_data_dir_path,
+                                        save_data_path=save_data_dir_path + save_data_path)
 
     # build model by sensitive analysis on crop window size feature
     elif feature_type == "window_size_arr":
+        save_data_dir_path = base_dir_path + f"/{feature_type}/"
         for win_size in params.feature_calc_types[feature_type]:
             print(f"start preprocess_data with window size: {win_size}")
-            preprocess_data(n_tasks=n_tasks, job_id=task_id, s_run=s_run, modality=modality, win_size=win_size,
-                            track_len=params.tracks_len, feature_type=feature_type, specific_feature_calc=win_size)
+            prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality,
+                                            target=vid_info["target"], n_tasks=n_tasks,
+                                            job_id=task_id, win_size=params.window_size,
+                                            segment_length=params.tracks_len,
+                                            save_data_dir_path=save_data_dir_path,
+                                            save_data_path=save_data_dir_path + save_data_path)
             print(f"finish preprocess_data with window size: {win_size}")
 
     # build model by sensitive analysis on temporal_segment feature
     elif feature_type == "temporal_segment_arr":
-        # array of arrays that each array is one of temporal segment array, differentiation_window array and control window array
+        # array of arrays that each array is one of temporal segment array, differentiation_window array and control
+        # window array
         list_of_tempural_diff_win_con_win = params.feature_calc_types[feature_type]
         temporal_segment_array = list_of_tempural_diff_win_con_win[0][0]
         diff_wind_array = list_of_tempural_diff_win_con_win[0][1]
         con_wind_array = list_of_tempural_diff_win_con_win[0][2]
 
         for temporal_segment, diff_wind, con_wind in zip(temporal_segment_array, diff_wind_array, con_wind_array):
-            feature_specific = temporal_segment
+            save_data_dir_path = base_dir_path + f"/{feature_type}/{temporal_segment}"
 
             print(f"start preprocess_data with temporal segment size: {temporal_segment}")
             print(f"diff_window: {diff_wind}")
             print(f"con_wind: {con_wind}")
-            preprocess_data(n_tasks=n_tasks, job_id=task_id, s_run=s_run, modality=modality,
-                            win_size=params.window_size, track_len=temporal_segment,
-                            feature_type=feature_type, specific_feature_calc=feature_specific)
+            prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality,
+                                            target=vid_info["target"], n_tasks=n_tasks,
+                                            job_id=task_id, win_size=params.window_size,
+                                            segment_length=params.tracks_len,
+                                            save_data_dir_path=save_data_dir_path,
+                                            save_data_path=save_data_dir_path + save_data_path)
             print(f"finish preprocess_data with temporal segment size: {temporal_segment}")
 
     # build model by sensitive analysis on diff_win feature
     elif feature_type == "diff_window_arr":
         for diff_win in params.feature_calc_types[feature_type]:
-            feature_specific = diff_win
-            preprocess_data(n_tasks=n_tasks, job_id=task_id, s_run=s_run, modality=modality,
-                            win_size=params.window_size, track_len=params.tracks_len, feature_type=feature_type,
-                            specific_feature_calc=feature_specific)
+            save_data_dir_path = base_dir_path + f"/{feature_type}/{diff_win}"
+            prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality,
+                                            target=vid_info["target"], n_tasks=n_tasks,
+                                            job_id=task_id, win_size=params.window_size,
+                                            segment_length=params.tracks_len,
+                                            save_data_dir_path=save_data_dir_path,
+                                            save_data_path=save_data_dir_path + save_data_path)
