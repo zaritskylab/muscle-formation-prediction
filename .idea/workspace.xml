@@ -23,8 +23,87 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="package reorganization">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/muscle-formation-diff.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/muscle-formation-diff.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_auc_over_time.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_auc_over_time.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_diff_score.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_diff_score.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_single_cell_properties.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/Untitled-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/Untitled-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/UpdateVisualizaion-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/UpdateVisualizaion-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/auc_over_time_script-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/auc_over_time_script-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/calibration analysis-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/calibration analysis-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/cellular_properties-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/cellular_properties-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/data inspection-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/data inspection-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/differentiation over time-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/differentiation over time-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/explainability_shap-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/explainability_shap-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/fusion_correlations-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/fusion_correlations-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/model_actin_motility-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/model_actin_motility-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/myimage-checkpoint.gif" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/myimage-checkpoint.gif" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/plot_actin_speed-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/plot_actin_speed-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/rf_hyperparams_tunning-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/rf_hyperparams_tunning-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/simple classifiers comaprison-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/simple classifiers comaprison-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/single_cell_tracking_fig-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/single_cell_tracking_fig-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/.ipynb_checkpoints/untitled-checkpoint.txt" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/untitled-checkpoint.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/Diff_visualization_sma_change_sma.gif" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/Diff_visualization_sma_change_sma.gif" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/Thumbs.db" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/Thumbs.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/Untitled.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/Untitled.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/UpdateVisualizaion.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/UpdateVisualizaion.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/auc_over_time_script.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/auc_over_time_script.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/calibration analysis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/calibration analysis.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/cellular_properties.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/cellular_properties.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/data inspection.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/data inspection.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/differentiation over time.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/differentiation over time.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/explainability_shap.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/explainability_shap.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/fusion_correlations.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/fusion_correlations.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/model_actin_motility.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/model_actin_motility.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/myimage.gif" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/myimage.gif" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/new_single_cell_tracking_id=1.gif" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/new_single_cell_tracking_id=1.gif" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/new_single_cell_tracking_id=217.gif" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/new_single_cell_tracking_id=217.gif" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/plot_actin_speed.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/plot_actin_speed.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/rf_hyperparams_tunning.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/rf_hyperparams_tunning.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/simple classifiers comaprison.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/simple classifiers comaprison.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/single_cell_tracking_fig.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/single_cell_tracking_fig.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/single_cell_tracking_id=1.gif" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/single_cell_tracking_id=1.gif" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/track_gif_1394.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/track_gif_16348.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/track_gif_16991.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/track_gif_2764.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/track_gif_27879.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/track_gif_6208.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/track_gif_6405.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/notebooks/track_gif_9241.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/analysis/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/consts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/params.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/params.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/params_tunning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/params_tunning/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/params_tunning/run_build_models_on_tranformed_tracks.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/params_tunning/run_build_models_on_tranformed_tracks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/params_tunning/run_merge_preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/params_tunning/run_merge_preprocess_data_chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/params_tunning/run_preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/params_tunning/run_preprocess_data_chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_main_builed_model" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/sbatchs/sbatch_cpu.run_main_builed_model" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_main_merge_with_array" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/sbatchs/sbatch_cpu.run_main_merge_with_array" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_main_preprocess_data_chunks" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/sbatchs/sbatch_cpu.run_main_preprocess_data_chunks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_preprocess_data_chunks" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/sbatchs/sbatch_cpu.run_preprocess_data_chunks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_second_merge_with_array" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/sbatchs/sbatch_cpu.run_second_merge_with_array" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.run_second_preprocess_data_chunks" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/sbatchs/sbatch_cpu.run_second_preprocess_data_chunks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.vid_to_tsfresh_data" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/sbatchs/sbatch_cpu.vid_to_tsfresh_data" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_cpu.vid_tracking_cell" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/sbatchs/sbatch_cpu.vid_tracking_cell" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/configuration/sbatchs/sbatch_gpu.single_cell_properties_calc" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/sbatchs/sbatch_gpu.single_cell_properties_calc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_layer/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/data_normalizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/data_normalizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/data_preprocessor.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/data_preprocessor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/features_calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/features_calculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/imputer_strategy.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/imputer_strategy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/merge_preprocessed_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/merge_preprocessed_data_chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/preprocess_data_chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/tsfresh_transformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/tsfresh_transformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/data_preprocessing/video_registrator.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/video_registrator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/data_layer/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/model_layer/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/model_layer/build_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_layer/build_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TimeSeriesAnalysis/model_layer/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_layer/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,22 +166,22 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\analysis" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\configuration" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\data_layer" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\model_layer" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\sbatchs" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\sbatchs" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\Coordination" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\TimeSeriesAnalysis" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\data\videos\BrightField_pixel_ratio_1" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\data_layer" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\data\videos" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\analysis" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\configuration" />
     </key>
   </component>
   <component name="RunManager" selected="Python.main">
@@ -492,7 +571,11 @@
       <workItem from="1684038775158" duration="2328000" />
       <workItem from="1684216456662" duration="34977000" />
       <workItem from="1684819281496" duration="13179000" />
-      <workItem from="1685340882339" duration="140000" />
+      <workItem from="1685340882339" duration="998000" />
+      <workItem from="1685347081708" duration="604000" />
+      <workItem from="1685355112657" duration="12464000" />
+      <workItem from="1685538263380" duration="7377000" />
+      <workItem from="1685944297688" duration="5608000" />
     </task>
     <task id="LOCAL-00001" summary="Added aae files">
       <created>1617796329153</created>
@@ -823,7 +906,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685340900276</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="package reorganization">
+      <created>1685341049705</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1685341049705</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -880,20 +970,25 @@
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="2301" y="234" key="MultipleFileMergeDialog/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1679986943364" />
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1685340902981">
+    <state x="2261" y="169" key="SettingsEditor" timestamp="1685949978657">
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685340902981" />
+    <state x="2261" y="169" key="SettingsEditor/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685949978657" />
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1685341050999">
+      <screen x="1920" y="23" width="1680" height="1002" />
+    </state>
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685341050999" />
     <state x="432" y="221" key="Vcs.Push.Dialog.v2/0.0.1680.1002@0.0.1680.1002" timestamp="1684906594358" />
     <state x="710" y="393" key="publish.login" timestamp="1683740580290">
       <screen x="0" y="0" width="1680" height="1002" />
     </state>
     <state x="710" y="393" key="publish.login/0.0.1680.1002@0.0.1680.1002" timestamp="1683740580290" />
-    <state x="503" y="215" width="672" height="678" key="search.everywhere.popup" timestamp="1684916283613">
-      <screen x="0" y="0" width="1680" height="1002" />
+    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup" timestamp="1685947052956">
+      <screen x="1920" y="23" width="1680" height="1002" />
     </state>
-    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1684830450858" />
-    <state x="503" y="215" width="672" height="678" key="search.everywhere.popup/0.0.1680.1002@0.0.1680.1002" timestamp="1684916283613" />
+    <state x="383" y="144" width="672" height="455" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@0.0.1280.672" timestamp="1685852395790" />
+    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685947052956" />
+    <state x="503" y="215" width="672" height="678" key="search.everywhere.popup/0.0.1680.1002@0.0.1680.1002" timestamp="1685523093303" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -919,17 +1014,17 @@
           <option name="timeStamp" value="484" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/model_layer/build_model.py</url>
+          <url>file://$PROJECT_DIR$/model_layer/build_model.py</url>
           <line>281</line>
           <option name="timeStamp" value="1692" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/analysis/calc_single_cell_properties.py</url>
+          <url>file://$PROJECT_DIR$/analysis/calc_single_cell_properties.py</url>
           <line>305</line>
           <option name="timeStamp" value="1706" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TimeSeriesAnalysis/analysis/vid_tracking_cell.py</url>
+          <url>file://$PROJECT_DIR$/analysis/vid_tracking_cell.py</url>
           <line>32</line>
           <option name="timeStamp" value="1708" />
         </line-breakpoint>
