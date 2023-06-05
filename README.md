@@ -39,7 +39,35 @@ We used live cell imaging and machine learning to track the differentiation stat
 
 See our paper (linked below) for more details and extensive resources.
 
-<!-- ## Reproduce computational environment
+
+## performing single cell tracks registration
+To reproduce our single cell registration, you can use the following example:
+```python
+    
+    reg_name = "MeanOpticalFlowReg"
+    nuclei_vid_path = "data/videos/S1_nuclei.tif"
+    no_reg_csv_path = "data/mastodon/no_reg_S3_all detections.csv"
+    registrated_csv_save_path = "data/mastodon/MeanOpticalFlowReg_S3_all detections.csv"
+    
+    # load the video & single cell tracks csv for registrating the tracks according to the video.
+    vid_arr = io.imread(nuclei_vid_path)
+    tracks_df, _ = get_tracks(no_reg_csv_path, tagged_only=True)
+
+    # activate registrator according to the chosen registrator's name
+    registrator = video_registration_factory(reg_name)
+
+    # compute shifts in tracks to correct them
+    corrections = registrator.calc_shifts(vid_arr)
+
+    # registrate the tracks according to the calculated shifts
+    reg_data = registrator.registrate_tracks(data_to_registrate=tracks_df, flows=corrections)
+
+    # save registrated tracks to csv
+    reg_data.to_csv(registrated_csv_save_path)
+```
+
+
+## Reproduce computational environment
 
 We use a combination of conda and pip to manage the proper python packages for data assessment and model predictions.
 To reproduce our environment run the following:
@@ -71,7 +99,7 @@ python3 -m pip install -r tensorflow_requirements.txt
 # Step 2 - Pytorch
 python3 -m venv pytorch_env
 source pytorch_env/bin/activate
-python3 -m pip install -r pytorch_requirements.txt && python3 setup.py -->
+python3 -m pip install -r pytorch_requirements.txt && python3 setup.py
 ```
 
 ## Citation
