@@ -15,6 +15,11 @@ differentiation under conditions where fusion was stalled, demonstrating potenti
 in screening. This method can be adapted to other biological processes to reveal connections 
 between the dynamic single-cell state and virtually any other functional readout.
 
+## Findings summary
+
+We used live cell imaging and machine learning to track the differentiation state of muscle cells during muscle fiber formation. Our findings include identifying the time frame of myoblast differentiation and its link to fusion events. We also validated that inhibiting fusion did not significantly affect the differentiation process. This approach has potential applications in identifying new factors and screening compounds for muscle regeneration. Our study highlights the importance of supervised machine learning in accurately inferring cell state and its broader applicability to studying other dynamic cellular processes.
+
+See our paper (linked below) for more details and extensive resources.
 
 ## Data collection, processing and model training procedures
 
@@ -33,16 +38,16 @@ between the dynamic single-cell state and virtually any other functional readout
 >   d. Extracting hundreds of single-cell time series features: Features encoding properties of the temporal segments were extracted using the "tsfresh" Python package.
 >   e. Training classifiers: Random forest classifiers were trained to distinguish between differentiated and undifferentiated cells.
 
-## Findings summary
 
-We used live cell imaging and machine learning to track the differentiation state of muscle cells during muscle fiber formation. Our findings include identifying the time frame of myoblast differentiation and its link to fusion events. We also validated that inhibiting fusion did not significantly affect the differentiation process. This approach has potential applications in identifying new factors and screening compounds for muscle regeneration. Our study highlights the importance of supervised machine learning in accurately inferring cell state and its broader applicability to studying other dynamic cellular processes.
+---
 
-See our paper (linked below) for more details and extensive resources.
+## Examples
 
-
-## performing single cell tracks registration
+### Single cell tracks registration
 To reproduce our single cell registration, you can use the following example:
 ```python
+    from data_layer.utils import *
+    from data_layer.video_registrator import *
     
     reg_name = "MeanOpticalFlowReg"
     nuclei_vid_path = "data/videos/S1_nuclei.tif"
@@ -65,7 +70,15 @@ To reproduce our single cell registration, you can use the following example:
     # save registrated tracks to csv
     reg_data.to_csv(registrated_csv_save_path)
 ```
+### data preperation
+You can use the module "data_preparation" for preparing & transforming single cell tracks into tsfresh timeseries vectors.
 
+
+>   a. Determining labels for training: ERKi-treated cells were labeled as "differentiated" in a specific time segment before the first fusion event was observed, while DMSO-treated cells were labeled as "undifferentiated".
+>   b. Partitioning single-cell trajectories to temporal segments: Trajectories of DMSO- and ERKi-treated cells were divided into overlapping temporal segments of equal lengths.
+>   c. Extracting motility and actin features: Single-cell motility and actin intensity time series were extracted from each temporal segment.
+>   d. Extracting hundreds of single-cell time series features: Features encoding properties of the temporal segments were extracted using the "tsfresh" Python package.
+>   e. Training classifiers: Random forest classifiers were trained to distinguish between differentiated and undifferentiated cells.
 
 ## Reproduce computational environment
 
