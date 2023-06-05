@@ -24,7 +24,7 @@ See our paper (linked below) for more details and extensive resources.
 ## Data collection, processing and model training procedures
 
 <p align="center">
-<img src="figures/figure_2A.png" width=60%>
+<img src="figures/Figure_2A.png" width=60%>
 </p>
 
 > **Semi-manual single-cell tracking:** Time-lapse images were converted to XML/hdf5 format, and Mastodon's FIJI plugin was used for single-cell tracking and manual correction. Cells that fused into multinucleated fibers and cells that did not fuse within the experimental timeframe were included.
