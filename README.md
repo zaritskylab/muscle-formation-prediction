@@ -149,7 +149,7 @@ df_score_dif = calc_state_trajectory(diff_df_test[cols].dropna(axis=1), clf, n_f
 # plot average differentiation score over time
 plot_avg_score(df_score_con.drop("Spot track ID", axis=1), df_score_dif.drop("Spot track ID", axis=1), modality, save_dir_path)
 ```
-
+an example for possible output of the method "plot_avg_score":
 <p align="center">
 <img src="figures/Figure_2D.png" width=100%>
 </p>
