@@ -115,9 +115,32 @@ from data_layer.merge_preprocessed_data_chunks import *
 
 modality = "motility"
 files_path = "data/mastodon/transformed_data/save_files_path"
-data_save_csv_path = "data/mastodon/transformed_data/concatenated_data_chunks.pkl"
-
+transformed_data_path = "data/mastodon/transformed_data/%s/data_file_num_%s" 
 concat_data_portions(files_path, data_save_csv_path)
+```
+### build state prediction model with the transformed tracks data
+To do so, you can use the module "build_model". For example:
+```python
+
+# parameters setting
+modality = "motility"
+con_train_n, diff_train_n, con_test_n, diff_test_n  = (1, 5, 2, 3)
+transformed_data_path = "data/mastodon/transformed_data/%s/data_file_num_%s" # a general path for transformed data
+
+# load tsfresh transformed time series data
+diff_df_train = load_tsfresh_csv(transformed_data_path, modality, diff_train_num)
+con_df_train = load_tsfresh_csv(transformed_data_path, modality, con_train_n)
+diff_df_test = load_tsfresh_csv(transformed_data_path, modality, diff_test_n)
+con_df_test = load_tsfresh_csv(transformed_data_path, modality, con_test_n)
+
+diff_df_train, con_df_train = get_data(modality, transformed_data_path, local_density, con_train_n, diff_train_n, None, None, feature_type, specific_feature_type, window_size)
+
+build_state_prediction_model(save_data_dir_path, diff_df_train, con_df_train, diff_df_test, con_df_test, diff_window, con_window)
+
+
+
+
+
 ```
 
 
