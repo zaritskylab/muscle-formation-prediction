@@ -72,13 +72,57 @@ To reproduce our single cell registration, you can use the following example:
 ```
 ### data preperation
 You can use the module "data_preparation" for preparing & transforming single cell tracks into tsfresh timeseries vectors.
+an example for preparing single cell tracks (full documentation is available with the code):
+```python
+from data_layer.data_preparation import *
+
+vid_path = "data/videos/S1_nuclei.tif"
+modality = "actin_intensity" # can be changed to "actin_intensity"
+win_size = 16 # deafult is 16, for window size of 32X32
+segment_length = 30 # length of the needed temporal overlapping segments
+target = 1 # 1 for "differentiated" class, 0 for "undifferentiated".
+
+preprocessor = data_preprocessor_factory(modality)
+transformed_data = prepare_data(preprocessor, data, vid_path, win_size, segment_length, target)
+pickle.dump(transformed_data, open("transformed_data.pkl", 'wb'))
+```
+In case you would like to parallelize the computation, you can use the method "prepare_data_in_parallel_chunks". The method will devide the data into n chunks, as n is the number of parallel runs, run the data prepartion method on each one of them, and saves the transformed data seperately. 
+```python
+from data_layer.data_preparation import *
+# set parameters
+n_tasks = 10 # how many jobs are there in total
+task_id = 101 # 3 digit number to indicate the id of the current running job (out of all n_tasks) 
+
+modality = "motility"
+vid_path = "data/videos/S2_nuclei.tif"
+vid_name = "S2" # represents the name of the needed file
+target = 0 # 1 for "differentiated" class, 0 for "undifferentiated".
+win_size = 16 # deafult is 16, for window size of 32X32
+segment_length = 30 # length of the needed temporal overlapping segments
+save_data_dir_path = "data/mastodon/transformed_data/"
+save_data_path = save_data_dir_path + "/save_files_path"
+tracks_csv_path = "data/S2.csv"
+
+# load tracks dataset
+tracks_df, _ = get_tracks(tracks_csv_path, tagged_only=True)
+prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality, target=target, n_tasks=n_tasks, job_id=task_id, win_size=win_size,
+                                segment_length=segment_length, save_data_dir_path=save_data_dir_path, save_data_path=save_data_path)
+```
+The method "concat_data_portions" from the module "merge_preprocessed_data_chunks" used to merge all tramsformed data chunks together.
+
+```python
+from data_layer.utils import *
+from data_layer.merge_preprocessed_data_chunks import *
+
+modality = "motility"
+files_path = "data/mastodon/transformed_data/save_files_path"
+data_save_csv_path = "data/mastodon/transformed_data/concatenated_data_chunks.pkl"
+
+concat_data_portions(files_path, data_save_csv_path)
+```
 
 
->   a. Determining labels for training: ERKi-treated cells were labeled as "differentiated" in a specific time segment before the first fusion event was observed, while DMSO-treated cells were labeled as "undifferentiated".
->   b. Partitioning single-cell trajectories to temporal segments: Trajectories of DMSO- and ERKi-treated cells were divided into overlapping temporal segments of equal lengths.
->   c. Extracting motility and actin features: Single-cell motility and actin intensity time series were extracted from each temporal segment.
->   d. Extracting hundreds of single-cell time series features: Features encoding properties of the temporal segments were extracted using the "tsfresh" Python package.
->   e. Training classifiers: Random forest classifiers were trained to distinguish between differentiated and undifferentiated cells.
+
 
 ## Citation
 
