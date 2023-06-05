@@ -118,14 +118,19 @@ files_path = "data/mastodon/transformed_data/save_files_path"
 transformed_data_path = "data/mastodon/transformed_data/%s/data_file_num_%s" 
 concat_data_portions(files_path, data_save_csv_path)
 ```
+
 ### build state prediction model with the transformed tracks data
-To do so, you can use the module "build_model". For example:
+To do so, you can use the module "build_model". In the following example, we load transformed tracks from extracted from 4 different videos (2 datasetes of ERKi treated cells; 2 of DMSO treated cells). We then call the method "build_state_prediction_model" to build and evaluate the model. Look for the complete documentation in the relevant module. 
+In case that you have a RAM memory limitation, look for the method "build_state_prediction_model_light", which loads the train data and test data seperately. Another example can be found in the module's "main" function.
 ```python
 
 # parameters setting
 modality = "motility"
 con_train_n, diff_train_n, con_test_n, diff_test_n  = (1, 5, 2, 3)
 transformed_data_path = "data/mastodon/transformed_data/%s/data_file_num_%s" # a general path for transformed data
+save_data_dir_path = "data/save_model_dir"
+diff_window = params.diff_window # defined temporal segments
+con_window - params.con_window # defined temporal segments
 
 # load tsfresh transformed time series data
 diff_df_train = load_tsfresh_csv(transformed_data_path, modality, diff_train_num)
@@ -133,16 +138,21 @@ con_df_train = load_tsfresh_csv(transformed_data_path, modality, con_train_n)
 diff_df_test = load_tsfresh_csv(transformed_data_path, modality, diff_test_n)
 con_df_test = load_tsfresh_csv(transformed_data_path, modality, con_test_n)
 
-diff_df_train, con_df_train = get_data(modality, transformed_data_path, local_density, con_train_n, diff_train_n, None, None, feature_type, specific_feature_type, window_size)
+clf = build_state_prediction_model(save_data_dir_path, diff_df_train, con_df_train, diff_df_test, con_df_test, diff_window, con_window)
 
-build_state_prediction_model(save_data_dir_path, diff_df_train, con_df_train, diff_df_test, con_df_test, diff_window, con_window)
+# predict single cells differentiation trajectory for all tracked cells
+cols = list(clf.feature_names_in_)
+cols.extend(["Spot track ID", "Spot frame"])
+df_score_con = calc_state_trajectory(con_df_test[cols].dropna(axis=1), clf, n_frames=260)
+df_score_dif = calc_state_trajectory(diff_df_test[cols].dropna(axis=1), clf, n_frames=260)
 
-
-
-
-
+# plot average differentiation score over time
+plot_avg_score(df_score_con.drop("Spot track ID", axis=1), df_score_dif.drop("Spot track ID", axis=1), modality, save_dir_path)
 ```
 
+<p align="center">
+<img src="figures/Figure_2D.png" width=100%>
+</p>
 
 ## Citation
 
