@@ -107,7 +107,7 @@ tracks_df, _ = get_tracks(tracks_csv_path, tagged_only=True)
 prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality, target=target, n_tasks=n_tasks, job_id=task_id, win_size=win_size,
                                 segment_length=segment_length, save_data_dir_path=save_data_dir_path, save_data_path=save_data_path)
 ```
-The method "concat_data_portions" from the module "merge_preprocessed_data_chunks" used to merge all tramsformed data chunks together.
+The method "concat_data_portions" from the module "merge_preprocessed_data_chunks" can be used to merge all tramsformed data chunks together and save them into one file.
 
 ```python
 from data_layer.utils import *
@@ -119,8 +119,6 @@ data_save_csv_path = "data/mastodon/transformed_data/concatenated_data_chunks.pk
 
 concat_data_portions(files_path, data_save_csv_path)
 ```
-
-
 
 
 ## Citation
