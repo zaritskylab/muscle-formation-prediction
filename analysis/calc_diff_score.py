@@ -1,8 +1,7 @@
-# import consts
 import sys, os
 
-from model_layer import clean_redundant_columns
-from model_layer import calc_prob
+from model_layer.build_model import clean_redundant_columns
+from model_layer.build_model import calc_state_trajectory
 
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('..'))
@@ -11,7 +10,9 @@ sys.path.append(os.path.abspath('../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
-from configuration.params import impute_methodology, impute_func
+
+from configuration.consts import IMPUTE_METHOD, IMPUTE_FUNC
+import configuration.consts
 from data_layer.utils import *
 from warnings import simplefilter
 
@@ -55,8 +56,8 @@ if __name__ == '__main__':
                                     load_y_test=False, load_y_train=False)
 
         print(f"loading vid {s_run['name']}", flush=True)
-        tsfresh_file_name = f"merged_chunks_reg=MeanOpticalFlowReg_,local_den=False,win size={params.window_size}.pkl"
-        tsfresh_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{s_run['name']}/"
+        tsfresh_file_name = f"merged_chunks_reg=MeanOpticalFlowReg_,local_den=False,win size={consts.WIN_SIZE}.pkl"
+        tsfresh_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{IMPUTE_METHOD}_{IMPUTE_FUNC}/{s_run['name']}/"
         tsfresh_transform_path = tsfresh_dir_path + tsfresh_file_name
         df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
 
@@ -65,5 +66,5 @@ if __name__ == '__main__':
         cols_to_check = list(clf.feature_names_in_) + ["Spot track ID", "Spot frame"]
         df_s = df_s[cols_to_check]
         print(df_s.shape)
-        df_score = calc_prob(df_s, clf, n_frames=260)
+        df_score = calc_state_trajectory(df_s, clf, n_frames=260)
         pickle.dump(df_score, open(dir_path + f"/df_score_vid_num_{s_run['name']}.pkl", 'wb'))

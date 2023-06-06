@@ -6,6 +6,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 from data_layer.utils import *
+from configuration import consts
+
 
 
 def concat_files(data_files):
@@ -84,7 +86,7 @@ def concat_data_portions(files_location_path, saving_path):
 if __name__ == '__main__':
     modality = sys.argv[1]
     vid_info = consts.vid_info_dict[os.getenv('SLURM_ARRAY_TASK_ID')]
-    files_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{vid_info['name']}/"
-    data_save_csv_path = files_path + f"merged_chunks_reg={params.registration_method},local_den=False,win size={params.window_size}.pkl"
+    files_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/{vid_info['name']}/"
+    data_save_csv_path = files_path + f"merged_chunks_reg={consts.REG_METHOD},local_den=False,win size={consts.WIN_SIZE}.pkl"
 
     concat_data_portions(files_path, data_save_csv_path)

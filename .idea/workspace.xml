@@ -22,12 +22,24 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="added figures">
+    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="added figures, styled build_state_prediction_model method">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/calc_diff_score.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_diff_score.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/single_cell_tracking_fig-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/.ipynb_checkpoints/single_cell_tracking_fig-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/Thumbs.db" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/Thumbs.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/single_cell_tracking_fig.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/single_cell_tracking_fig.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configuration/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/consts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configuration/params.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/params.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configuration/params_tunning/run_build_models_on_tranformed_tracks.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/params_tunning/run_build_models_on_tranformed_tracks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configuration/params_tunning/run_merge_preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/params_tunning/run_merge_preprocess_data_chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configuration/params_tunning/run_preprocess_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/params_tunning/run_preprocess_data_chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_layer/data_preparation.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/data_preparation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_layer/features_calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/features_calculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_layer/imputer_strategy.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/imputer_strategy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_layer/merge_preprocessed_data_chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/merge_preprocessed_data_chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_layer/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model_layer/build_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_layer/build_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_layer/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_layer/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -500,21 +512,8 @@
       <workItem from="1685355112657" duration="12464000" />
       <workItem from="1685538263380" duration="7377000" />
       <workItem from="1685944297688" duration="12872000" />
-      <workItem from="1685958541612" duration="17756000" />
-    </task>
-    <task id="LOCAL-00003" summary="Added Coordination files">
-      <created>1617796529492</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1617796529492</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Added DataPrep files">
-      <created>1617796626959</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1617796626959</updated>
+      <workItem from="1685958541612" duration="18804000" />
+      <workItem from="1686025019150" duration="6757000" />
     </task>
     <task id="LOCAL-00005" summary="Added Oron's files">
       <created>1617796730930</created>
@@ -845,7 +844,21 @@
       <option name="project" value="LOCAL" />
       <updated>1685969292545</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="added figures, styled build_state_prediction_model method">
+      <created>1685978272484</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1685978272484</updated>
+    </task>
+    <task id="LOCAL-00053" summary="added figures, styled build_state_prediction_model method">
+      <created>1685978326864</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1685978326864</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -881,7 +894,8 @@
     <MESSAGE value="package reorganization" />
     <MESSAGE value="package reorganization, added figures, added documentation" />
     <MESSAGE value="added figures" />
-    <option name="LAST_COMMIT_MESSAGE" value="added figures" />
+    <MESSAGE value="added figures, styled build_state_prediction_model method" />
+    <option name="LAST_COMMIT_MESSAGE" value="added figures, styled build_state_prediction_model method" />
   </component>
   <component name="WindowStateProjectService">
     <state x="393" y="181" key="#Deployment" timestamp="1683609937968">
@@ -908,20 +922,20 @@
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="2261" y="169" key="SettingsEditor/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685949978657" />
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1685969298559">
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1685978328075">
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685969298559" />
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685978328075" />
     <state x="432" y="221" key="Vcs.Push.Dialog.v2/0.0.1680.1002@0.0.1680.1002" timestamp="1684906594358" />
     <state x="710" y="393" key="publish.login" timestamp="1683740580290">
       <screen x="0" y="0" width="1680" height="1002" />
     </state>
     <state x="710" y="393" key="publish.login/0.0.1680.1002@0.0.1680.1002" timestamp="1683740580290" />
-    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup" timestamp="1685974061252">
+    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup" timestamp="1686029427622">
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="383" y="144" width="672" height="455" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@0.0.1280.672" timestamp="1685852395790" />
-    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685974061252" />
+    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686029427622" />
     <state x="503" y="215" width="672" height="678" key="search.everywhere.popup/0.0.1680.1002@0.0.1680.1002" timestamp="1685523093303" />
   </component>
   <component name="XDebuggerManager">
@@ -949,7 +963,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/analysis/calc_single_cell_properties.py</url>
-          <line>305</line>
+          <line>306</line>
           <option name="timeStamp" value="1706" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

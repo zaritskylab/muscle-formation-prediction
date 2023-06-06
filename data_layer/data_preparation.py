@@ -7,7 +7,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from configuration.params import impute_methodology, impute_func, registration_method
+from configuration.consts import IMPUTE_METHOD, IMPUTE_FUNC, REG_METHOD
 from data_layer.utils import *
 from data_preprocessor import data_preprocessor_factory
 import pandas as pd
@@ -101,22 +101,22 @@ if __name__ == '__main__':
 
     task_id = int(os.getenv('SLURM_ARRAY_TASK_ID')[1:])
 
-    save_data_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{impute_methodology}_{impute_func}/{vid_info['name']}"
+    save_data_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{IMPUTE_METHOD}_{IMPUTE_FUNC}/{vid_info['name']}"
     os.makedirs(save_data_dir_path, exist_ok=True)
 
     vid_path = vid_info["actin_path"] if modality == "actin_intensity" else vid_info["nuc_path"]
 
     # set paths for saving transformed data
     save_data_path = save_data_dir_path + \
-                     f"/{vid_info['name']}_reg={registration_method},local_den=False" + \
-                     (f"win size {params.window_size}" if modality != "motility" else "")
+                     f"/{vid_info['name']}_reg={REG_METHOD},local_den=False" + \
+                     (f"win size {consts.WIN_SIZE}" if modality != "motility" else "")
 
     print("\n===== load data =====")
-    tracks_csv_path = consts.data_csv_path % (registration_method, vid_info['name'])
+    tracks_csv_path = consts.data_csv_path % (REG_METHOD, vid_info['name'])
     tracks_df, _ = get_tracks(tracks_csv_path, tagged_only=True)
 
     prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality,
                                     target=vid_info["target"],
-                                    n_tasks=n_tasks, job_id=task_id, win_size=params.window_size,
-                                    segment_length=params.tracks_len, save_data_dir_path=save_data_dir_path,
+                                    n_tasks=n_tasks, job_id=task_id, win_size=consts.WIN_SIZE,
+                                    segment_length=consts.SEGMENT_LEN, save_data_dir_path=save_data_dir_path,
                                     save_data_path=save_data_path)

@@ -1,7 +1,8 @@
 import sys, os
 from skimage import io
 import pymannkendall as mk
-from data_layer import LocalDensityFeaturesCalculator
+
+from data_layer.features_calculator import LocalDensityFeaturesCalculator
 
 ROLLING_VAL = 30
 sys.path.append('/sise/home/shakarch/muscle-formation-regeneration')
@@ -16,7 +17,7 @@ def add_spot_position_columns(scores_df, vid_name):
     :param vid_name: (Str) name of the data's video stage ("S1"/"S2"/"S3"/"S5"/"S6"/"S8")
     :return: (pd.DataFrame) scores with spot positions (x,y) for each timepoint.
     """
-    csv_path = consts.data_csv_path % (params.registration_method, vid_name)
+    csv_path = consts.data_csv_path % (consts.REG_METHOD, vid_name)
     tracks_df, _ = get_tracks(csv_path, manual_tagged_list=False)
     tracks_df = tracks_df.drop_duplicates(subset=["Spot track ID", "Spot frame"])
     tracks_df_cols = ["Spot track ID", "Spot frame", "Spot position X", "Spot position Y"]
@@ -51,7 +52,7 @@ def add_actin_intensity_mean(scores_df, actin_vid_path):
     """
 
     def calc_mean_actin(track, actin_vid):
-        mean_int_lst = [get_centered_image(i, track, actin_vid, params.window_size).mean() for i in range(len(track))]
+        mean_int_lst = [get_centered_image(i, track, actin_vid, consts.WIN_SIZE).mean() for i in range(len(track))]
         return mean_int_lst
 
     def map_mean_actin(x, means):
@@ -340,6 +341,7 @@ def get_diff_start_time(scores_df, modality, low_thresh, high_thresh):
 
     return scores_df
 
+
 def get_mannkendall(scores_df, modality):
     def calc_mannkendall(track, modality):
         try:
@@ -364,9 +366,11 @@ def get_property(scores_df, feature_name, modality, func, func_args):
         return lst[x.iloc[0]]
 
     lst = scores_df.groupby(['Spot track ID']).apply(lambda x: func(x, *func_args))
-    scores_df[f"{feature_name}_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(lambda x: map_value(x, lst))
+    scores_df[f"{feature_name}_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
+        lambda x: map_value(x, lst))
 
     return scores_df
+
 
 if __name__ == '__main__':
     print("single_cell_properties_calc")
@@ -375,9 +379,9 @@ if __name__ == '__main__':
 
     s_run = consts.vid_info_dict[sys.argv[1]]
 
-    coord_df_path = f"Coordination/coordination_outputs/coordination_dfs/manual_tracking/ring_size_30/coord_mastodon_S{s_run['name'][1]} reg {params.registration_method}_n_dist={30}"  # .pkl
+    coord_df_path = f"Coordination/coordination_outputs/coordination_dfs/manual_tracking/ring_size_30/coord_mastodon_S{s_run['name'][1]} reg {consts.REG_METHOD}_n_dist={30}"  # .pkl
 
-    csv_path = consts.data_csv_path % (params.registration_method, s_run['name'])
+    csv_path = consts.data_csv_path % (consts.REG_METHOD, s_run['name'])
 
     for con_train_n, diff_train_n in [(1, 5), (2, 3)]:
         print(s_run, flush=True)

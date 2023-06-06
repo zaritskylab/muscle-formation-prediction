@@ -5,9 +5,10 @@ sys.path.append(os.path.abspath('../..'))
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
-from data_layer.data_preprocessing import concat_data_portions
-import configuration.params as params
-import configuration.consts as consts
+from data_layer.merge_preprocessed_data_chunks import concat_data_portions
+
+
+from configuration import consts, params
 
 
 
@@ -17,14 +18,17 @@ if __name__ == '__main__':
     # get arguments from sbatch
     modality = sys.argv[1]
 
-    s_run = consts.vid_info_dict[os.getenv('SLURM_ARRAY_TASK_ID')]
+    vid_info = consts.vid_info_dict[os.getenv('SLURM_ARRAY_TASK_ID')]
 
     feature_type = sys.argv[2]
 
     # if this is the original model - not sensitive analysis
     if feature_type == "original":
         feature_specific = 'original'
-        concat_data_portions(params.window_size, s_run, modality, feature_specific, feature_type)
+
+        files_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/{vid_info['name']}/feature_type_{feature_type}_{feature_specific}"
+        data_save_csv_path = files_path + f"merged_chunks_reg={consts.REG_METHOD},local_den=False,win size={consts.WIN_SIZE}.pkl"
+        concat_data_portions(files_path, data_save_csv_path)
 
     # build model by sensitive analysis on temporal_segment feature
     elif feature_type == "temporal_segment_arr":
@@ -41,7 +45,9 @@ if __name__ == '__main__':
 
             feature_specific = temporal_segment
 
-            concat_data_portions(params.window_size, s_run, modality, feature_specific, feature_type)
+            files_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/{vid_info['name']}/feature_type_{feature_type}_{feature_specific}"
+            data_save_csv_path = files_path + f"merged_chunks_reg={consts.REG_METHOD},local_den=False,win size={consts.WIN_SIZE}.pkl"
+            concat_data_portions(files_path, data_save_csv_path)
 
     # build model by sensitive analysis on diff_win feature
     elif feature_type == "diff_window_arr":
@@ -49,14 +55,19 @@ if __name__ == '__main__':
         for diff_win in params.feature_calc_types[feature_type]:
             feature_specific = diff_win
 
-            concat_data_portions(params.window_size, s_run, modality, feature_specific, feature_type)
+            files_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/{vid_info['name']}/feature_type_{feature_type}_{feature_specific}"
+            data_save_csv_path = files_path + f"merged_chunks_reg={consts.REG_METHOD},local_den=False,win size={consts.WIN_SIZE}.pkl"
+            concat_data_portions(files_path, data_save_csv_path)
 
     # build model by sensitive analysis on crop window size feature
     elif feature_type == "window_size_arr":
 
         for win_size in params.feature_calc_types[feature_type]:
             feature_specific = win_size
-            concat_data_portions(params.window_size, s_run, modality, feature_specific, feature_type)
+
+            files_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/{vid_info['name']}/feature_type_{feature_type}_{feature_specific}"
+            data_save_csv_path = files_path + f"merged_chunks_reg={consts.REG_METHOD},local_den=False,win size={consts.WIN_SIZE}.pkl"
+            concat_data_portions(files_path, data_save_csv_path)
 
 
 
