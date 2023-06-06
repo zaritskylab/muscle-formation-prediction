@@ -2,6 +2,8 @@ from collections import Counter
 import os
 import sys
 
+from configuration import params
+
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('..'))
 
@@ -10,17 +12,17 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from configuration.params import impute_methodology, impute_func, registration_method
+from configuration.consts import IMPUTE_METHOD, IMPUTE_FUNC, REG_METHOD
 from model_layer.utils import *
 from data_layer.utils import *
 from analysis.utils import *
 from data_layer import utils as load_save_utils
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 from tsfresh import select_features
 import datetime
+import configuration.params
 
 
 def clean_redundant_columns(df):
@@ -42,7 +44,8 @@ def load_tsfresh_csv(transfromed_pkl_path, modality, vid_num):
     return df
 
 
-def get_to_run(transformed_data_path, modality, con_train_num=None, con_test_num=None, diff_train_num=None, diff_test_num=None):
+def get_to_run(transformed_data_path, modality, con_train_num=None, con_test_num=None, diff_train_num=None,
+               diff_test_num=None):
     diff_df_train, con_df_train, con_df_test, diff_df_test = None, None, None, None
 
     if diff_train_num:
@@ -130,7 +133,8 @@ def plot_avg_score(df_con, df_diff, type_modality, path=""):
 
 def get_to_run_both_modalities(path, modality1, modality2, con_train_n=None, diff_train_n=None,
                                con_test_n=None, diff_test_n=None):
-    diff_df_train_mot, con_df_train_mot, con_df_test_mot, diff_df_test_mot = get_to_run(transformed_data_path=path, modality=modality1,
+    diff_df_train_mot, con_df_train_mot, con_df_test_mot, diff_df_test_mot = get_to_run(transformed_data_path=path,
+                                                                                        modality=modality1,
                                                                                         con_train_num=con_train_n,
                                                                                         diff_train_num=diff_train_n,
                                                                                         con_test_num=con_test_n,
@@ -155,16 +159,16 @@ def get_to_run_both_modalities(path, modality1, modality2, con_train_n=None, dif
     return diff_df, con_df
 
 
-def get_data(modality, path, local_density, con_train_n, diff_train_n, con_test_n, diff_test_n):
+def get_data(modality, path, con_train_n, diff_train_n, con_test_n, diff_test_n):
     if len(modality.split("-")) == 2:
         first_modality, second_modality = modality.split("-")[0], modality.split("-")[1]
-        diff_df, con_df = get_to_run_both_modalities(path, local_density, first_modality,
-                                                     second_modality,
-                                                     diff_train_n=diff_train_n,
-                                                     con_test_n=con_test_n,
-                                                     diff_test_n=diff_test_n)
+
+        diff_df, con_df = get_to_run_both_modalities(path, first_modality, second_modality,
+                                                     con_train_n=con_train_n, diff_train_n=diff_train_n,
+                                                     con_test_n=con_test_n, diff_test_n=diff_test_n)
     else:
-        diff_df_train, con_df_train, con_df_test, diff_df_test = get_to_run(transformed_data_path=path, modality=modality,
+        diff_df_train, con_df_train, con_df_test, diff_df_test = get_to_run(transformed_data_path=path,
+                                                                            modality=modality,
                                                                             con_train_num=con_train_n,
                                                                             diff_train_num=diff_train_n,
                                                                             con_test_num=con_test_n,
@@ -204,9 +208,9 @@ def build_state_prediction_model(save_data_dir_path, diff_df_train, con_df_train
     return clf
 
 
-def build_state_prediction_model_light(save_dir_path, transformed_data_path, local_density, con_window, diff_window, modality):
-    diff_df_train, con_df_train = get_data(modality, transformed_data_path, local_density, con_train_n, diff_train_n,
-                                           None, None)
+def build_state_prediction_model_light(save_dir_path, transformed_data_path, con_window, diff_window, modality):
+    diff_df_train, con_df_train = get_data(modality, transformed_data_path, con_train_n, diff_train_n, None, None)
+
     print("loaded data, now start prep data", flush=True)
     X_train, y_train = prep_data(diff_df=diff_df_train, con_df=con_df_train, diff_t_window=diff_window,
                                  con_t_windows=con_window)
@@ -222,7 +226,7 @@ def build_state_prediction_model_light(save_dir_path, transformed_data_path, loc
     clf = train_model(X_train, y_train, modality)
     load_save_utils.save_data(save_dir_path, X_train=X_train)
 
-    diff_df_test, con_df_test = get_data(modality, transformed_data_path, local_density, None, None, con_test_n, diff_test_n)
+    diff_df_test, con_df_test = get_data(modality, transformed_data_path, None, None, con_test_n, diff_test_n)
 
     X_test, y_test = prep_data(diff_df=diff_df_test, con_df=con_df_test, diff_t_window=diff_window,
                                con_t_windows=con_window)
@@ -242,15 +246,15 @@ if __name__ == '__main__':
 
         today = datetime.datetime.now().strftime('%d-%m-%Y')
         dir_path = f"{consts.storage_path}/{today}-{modality} local dens-False, s{con_train_n}, s{diff_train_n} train" \
-                   + (f" win size {params.window_size}" if modality != "motility" else "")
+                   + (f" win size {consts.WIN_SIZE}" if modality != "motility" else "")
 
-        second_dir = f"track len {params.tracks_len}, impute_func-{impute_methodology}_{impute_func} reg {registration_method}"
+        second_dir = f"track len {consts.SEGMENT_LEN}, impute_func-{IMPUTE_METHOD}_{IMPUTE_FUNC} reg {REG_METHOD}"
         os.makedirs(dir_path, exist_ok=True)
         os.makedirs(os.path.join(dir_path, second_dir), exist_ok=True)
         save_dir_path = dir_path + "/" + second_dir + "/"
 
-        clf = build_state_prediction_model_light(save_dir_path=save_dir_path, transformed_data_path=consts.transformed_data_path,
-                                                 local_density=params.local_density,
+        clf = build_state_prediction_model_light(save_dir_path=save_dir_path,
+                                                 transformed_data_path=consts.transformed_data_path,
                                                  con_window=params.con_window,
                                                  diff_window=params.diff_window, modality=modality)
 
@@ -258,8 +262,8 @@ if __name__ == '__main__':
         cols.extend(["Spot track ID", "Spot frame"])
 
         print("calc avg prob")
-        diff_df_test, con_df_test = get_data(modality, consts.transformed_data_path, False, None, None,
-                                             con_test_n, diff_test_n)
+        diff_df_test, con_df_test = get_data(modality, consts.transformed_data_path, None, None, con_test_n,
+                                             diff_test_n)
 
         df_score_con = calc_state_trajectory(con_df_test[cols].dropna(axis=1), clf, n_frames=260)
         df_score_dif = calc_state_trajectory(diff_df_test[cols].dropna(axis=1), clf, n_frames=260)
@@ -269,4 +273,3 @@ if __name__ == '__main__':
 
         plot_avg_score(df_score_con.drop("Spot track ID", axis=1),
                        df_score_dif.drop("Spot track ID", axis=1), modality, save_dir_path)
-

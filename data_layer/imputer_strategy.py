@@ -8,7 +8,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from model_layer.utils import *
-from configuration import params
+from configuration import consts
 
 
 class ImputerStrategy(object):
@@ -84,7 +84,7 @@ class ImputerTimeSlots(ImputerStrategy, ABC):
         :return: (pd.DataFrame) imputed single cells trajectories.
         """
         imputed = pd.DataFrame()
-        df_time_window_split_list = split_data_to_time_portions(data, params.tracks_len)
+        df_time_window_split_list = split_data_to_time_portions(data, consts.SEGMENT_LEN)
         for t_df in df_time_window_split_list:
             imputed = imputed.append(self.apply_impute(t_df), ignore_index=True)
 

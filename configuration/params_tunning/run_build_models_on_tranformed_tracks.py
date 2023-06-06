@@ -1,60 +1,79 @@
 import os, sys
+from datetime import datetime
 
 sys.path.append('/sise/home/reutme/muscle-formation-regeneration')
 sys.path.append(os.path.abspath('../../TimeSeriesAnalysis'))
 
 from data_layer.utils import *
-from model_layer import build_model_trans_tracks
+from model_layer.build_model import build_state_prediction_model_light
+from configuration import consts, params
 
 if __name__ == '__main__':
     modality = sys.argv[1]
     feature_type = sys.argv[2]
 
-    # build model by original features - not sensitive analysis
-    if feature_type is None:
-        build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density,
-                                 window_size=params.window_size,
-                                 tracks_len=params.tracks_len, con_window=params.con_window,
-                                 diff_window=params.diff_window, modality=modality)
 
-    # build model by sensitive analysis on temporal_segment feature
-    elif feature_type == "temporal_segment_arr":
-        # array of arrays that each array is one of temporal segment array, differentiation_window array and control window array
-        list_of_tempural_diff_win_con_win = params.feature_calc_types[feature_type]
+    for con_train_n, diff_train_n, con_test_n, diff_test_n in [(1, 5, 2, 3), (2, 3, 1, 5), ]:
+        print(f"\n train: con_n-{con_train_n},dif_n-{diff_train_n}; test: con_n-{con_test_n},dif_n-{diff_test_n}")
 
-        temporal_segment_array = list_of_tempural_diff_win_con_win[0][0]
-        diff_wind_array = list_of_tempural_diff_win_con_win[0][1]
-        con_wind_array = list_of_tempural_diff_win_con_win[0][2]
+        today = datetime.datetime.now().strftime('%d-%m-%Y')
+        dir_path = f"{consts.storage_path}/{today}-{modality} local dens-False, s{con_train_n}, s{diff_train_n} train" \
+                   + (f" win size {consts.WIN_SIZE}" if modality != "motility" else "")
 
-        for temporal_segment, diff_wind, con_wind in zip(temporal_segment_array, diff_wind_array, con_wind_array):
-            print(f"start_merge with feature_type: {feature_type}, temporal_segment: {temporal_segment}")
-            print(f"diff_wind: {diff_wind}")
-            print(f"con_wind: {con_wind}")
+        second_dir = f"track len {consts.SEGMENT_LEN}, impute_func-{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC} reg {consts.REG_METHOD}"
+        os.makedirs(dir_path, exist_ok=True)
+        os.makedirs(os.path.join(dir_path, second_dir), exist_ok=True)
+        save_dir_path = dir_path + "/" + second_dir + "/"
 
-            feature_specific = temporal_segment
+        # build model by original features - not sensitive analysis
+        if feature_type is None:
+            build_state_prediction_model_light(save_dir_path=save_dir_path,
+                                                con_window=params.con_window,
+                                               diff_window=params.diff_window, modality=modality,
+                                               transformed_data_path=consts.transformed_data_path)
 
-            build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density,
-                                     window_size=params.window_size,
-                                     tracks_len=temporal_segment, con_window=con_wind,
-                                     diff_window=diff_wind, feature_type=feature_type,
-                                     specific_feature_type=feature_specific, modality=modality)
 
-    # build model by sensitive analysis on diff_win feature
-    elif feature_type == "diff_window_arr":
-        for diff_win in params.feature_calc_types[feature_type]:
-            feature_specific = diff_win
+        # build model by sensitive analysis on temporal_segment feature
+        elif feature_type == "temporal_segment_arr":
+            # array of arrays that each array is one of temporal segment array,
+            # differentiation_window array and control window array
+            list_of_tempural_diff_win_con_win = params.feature_calc_types[feature_type]
 
-            build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density,
-                                     window_size=params.window_size,
-                                     tracks_len=params.tracks_len, con_window=params.con_window,
-                                     diff_window=diff_win, feature_type=feature_type,
-                                     specific_feature_type=feature_specific, modality=modality)
+            temporal_segment_array = list_of_tempural_diff_win_con_win[0][0]
+            diff_wind_array = list_of_tempural_diff_win_con_win[0][1]
+            con_wind_array = list_of_tempural_diff_win_con_win[0][2]
 
-    # build model by sensitive analysis on crop window size feature
-    elif feature_type == "window_size_arr":
-        for win_size in params.feature_calc_types[feature_type]:
-            build_model_trans_tracks(path=consts.storage_path, local_density=params.local_density,
-                                     window_size=params.window_size,
-                                     tracks_len=params.tracks_len, con_window=params.con_window,
-                                     diff_window=params.diff_window, feature_type=feature_type,
-                                     specific_feature_type=win_size, modality=modality)
+            for temporal_segment, diff_wind, con_wind in zip(temporal_segment_array, diff_wind_array, con_wind_array):
+                print(f"start_merge with feature_type: {feature_type}, temporal_segment: {temporal_segment}")
+                print(f"diff_wind: {diff_wind}")
+                print(f"con_wind: {con_wind}")
+
+                feature_specific = temporal_segment
+
+                build_state_prediction_model_light(save_dir_path=save_dir_path,
+                                                   con_window=params.con_window,
+                                                   diff_window=params.diff_window, modality=modality,
+                                                   transformed_data_path=consts.transformed_data_path)
+
+        # build model by sensitive analysis on diff_win feature
+        elif feature_type == "diff_window_arr":
+            for diff_win in params.feature_calc_types[feature_type]:
+                feature_specific = diff_win
+                transformed_data_path = consts.storage_path + f"data/mastodon/ts_transformed/%s/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/S%s/feature_type_{feature_type}_{feature_specific}/merged_chunks_reg={consts.REG_METHOD},local_den=False,win size={consts.WIN_SIZE}.pkl"
+
+                build_state_prediction_model_light(save_dir_path=save_dir_path,
+                                                   con_window=params.con_window,
+                                                   diff_window=params.diff_window, modality=modality,
+                                                   transformed_data_path=consts.transformed_data_path)
+
+        # build model by sensitive analysis on crop window size feature
+        elif feature_type == "window_size_arr":
+            for win_size in params.feature_calc_types[feature_type]:
+                feature_specific = win_size
+
+                transformed_data_path = consts.storage_path + f"data/mastodon/ts_transformed/%s/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/S%s/feature_type_{feature_type}_{feature_specific}/merged_chunks_reg={consts.REG_METHOD},local_den=False,win size={consts.WIN_SIZE}.pkl"
+
+                build_state_prediction_model_light(save_dir_path=save_dir_path,
+                                                   con_window=params.con_window,
+                                                   diff_window=params.diff_window, modality=modality,
+                                                   transformed_data_path=consts.transformed_data_path)

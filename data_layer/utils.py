@@ -15,7 +15,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from configuration import consts, params
+from configuration import consts
 
 
 def convert_score_df(score_df, modality):
@@ -187,8 +187,8 @@ def load_tsfresh_transformed_df(modality, vid_num, cols=None):
     modalities = ["motility", "actin_intensity"] if modality == "combined" else [modality]
     df = pd.DataFrame(columns=["Spot track ID", "Spot frame"])
     for modal in modalities:
-        tsfresh_transform_path = consts.storage_path + f"data/mastodon/ts_transformed/{modal}/{params.impute_methodology}_{params.impute_func}/S{vid_num}/" \
-                                                       f"merged_chunks_reg={params.registration_method},local_den=False,win size={params.window_size}.pkl"
+        tsfresh_transform_path = consts.storage_path + f"data/mastodon/ts_transformed/{modal}/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/S{vid_num}/" \
+                                                       f"merged_chunks_reg={consts.REG_METHOD},local_den=False,win size={consts.WIN_SIZE}.pkl"
         df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
         if cols is not None:
             df_s = df_s[set(cols).intersection(set(df_s.columns))]
@@ -231,7 +231,7 @@ def get_scores_df_with_fusion():
     # load & merge fusion timing data with spot positions data
     fusion_time_df = load_fusion_data(
         path=consts.storage_path + r"data/mastodon/no_reg_S3 all detections.csv")
-    tagged_tracks_s3, _ = get_tracks(consts.data_csv_path % (params.registration_method, "S3"),
+    tagged_tracks_s3, _ = get_tracks(consts.data_csv_path % (consts.REG_METHOD, "S3"),
                                      tagged_only=True)
     fusion_spot_frames = fusion_time_df.merge(tagged_tracks_s3.drop(columns="manual"), on=["Spot track ID"], how="left")
 

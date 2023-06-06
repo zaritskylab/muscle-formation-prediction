@@ -58,7 +58,7 @@ class FeaturesCalculatorStrategy(object):
 
         return x, y, spot_frame
 
-    def calc_features(self, data, temporal_seg_size=30, window_size=16, vid_path=None):
+    def calc_features(self, data, temporal_seg_size=30, window_size=16, vid_path=None, saving_path=""):
         """
         Calculates single cell trajectories of needed measurements (features) for all trajectories, and saves it to a designated
         directory. Features are calculated using the subclass function get_single_cell_measures, ibherited by each
@@ -71,10 +71,10 @@ class FeaturesCalculatorStrategy(object):
 
         # check if a features dataframe already exist
         vid_num = os.path.basename(vid_path)[1]
-        features_df_path = consts.FEATURES_DIR_PATH + f"S{vid_num}_{self.name}"
-        if os.path.exists(features_df_path):
+
+        if os.path.exists(saving_path):
             print("data exists, returning an already built features dataframe")
-            features_df = pd.read_csv(features_df_path, encoding="cp1252")
+            features_df = pd.read_csv(saving_path, encoding="cp1252")
             features_df = features_df[features_df["Spot track ID"].isin(data["Spot track ID"].unique())]
             print("data shape after calculate features: ", data.shape)
 
@@ -92,7 +92,7 @@ class FeaturesCalculatorStrategy(object):
 
             # save the new features df
             if not features_df.empty:
-                out_file = open(consts.storage_path + consts.FEATURES_DIR_PATH + "S{vid_num}_{self.name}", 'wb')
+                out_file = open(consts.storage_path + saving_path, 'wb')
                 features_df.to_csv(out_file, index=False, header=True, sep=',', encoding='utf-8')
                 out_file.close()
 
@@ -249,7 +249,7 @@ class LocalDensityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
         self.all_tracks_df_dict = {}
         for vid_name in ["S1", "S2", "S3", "S5", "S6", "S8"]:
             self.all_tracks_df_dict[vid_name], _ = get_tracks(
-                consts.data_csv_path % (params.registration_method, vid_name), manual_tagged_list=False)
+                consts.data_csv_path % (consts.REG_METHOD, vid_name), manual_tagged_list=False)
 
     def get_local_density(self, df, x, y, t, neighboring_distance):
         neighbors = df[(np.sqrt(
@@ -269,7 +269,7 @@ class LocalDensityFeaturesCalculator(FeaturesCalculatorStrategy, ABC):
         """
         all_tracks_df = self.all_tracks_df_dict.get(f"S{vid_num}")
         if all_tracks_df is None:
-            tracks_csv_path = consts.data_csv_path % (params.registration_method, f"S{vid_num}")
+            tracks_csv_path = consts.data_csv_path % (consts.REG_METHOD, f"S{vid_num}")
             all_tracks_df, _ = get_tracks(tracks_csv_path, manual_tagged_list=False)
         track = tagged_df[tagged_df["Spot track ID"] == track_id]
         spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
@@ -295,19 +295,21 @@ if __name__ == '__main__':
     features_df_save_path = consts.FEATURES_DIR_PATH + f"{s_run['name']}_{feature_creator.name}"
 
     print(f"\n== running: modality={modality}, \nvideo={s_run['name']}, "
-          f"\nnreg={params.registration_method}, "
-          f"\nimpute func= {params.impute_func}, \nfeature_calc={feature_creator.name} ==", flush=True)
+          f"\nnreg={consts.REG_METHOD}, "
+          f"\nimpute func= {consts.IMPUTE_FUNC}, \nfeature_calc={feature_creator.name} ==", flush=True)
 
     print("\n===== loading data =====", flush=True)
-    csv_path = consts.data_csv_path % (params.registration_method, s_run['name'])
+    csv_path = consts.data_csv_path % (consts.REG_METHOD, s_run['name'])
     df_all, _ = get_tracks(csv_path, manual_tagged_list=True)
     df_tagged = df_all[df_all["manual"] == 1]
     del df_all
 
     vid_path = s_run["actin_path"] if modality == "actin_intensity" else s_run["nuc_path"]
+    features_df_path = consts.FEATURES_DIR_PATH + f"{s_run['name']}_{feature_creator.name}"
     calculated_features = feature_creator.calc_features(df_tagged,
                                                         vid_path=vid_path,
-                                                        window_size=params.window_size)
+                                                        window_size=consts.WIN_SIZE,
+                                                        saving_path=features_df_path)
     print(calculated_features.shape)
 
     if not calculated_features.empty:

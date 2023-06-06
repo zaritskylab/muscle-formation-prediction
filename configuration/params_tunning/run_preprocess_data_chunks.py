@@ -9,6 +9,7 @@ sys.path.append(parent)
 
 from data_preparation import prepare_data_in_parallel_chunks
 from data_layer.utils import *
+from configuration import consts, params
 
 if __name__ == '__main__':
     print("running prepare_data")
@@ -23,15 +24,15 @@ if __name__ == '__main__':
     # feature type is the name of the feature that we change
     feature_type = sys.argv[4]
 
-    base_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{params.impute_methodology}_{params.impute_func}/{vid_info['name']} "
+    base_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/{vid_info['name']} "
     vid_path = vid_info["actin_path"] if modality == "actin_intensity" else vid_info["nuc_path"]
 
     # set paths for saving transformed data
-    save_data_path = f"/{vid_info['name']}_reg={params.registration_method},local_den=False" + \
-                     (f"win size {params.window_size}" if modality != "motility" else "")
+    save_data_path = f"/{vid_info['name']}_reg={consts.REG_METHOD},local_den=False" + \
+                     (f"win size {consts.WIN_SIZE}" if modality != "motility" else "")
 
     print("\n===== load data =====")
-    tracks_csv_path = consts.data_csv_path % (params.registration_method, vid_info['name'])
+    tracks_csv_path = consts.data_csv_path % (consts.REG_METHOD, vid_info['name'])
     tracks_df, _ = get_tracks(tracks_csv_path, tagged_only=True)
 
     # if this is the original model - not sensitivity analysis
@@ -42,8 +43,8 @@ if __name__ == '__main__':
         # build model by original feature
         prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality,
                                         target=vid_info["target"], n_tasks=n_tasks,
-                                        job_id=task_id, win_size=params.window_size,
-                                        segment_length=params.tracks_len,
+                                        job_id=task_id, win_size=consts.WIN_SIZE,
+                                        segment_length=consts.SEGMENT_LEN,
                                         save_data_dir_path=save_data_dir_path,
                                         save_data_path=save_data_dir_path + save_data_path)
 
@@ -54,8 +55,8 @@ if __name__ == '__main__':
             print(f"start preprocess_data with window size: {win_size}")
             prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality,
                                             target=vid_info["target"], n_tasks=n_tasks,
-                                            job_id=task_id, win_size=params.window_size,
-                                            segment_length=params.tracks_len,
+                                            job_id=task_id, win_size=consts.WIN_SIZE,
+                                            segment_length=consts.SEGMENT_LEN,
                                             save_data_dir_path=save_data_dir_path,
                                             save_data_path=save_data_dir_path + save_data_path)
             print(f"finish preprocess_data with window size: {win_size}")
@@ -77,8 +78,8 @@ if __name__ == '__main__':
             print(f"con_wind: {con_wind}")
             prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality,
                                             target=vid_info["target"], n_tasks=n_tasks,
-                                            job_id=task_id, win_size=params.window_size,
-                                            segment_length=params.tracks_len,
+                                            job_id=task_id, win_size=consts.WIN_SIZE,
+                                            segment_length=consts.SEGMENT_LEN,
                                             save_data_dir_path=save_data_dir_path,
                                             save_data_path=save_data_dir_path + save_data_path)
             print(f"finish preprocess_data with temporal segment size: {temporal_segment}")
@@ -89,7 +90,7 @@ if __name__ == '__main__':
             save_data_dir_path = base_dir_path + f"/{feature_type}/{diff_win}"
             prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality,
                                             target=vid_info["target"], n_tasks=n_tasks,
-                                            job_id=task_id, win_size=params.window_size,
-                                            segment_length=params.tracks_len,
+                                            job_id=task_id, win_size=consts.WIN_SIZE,
+                                            segment_length=consts.SEGMENT_LEN,
                                             save_data_dir_path=save_data_dir_path,
                                             save_data_path=save_data_dir_path + save_data_path)
