@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/Coordination" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/data_layer" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/model_layer" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/analysis/notebooks/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.7" jdkType="Python SDK" />
