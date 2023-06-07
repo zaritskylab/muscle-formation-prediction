@@ -22,31 +22,17 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="Added analysis notebooks, change variables, modules &amp; function names">
+    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="updated gitignore">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/Diff_visualization_sma_change_sma.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/Thumbs.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/Untitled.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/data inspection.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/explainability_shap.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/explainability_shap.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/figure_1_mean_actin_speed.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/figure_1_mean_actin_speed.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/figure_2.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/figure_2.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/figure_3.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/figure_3.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/figure_4.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/figure_4.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/fusion_correlations.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/fusion_correlations.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/model_actin_motility.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/myimage.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/new_single_cell_tracking_id=1.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/new_single_cell_tracking_id=217.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/plot_actin_speed.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/simple classifiers comaprison.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/simple classifiers comaprison.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/single_cell_tracking_id=1.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/sup_figure_1_speed_actin.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/sup_figure_1_speed_actin.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/sup_figure_2_single_cell_diff_change.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/sup_figure_2_single_cell_diff_change.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_layer/build_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_layer/build_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/auc_over_time_script.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/auc_over_time_script.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/calibration analysis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/calibration analysis.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/cellular_properties.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/cellular_properties.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/differentiation over time.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/differentiation over time.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/explainability_shap.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/explainability_shap.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/fusion_correlations.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/fusion_correlations.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/rf_hyperparams_tunning.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/rf_hyperparams_tunning.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/simple classifiers comaprison.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/simple classifiers comaprison.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/single_cell_tracking_fig.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/single_cell_tracking_fig.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,19 +98,19 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\analysis\notebooks\old notebooks" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\data_layer" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\data\videos" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff" />
+      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\analysis" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\sbatchs" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\sbatchs" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\Coordination" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\TimeSeriesAnalysis" />
       <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-regeneration\data\videos\BrightField_pixel_ratio_1" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\data_layer" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\data\videos" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\analysis" />
-      <recent name="C:\Users\Amit\PycharmProjects\muscle-formation-diff\TimeSeriesAnalysis\configuration" />
     </key>
   </component>
   <component name="RunManager" selected="Python.main">
@@ -520,21 +506,7 @@
       <workItem from="1685538263380" duration="7377000" />
       <workItem from="1685944297688" duration="12872000" />
       <workItem from="1685958541612" duration="18804000" />
-      <workItem from="1686025019150" duration="30414000" />
-    </task>
-    <task id="LOCAL-00006" summary="created a new cell croppe">
-      <created>1618998910354</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1618998910355</updated>
-    </task>
-    <task id="LOCAL-00007" summary="aspect ratio measurement (not working properly yet) was implemented.">
-      <created>1620039565313</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1620039565313</updated>
+      <workItem from="1686025019150" duration="30809000" />
     </task>
     <task id="LOCAL-00008" summary="aspect ratio- implemented a new measurement for a change in the morphological appereance of a single cell">
       <created>1621429795697</created>
@@ -865,7 +837,21 @@
       <option name="project" value="LOCAL" />
       <updated>1686037777021</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="added notebooks for: fig 5, fig S1, fig S3, fig S12">
+      <created>1686128545083</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1686128545083</updated>
+    </task>
+    <task id="LOCAL-00056" summary="updated gitignore">
+      <created>1686128718519</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1686128718519</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -903,7 +889,9 @@
     <MESSAGE value="added figures" />
     <MESSAGE value="added figures, styled build_state_prediction_model method" />
     <MESSAGE value="Added analysis notebooks, change variables, modules &amp; function names" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added analysis notebooks, change variables, modules &amp; function names" />
+    <MESSAGE value="added notebooks for: fig 5, fig S1, fig S3, fig S12" />
+    <MESSAGE value="updated gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated gitignore" />
   </component>
   <component name="WindowStateProjectService">
     <state x="393" y="181" key="#Deployment" timestamp="1683609937968">
@@ -930,10 +918,10 @@
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="2261" y="169" key="SettingsEditor/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685949978657" />
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1686037781685">
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1686128721695">
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686037781685" />
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686128721695" />
     <state x="432" y="221" key="Vcs.Push.Dialog.v2/0.0.1680.1002@0.0.1680.1002" timestamp="1684906594358" />
     <state x="710" y="393" key="publish.login" timestamp="1683740580290">
       <screen x="0" y="0" width="1680" height="1002" />
