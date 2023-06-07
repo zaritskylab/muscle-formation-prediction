@@ -12,29 +12,34 @@ from data_layer.utils import load_tsfresh_transformed_df
 from configuration import consts
 
 
-def plot_violin_distributions(data_to_plot, feature, modalities, plot_window=False):
-    print(f"number of cells in the analysis: {data_to_plot['Spot track ID'].nunique()}")
+def plot_violin_distributions(data, feature, modalities, plot_window=False, xlim=None):
+    print(f"number of cells in the analysis: {data['Spot track ID'].nunique()}")
     df = pd.DataFrame()
+    medians = []
     for modality in modalities:
-        col = my_string = f"{feature}_{modality}".rstrip('_')
-        p_value = normaltest(data_to_plot[col], nan_policy='omit')[1]
-        mean = round(data_to_plot[col].mean(), 3)
-        std = round(data_to_plot[col].std(), 3)
-        median = round(data_to_plot[col].median(), 3)
+        col = f"{feature}_{modality}".rstrip('_')
+        p_value = normaltest(data[col], nan_policy='omit')[1]
+        mean = round(data[col].mean(), 3)
+        std = round(data[col].std(), 3)
+        median = round(data[col].median(), 3)
+        medians.append(median)
         percentage_zero_above = round(
-            100 * (len(data_to_plot[data_to_plot[col] >= 0]) / len(data_to_plot)), 3)
+            100 * (len(data[data[col] > 0]) / len(data)), 3)
 
         print(
             f"{modality}: normality test p-val={p_value}, mean: {mean}, std: {std}, median: {median}, percentage >=0: {percentage_zero_above} %")
-        df = df.append(pd.DataFrame({feature: data_to_plot[col], "data": modality}),
+        df = df.append(pd.DataFrame({feature: data[col], "data": modality}),
                        ignore_index=True)
 
-    sns.catplot(data=df, x=feature, y="data", kind="violin", color=".9", inner=None)
-    swarmplot = sns.swarmplot(data=df, x=feature, y="data", size=3)
+    sns.catplot(data=df, x=feature, y="data", kind="violin", color=".9", inner="quartile")
+    sns.swarmplot(data=df, x=feature, y="data", size=3)
+
+    if xlim:
+        plt.xlim(xlim)
     if plot_window:
         plt.axvspan(6, 13, alpha=0.6, color='lightgray')
-        plt.axvline(6, color='gray', linestyle='dashed')
-        plt.axvline(13, color='gray', linestyle='dashed')
+        plt.axvline(6, color=".8", linestyle='dashed')
+        plt.axvline(13, color=".8", linestyle='dashed')
     plt.savefig(consts.storage_path + f"eps_figs/dist_{feature}_{str(modalities)}.eps", format="eps")
 
     plt.show()
@@ -112,8 +117,8 @@ def plot_avg_conf(conf_data, modality, path="", plot_std=True, time=(0, 24), xli
 def get_correlation_coefficients(data, time, x_prop, y_prop, rolling_w, corr_metric):
     data = data[(data["time"] >= time[0]) & (data["time"] <= time[1])]
     data = data.astype('float64')
-    corr = np.array(data.groupby('Spot track ID').apply(
-        lambda df: df[x_prop].rolling(rolling_w).mean().corr(df[y_prop].rolling(rolling_w).mean(), method=corr_metric)))
+    corr = data.groupby('Spot track ID').apply(lambda df: df[x_prop].rolling(rolling_w).mean().corr(df[y_prop].rolling(rolling_w).mean(), method=corr_metric))
+    corr = np.array(corr)
     return corr
 
 
@@ -152,7 +157,7 @@ def plot_diff_trajectories_single_cells(conf_data, modality, path=None, rolling_
         plot(df, modality, x_label)
 
 
-def evaluate_model(clf, x_test, y_test, modality, con_test_n, diff_test_n):
+def evaluate_model(clf, x_test, y_test, modality, con_test_n, diff_test_n, plot_auc_over_t=True):
     y_pred = clf.predict(x_test[clf.feature_names_in_])
     y_test = y_test["target"]
 
@@ -176,15 +181,18 @@ def evaluate_model(clf, x_test, y_test, modality, con_test_n, diff_test_n):
     print(f"AUC: {auc}")
 
     # plot ROC curve
-    plot_roc(clf=clf, X_test=x_test.drop(columns=['Spot track ID']), y_test=y_test, path="")
 
-    # calculate AUC over time
-    cols = list(clf.feature_names_in_) + ["Spot track ID", "Spot frame"]
-    df_con = load_tsfresh_transformed_df(modality, con_test_n, cols)
-    df_diff = load_tsfresh_transformed_df(modality, diff_test_n, cols)
-    aucs = auc_over_time(df_con[cols], df_diff[cols], clf)
-    plot_auc_over_time([(aucs, modality)],
-                       path=consts.storage_path + f"eps_figs/auc_over_time s{con_test_n}, s{diff_test_n} {modality}.eps")
+    plot_roc(clf=clf, X_test=x_test.drop(columns=['Spot track ID'], errors='ignore'), y_test=y_test, path="")
+    if plot_auc_over_t:
+        # calculate AUC over time
+        cols = list(clf.feature_names_in_) + ["Spot track ID", "Spot frame"]
+        df_con = load_tsfresh_transformed_df(modality, con_test_n, cols)
+        df_diff = load_tsfresh_transformed_df(modality, diff_test_n, cols)
+
+        aucs = auc_over_time(df_con[cols], df_diff[cols], clf)
+        plot_auc_over_time([(aucs, modality)],
+                           path=consts.storage_path + f"eps_figs/auc_over_time s{con_test_n}, s{diff_test_n} {modality}.eps")
+    return auc
 
 
 def get_mean_properties_in_range(track, feature, my_range):

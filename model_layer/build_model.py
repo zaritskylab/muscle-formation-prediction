@@ -2,8 +2,6 @@ from collections import Counter
 import os
 import sys
 
-from configuration import params
-
 sys.path.append('/sise/home/shakarch/muscle-formation-diff')
 sys.path.append(os.path.abspath('..'))
 
@@ -13,6 +11,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from configuration.consts import IMPUTE_METHOD, IMPUTE_FUNC, REG_METHOD
+from configuration import params
 from model_layer.utils import *
 from data_layer.utils import *
 from analysis.utils import *
@@ -22,7 +21,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tsfresh import select_features
 import datetime
-import configuration.params
 
 
 def clean_redundant_columns(df):

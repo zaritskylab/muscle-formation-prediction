@@ -228,24 +228,17 @@ def get_longest_sequences(df):
 
 
 def get_terminal_differentiation_time(track_df, modality, diff_threshold=0.78):
-    """
-    The terminal differentiation time of a single cell is an estimation based on the first time-point of the
-    longest sequence of differentiation scores that are higher than a threshold value. deafult is 0.78.
-    :param track_df: (pd.DataFrame) single cell's track dataframe, with differntiation scores by motility & actin intensity models
-    :param modality: (Str) "motility"/"intensity".
-    :param diff_threshold: (int) threshold value for determining terminal differentiation.
-    :return diff_time: (float) time of reaching terminal differentiation (hours)
-    """
     track_df = track_df[(track_df["time"] <= track_df["fusion_time"])]
+    track_df = track_df.sort_values("Spot frame", ascending=True)
     high_then_thresh = track_df[(track_df[f"score_{modality}"] >= diff_threshold)]
-    longest_sequence = get_longest_sequences(high_then_thresh)
+    high_then_thresh["Spot frame diff"] = high_then_thresh["Spot frame"].diff()
 
+    longest_sequence = get_longest_sequences(high_then_thresh)
     if longest_sequence is None:
         diff_time = np.nan
     else:
         diff_frame = np.floor(longest_sequence["Spot frame"].min())
         diff_time = diff_frame * 1 / 12
-
     return diff_time
 
 
