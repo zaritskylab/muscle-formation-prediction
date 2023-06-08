@@ -23,16 +23,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="updated gitignore">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/auc_over_time_script.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/auc_over_time_script.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/calibration analysis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/calibration analysis.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/cellular_properties.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/cellular_properties.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/differentiation over time.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/differentiation over time.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/explainability_shap.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/explainability_shap.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/fusion_correlations.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/fusion_correlations.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/rf_hyperparams_tunning.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/rf_hyperparams_tunning.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/simple classifiers comaprison.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/simple classifiers comaprison.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/single_cell_tracking_fig.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/old notebooks/single_cell_tracking_fig.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/analysis/notebooks/figure_s10.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/analysis/notebooks/figure_s7.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/calc_diff_score.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_diff_score.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/figure_1_mean_actin_speed.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/figure_1.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/figure_2.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/figure_2.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/figure_3.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/figure_3.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/notebooks/sup_figure_binary_clf.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/sup_figure_binary_clf.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configuration/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/consts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_layer/tsfresh_transformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/tsfresh_transformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_layer/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_layer/video_registrator.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/video_registrator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model_layer/build_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_layer/build_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model_layer/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_layer/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -506,14 +512,8 @@
       <workItem from="1685538263380" duration="7377000" />
       <workItem from="1685944297688" duration="12872000" />
       <workItem from="1685958541612" duration="18804000" />
-      <workItem from="1686025019150" duration="30809000" />
-    </task>
-    <task id="LOCAL-00008" summary="aspect ratio- implemented a new measurement for a change in the morphological appereance of a single cell">
-      <created>1621429795697</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1621429795697</updated>
+      <workItem from="1686025019150" duration="38374000" />
+      <workItem from="1686198552025" duration="12163000" />
     </task>
     <task id="LOCAL-00009" summary="time series classification- added validations to tsfresh's pipeline, such as tracks_length_analysis.py, and LeaveOneOutTraining.py">
       <created>1624436427608</created>
@@ -851,7 +851,14 @@
       <option name="project" value="LOCAL" />
       <updated>1686128718519</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="updated gitignore">
+      <created>1686128881250</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1686128881250</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -918,20 +925,20 @@
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="2261" y="169" key="SettingsEditor/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685949978657" />
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1686128721695">
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1686128882511">
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686128721695" />
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686128882511" />
     <state x="432" y="221" key="Vcs.Push.Dialog.v2/0.0.1680.1002@0.0.1680.1002" timestamp="1684906594358" />
     <state x="710" y="393" key="publish.login" timestamp="1683740580290">
       <screen x="0" y="0" width="1680" height="1002" />
     </state>
     <state x="710" y="393" key="publish.login/0.0.1680.1002@0.0.1680.1002" timestamp="1683740580290" />
-    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup" timestamp="1686126095894">
+    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup" timestamp="1686201317347">
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="383" y="144" width="672" height="455" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@0.0.1280.672" timestamp="1685852395790" />
-    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686126095894" />
+    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686201317347" />
     <state x="503" y="215" width="672" height="678" key="search.everywhere.popup/0.0.1680.1002@0.0.1680.1002" timestamp="1685523093303" />
   </component>
   <component name="XDebuggerManager">
@@ -959,7 +966,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/analysis/calc_single_cell_properties.py</url>
-          <line>299</line>
+          <line>372</line>
           <option name="timeStamp" value="1706" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

@@ -8,17 +8,28 @@ import seaborn as sns
 import pandas as pd
 
 from analysis.calc_auc_over_time import auc_over_time, plot_auc_over_time
-from data_layer.utils import load_tsfresh_transformed_df
+from data_layer.utils import load_tsfresh_transformed_df, convert_score_df
 from configuration import consts
 
 
-def plot_violin_distributions(data, feature, modalities, plot_window=False, xlim=None):
+def plot_violin_distributions(data, feature, modalities, plot_window=False, xlim=None, fig_path=None):
+    """
+    Plots violin distributions and swarmplot for the given data and feature.
+
+    :param data: (pd.DataFrame) The data to plot.
+    :param feature: (str) The name of the feature to plot.
+    :param modalities: (list) The list of modalities to include in the plot, fore example: ["motility", "intensity"]
+    :param plot_window: (bool) Whether to plot a window on the x-axis.
+    :param xlim: (tuple) The x-axis limits.
+    :param fig_path: (str) The path to save the figure (optional).
+    """
     print(f"number of cells in the analysis: {data['Spot track ID'].nunique()}")
     df = pd.DataFrame()
     medians = []
     for modality in modalities:
         col = f"{feature}_{modality}".rstrip('_')
-        p_value = normaltest(data[col], nan_policy='omit')[1]
+        p_value = normaltest(data[col], nan_policy='omit')[1] if data['Spot track ID'].nunique() >= 8 else None
+
         mean = round(data[col].mean(), 3)
         std = round(data[col].std(), 3)
         median = round(data[col].median(), 3)
@@ -40,12 +51,22 @@ def plot_violin_distributions(data, feature, modalities, plot_window=False, xlim
         plt.axvspan(6, 13, alpha=0.6, color='lightgray')
         plt.axvline(6, color=".8", linestyle='dashed')
         plt.axvline(13, color=".8", linestyle='dashed')
-    plt.savefig(consts.storage_path + f"eps_figs/dist_{feature}_{str(modalities)}.eps", format="eps")
+
+    fig_path = consts.storage_path + f"eps_figs/dist_{feature}_{str(modalities)}.eps" if fig_path is None else fig_path
+    plt.savefig(fig_path, format="eps")
 
     plt.show()
 
 
 def plot_roc(clf, X_test, y_test, path=None):
+    """
+    Plots the ROC curve for a classifier.
+
+    :param clf: The classifier model.
+    :param X_test: The test data features.
+    :param y_test: The test data labels.
+    :param path: (str) The path to save the figure (optional).
+    """
     # roc curve for models
     fpr1, tpr1, thresh1 = roc_curve(y_test, clf.predict_proba(X_test)[:, 1], pos_label=1)
 
@@ -75,11 +96,18 @@ def plot_roc(clf, X_test, y_test, path=None):
 def plot_avg_conf(conf_data, modality, path="", plot_std=True, time=(0, 24), xlim=(2.5, 24), ylim=(-0.1, 1.1),
                   axhline_val=0.5):
     """
-    :param conf_data: [(df_score_dif.drop("Spot track ID", axis=1), "ERK", "DarkOrange","Orange"),(df_score_con.drop("Spot track ID", axis=1), "Control", "blue", "blue")]
-    :param mot_int: modality name
-    :param path:
-    :param plot_std:
-    :return:
+    Plots the average differentiation score over time.
+
+    :param conf_data: (list) A list of tuples containing the dataframes, labels, average colors, and std colors. for
+    example: [(df_score_dif.drop("Spot track ID", axis=1), "ERK", "DarkOrange","Orange"),
+            (df_score_con.drop("Spot track ID", axis=1), "Control", "blue", "blue")]
+    :param modality: (str) The modality name. Can be "motility" or "intensity".
+    :param path: (str) The path to save the figure (optional).
+    :param plot_std: (bool) Whether to plot the standard deviation.
+    :param time: (tuple) The time range to plot (start, end).
+    :param xlim: (tuple) The x-axis limits.
+    :param ylim: (tuple) The y-axis limits.
+    :param axhline_val: (float) The value for the horizontal line.
     """
     plt.figure(figsize=(6, 4))
 
@@ -115,21 +143,43 @@ def plot_avg_conf(conf_data, modality, path="", plot_std=True, time=(0, 24), xli
 
 
 def get_correlation_coefficients(data, time, x_prop, y_prop, rolling_w, corr_metric):
+    """
+        Calculates the correlation coefficients between two properties over a specified time range.
+
+        :param data: (pd.DataFrame) The data containing the properties.
+        :param time: (tuple) The time range to consider (start, end).
+        :param x_prop: (str) The name of the first property.
+        :param y_prop: (str) The name of the second property.
+        :param rolling_w: (int) The rolling window size for calculating the correlation.
+        :param corr_metric: (str) The correlation metric to use.
+        :return: (np.array) The correlation coefficients.
+        """
     data = data[(data["time"] >= time[0]) & (data["time"] <= time[1])]
     data = data.astype('float64')
-    corr = data.groupby('Spot track ID').apply(lambda df: df[x_prop].rolling(rolling_w).mean().corr(df[y_prop].rolling(rolling_w).mean(), method=corr_metric))
+    corr = data.groupby('Spot track ID').apply(
+        lambda df: df[x_prop].rolling(rolling_w).mean().corr(df[y_prop].rolling(rolling_w).mean(), method=corr_metric))
     corr = np.array(corr)
     return corr
 
 
 def plot_diff_trajectories_single_cells(conf_data, modality, path=None, rolling_w=1, x_label="time"):
+    """
+    Plots the differentiation score trajectories for individual cells.
+
+    :param conf_data: (list) A list of tuples containing the dataframes and labels.
+    :param modality: (str) The modality name.
+    :param path: (str) The path to save the figures (optional).
+    :param rolling_w: (int) The rolling window size for smoothing the trajectories.
+    :param x_label: (str) The label for the x-axis.
+    """
+
     def plot(df, modality, x_label):
         for track_id, track in df.groupby("Spot track ID"):
             track = track[(track["Spot frame"] <= track["fusion_frame"])].sort_values("time")
             track[f"score_{modality}"] = track[f"score_{modality}"].rolling(rolling_w).mean()
             monotonicity = \
-            get_correlation_coefficients(track, (6, 13), f"score_{modality}", "time", rolling_w=rolling_w,
-                                         corr_metric="spearman")[0]
+                get_correlation_coefficients(track, (6, 13), f"score_{modality}", "time", rolling_w=rolling_w,
+                                             corr_metric="spearman")[0]
 
             plt.figure(figsize=(6, 3))
             cmap = mpl.cm.get_cmap('RdYlGn_r')
@@ -158,6 +208,19 @@ def plot_diff_trajectories_single_cells(conf_data, modality, path=None, rolling_
 
 
 def evaluate_model(clf, x_test, y_test, modality, con_test_n, diff_test_n, plot_auc_over_t=True):
+    """
+    Calculates the evaluation metrics and AUC score over time for a classifier model.
+
+    :param clf: (object) The classifier model used for prediction.
+    :param x_test: (pd.DataFrame) The feature matrix for testing.
+    :param y_test: (pd.DataFrame) The target variable for testing.
+    :param modality: (str) Modality for which model is evaluated, Choose from "motility" or "intensity".
+    :param con_test_n: (int) The number of control test videos.
+    :param diff_test_n: (int) The number of differentiation test videos.
+    :param plot_auc_over_t: (bool, optional) Whether to plot the AUC over time. Default is True.
+
+    :return: (float) The AUC (Area Under the Curve) score.
+    """
     y_pred = clf.predict(x_test[clf.feature_names_in_])
     y_test = y_test["target"]
 
@@ -196,6 +259,14 @@ def evaluate_model(clf, x_test, y_test, modality, con_test_n, diff_test_n, plot_
 
 
 def get_mean_properties_in_range(track, feature, my_range):
+    """
+        Calculates the mean values of selected properties within a specified range for a given track.
+
+        :param track: (pd.DataFrame) The track data.
+        :param feature: (str) The feature/column to calculate mean value for.
+        :param my_range: (tuple) The range of values to consider (start, end).
+        :return: (pd.DataFrame) Mean values of selected properties within the specified range.
+        """
     track = track[(track[feature] >= my_range[0]) & (track[feature] <= my_range[1])]
     track = track[[f"score_motility", "score_intensity", "speed", "mean", "persistence", "local density", "time"]]
     mean_values_df = pd.DataFrame(track.mean()).T
@@ -204,6 +275,14 @@ def get_mean_properties_in_range(track, feature, my_range):
 
 
 def plot_props_by_range(track, feature_name, ranges):
+    """
+        Plots the mean values of selected properties within specified ranges for a given track.
+
+        :param track: (pd.DataFrame) The track data.
+        :param feature_name: (str) The name of the feature/column to calculate mean value for.
+        :param ranges: (list) List of ranges to consider for plotting (each range as a tuple).
+        :return: None
+    """
     track = track[track["Spot frame"] <= track["fusion_frame"]]
 
     df = pd.DataFrame()
@@ -218,4 +297,43 @@ def plot_props_by_range(track, feature_name, ranges):
         plt.legend(loc='lower right')
         ax.set_yticks((round(df[col].min()), round(df[col].max())))
 
+    plt.show()
+
+
+def plot_violin_spearman_corr(data_list, modalities, color, corr_metric, ylim=(-1.5, 1.5), time=(6, 13), fig_name=None):
+    """
+        Plots violin plots showing the distribution of correlation coefficients between differentioation score
+        and time for different modalities.
+
+        :param data_list: (list) List of dataframes containing the score data for each modality.
+        :param modalities: (list) List of modality names. For example: ["motility", "intensity"]
+        :param color: (str) Color for the violin plots.
+        :param corr_metric: (str) The correlation metric to use.
+        :param ylim: (tuple) The y-axis limits for the plot.
+        :param time: (tuple) The time range to consider for correlation calculation.
+        :param fig_name: (str) Name for the figure file (optional).
+        :return: None
+        """
+    sns.set_style("white")
+    corrs = []
+    for df, modality in zip(data_list, modalities):
+        df = convert_score_df(df, modality)
+        corr = get_correlation_coefficients(df, time, f"score_{modality}", "time", rolling_w=5,
+                                            corr_metric="spearman")
+        corrs.append(corr[~np.isnan(corr)])
+        print(modality, "- median: ", round(np.nanmedian(corr), 2), "size of data: ", len(corr))
+
+    plt.axhline(0, color='gray', linestyle='dashed')
+    df = pd.DataFrame()
+    for i, col in enumerate(modalities):
+        tmp_df = pd.DataFrame({col: corrs[i]})
+        df = df.append(tmp_df.dropna(), ignore_index=True)
+    sns.violinplot(data=df, color=color, cut=0, inner='box')
+
+    plt.xticks(rotation=30, ha='right', fontsize='large')
+    plt.ylabel("corr")
+    plt.title(f"single cell corr between score models & time corr metric-{corr_metric}")
+    plt.ylim(ylim)
+    fig_name = f"single cell correlation time & score cls" if fig_name is None else fig_name
+    plt.savefig(consts.storage_path + f"eps_figs/" + fig_name + f" compare metric={corr_metric}.eps", format="eps")
     plt.show()

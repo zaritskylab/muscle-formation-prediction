@@ -1,3 +1,8 @@
+"""The "calc_single_cell_properties" module provides functions for calculating and retrieving various properties of
+single cells based on their tracks and scores. It includes functions for adding spot position columns, calculating
+speed, mean actin intensity, persistence, local density, monotonicity, and terminal differentiation time. These
+properties are computed using the provided data frames and video information. """
+
 import sys, os
 from skimage import io
 import pymannkendall as mk
@@ -55,13 +60,10 @@ def add_actin_intensity_mean(scores_df, actin_vid_path):
         mean_int_lst = [get_centered_image(i, track, actin_vid, consts.WIN_SIZE).mean() for i in range(len(track))]
         return mean_int_lst
 
-    def map_mean_actin(x, means):
-        return means[x.iloc[0]]
-
     actin_vid = io.imread(actin_vid_path)
     means = scores_df.groupby(['Spot track ID']).apply(lambda x: calc_mean_actin(x, actin_vid))
     scores_df["mean"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
-        lambda x: map_mean_actin(x, means))
+        lambda x: means[x.iloc[0]])
 
     return scores_df
 
@@ -75,16 +77,13 @@ def add_persistence(scores_df):
     """
 
     def calc_persistence(track):
-        persistence_lst = list(get_persistence_df(track, 30)["persistence"])
-        persistence_lst = [np.nan for i in range(len(track) - len(persistence_lst))] + persistence_lst
-        return persistence_lst
-
-    def map_persistence(x, persistence_lst):
-        return persistence_lst[x.iloc[0]]
+        persistence_data = list(get_persistence_df(track, 30)["persistence"])
+        persistence_data = [np.nan for i in range(len(track) - len(persistence_data))] + persistence_data
+        return persistence_data
 
     persistence_lst = scores_df.groupby(['Spot track ID']).apply(lambda x: calc_persistence(x))
     scores_df["persistence"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
-        lambda x: map_persistence(x, persistence_lst))
+        lambda x: persistence_lst[x.iloc[0]])
 
     return scores_df
 
@@ -99,21 +98,24 @@ def get_local_density(scores_df, vid_num):
 
     def calc_local_den(track, vid_num):
         track_id = track['Spot track ID'].max()
-        local_den_lst = list(calculator.get_single_cell_measures(track_id, track, None, None, vid_num)["local density"])
-        return local_den_lst
-
-    def map_local_den(x, persistence_lst):
-        return persistence_lst[x.iloc[0]]
+        local_den = list(calculator.get_single_cell_measures(track_id, track, None, None, vid_num)["local density"])
+        return local_den
 
     calculator = LocalDensityFeaturesCalculator()
     local_den_lst = scores_df.groupby(['Spot track ID']).apply(lambda x: calc_local_den(x, vid_num))
     scores_df["local density"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
-        lambda x: map_local_den(x, local_den_lst))
+        lambda x: local_den_lst[x.iloc[0]])
 
     return scores_df
 
 
 def get_position(ind, df):
+    """
+    Retrieves the position coordinates and frame number for a single cell at the specified index.
+    :param ind: (int) Index of the spot.
+    :param df: (pandas.DataFrame) DataFrame containing track's data.
+    :return: (tuple) Tuple containing the x-coordinate, y-coordinate, and frame number.
+    """
     x = int(df.iloc[ind]["Spot position X"] / 0.462)
     y = int(df.iloc[ind]["Spot position Y"] / 0.462)
     spot_frame = int(df.iloc[ind]["Spot frame"])
@@ -121,12 +123,28 @@ def get_position(ind, df):
 
 
 def get_centered_image(ind, df, im_actin, window_size):
+    """
+    Retrieves a centered image patch from the specified spot index.
+
+    :param ind: (int) Index of the spot.
+    :param df: (pandas.DataFrame) DataFrame containing track's data.
+    :param im_actin: (numpy.ndarray) Array of images.
+    :param window_size: (int) Half-size of the window around the spot.
+    :return: (numpy.ndarray) Cropped image patch.
+    """
     x, y, spot_frame = get_position(ind, df)
     cropped = im_actin[spot_frame][x - window_size:x + window_size, y - window_size: y + window_size]
     return cropped
 
 
 def get_path_len(x_vec, y_vec):
+    """
+    Calculates the path length based on the given x and y vectors.
+
+    :param x_vec: (pandas.Series) Vector of x-coordinates.
+    :param y_vec: (pandas.Series) Vector of y-coordinates.
+    :return: (float) Path length.
+    """
     delta_x = x_vec.diff()
     delta_y = y_vec.diff()
     path_len = np.sqrt(np.square(delta_x) + np.square(delta_y)).sum()
@@ -134,17 +152,32 @@ def get_path_len(x_vec, y_vec):
 
 
 def get_displacement(x_vec, y_vec):
+    """
+    Calculates the displacement based on the given x and y vectors.
+
+    :param x_vec: (pandas.Series) Vector of x-coordinates.
+    :param y_vec: (pandas.Series) Vector of y-coordinates.
+    :return: (float) Displacement.
+    """
     delta_x = (x_vec.tail(1).values - x_vec.head(1).values)[0]
     delta_y = (y_vec.tail(1).values - y_vec.head(1).values)[0]
     displacement = np.sqrt(np.square(delta_x) + np.square(delta_y))
     return displacement
 
 
-def get_persistence_df(track, window_size=ROLLING_VAL):
-    time_windows = [(track.iloc[val]['Spot frame']) for val in range(0 + window_size, len(track), 1)]
+def get_persistence_df(track, temporal_window_len=ROLLING_VAL):
+    """
+    Calculates the persistence values for a given track and returns a DataFrame with persistence values and frame 
+    numbers.
+
+    :param track: (pandas.DataFrame) DataFrame containing track data.
+    :param temporal_window_len: (int) Size of the time window for calculating persistence. Default is ROLLING_VAL.
+    :return: (pandas.DataFrame) DataFrame with persistence values and frame numbers.
+    """
+    time_windows = [(track.iloc[val]['Spot frame']) for val in range(0 + temporal_window_len, len(track), 1)]
     time_windows.sort()
-    time_frames_chunks = [time_windows[i:i + window_size] for i in range(0, len(time_windows), 1) if
-                          len(time_windows[i:i + window_size]) == window_size]
+    time_frames_chunks = [time_windows[i:i + temporal_window_len] for i in range(0, len(time_windows), 1) if
+                          len(time_windows[i:i + temporal_window_len]) == temporal_window_len]
 
     persistence_lst = []
     frames_lst = []
@@ -163,6 +196,16 @@ def get_persistence_df(track, window_size=ROLLING_VAL):
 
 
 def get_properties(scores_df, vid_name, actin_vid_path, exist_ok=True):
+    """
+    Retrieves single cell properties including spot position columns, speed, actin intensity mean, persistence,
+    and local density. The properties are calculated and stored in a pickle file for future use.
+
+    :param scores_df: (pandas.DataFrame) DataFrame containing scores data, tracks Ids, etc.
+    :param vid_name: (str) Name of the video the data was taken from.
+    :param actin_vid_path: (str) Path to the actin video for mean actin intensity computation.
+    :param exist_ok: (bool) Flag indicating whether to load from the existing file if available. Default is True.
+    :return: (pandas.DataFrame) DataFrame with calculated properties.
+    """
     saving_path = consts.storage_path + f"data/properties_dfs/scores_df_{vid_name}.pkl"
     if exist_ok and os.path.exists(saving_path):
         scores_df = pickle.load(open(saving_path, 'rb'))
@@ -198,17 +241,25 @@ def get_monotonicity_value(track_df, modality, time, rolling_w=1):
 
 
 def get_monotonicity(scores_df, modality, time, rolling_w=1):
+    """
+       Calculates and adds the monotonicity values to the scores DataFrame for the specified modality.
+
+       :param scores_df: (pandas.DataFrame) DataFrame containing scores data.
+       :param modality: (str) Modality for which monotonicity values are calculated,
+       Choose from "motility" or "intensity".
+       :param time: (str) Time column in the scores DataFrame.
+       :param rolling_w: (int) Rolling window size for calculating monotonicity. Default is 1.
+       :return: (pandas.DataFrame) DataFrame with added monotonicity values.
+       """
+
     def calc_monotonicity_value(track, modality, time, rolling_w):
         monotonicity = get_monotonicity_value(track, modality, time, rolling_w)
         return monotonicity
 
-    def map_monotonicity_value(x, monotonicity_lst):
-        return monotonicity_lst[x.iloc[0]]
-
     monotonicity_lst = scores_df.groupby(['Spot track ID']).apply(
         lambda x: calc_monotonicity_value(x, modality, time, rolling_w))
     scores_df[f"monotonicity_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
-        lambda x: map_monotonicity_value(x, monotonicity_lst))
+        lambda x: monotonicity_lst[x.iloc[0]])
 
     return scores_df
 
@@ -228,6 +279,15 @@ def get_longest_sequences(df):
 
 
 def get_terminal_differentiation_time(track_df, modality, diff_threshold=0.78):
+    """
+    Calculates the terminal differentiation time for a track based on the specified modality.
+
+    :param track_df: (pandas.DataFrame) DataFrame containing track data.
+    :param modality: (str) Modality for which differentiation time is calculated.
+                      Choose from "motility" or "intensity".
+    :param diff_threshold: (float) Differentiation threshold value. Default is 0.78.
+    :return: (float) Terminal differentiation time in hours.
+    """
     track_df = track_df[(track_df["time"] <= track_df["fusion_time"])]
     track_df = track_df.sort_values("Spot frame", ascending=True)
     high_then_thresh = track_df[(track_df[f"score_{modality}"] >= diff_threshold)]
@@ -267,38 +327,62 @@ def get_stable_threshold_time(track_df, threshold, modality, time_point, time_th
 
 
 def get_terminal_diff_time(scores_df, modality, diff_threshold):
+    """
+        Calculates the terminal differentiation time for each track based on the specified modality.
+
+        :param scores_df: (pandas.DataFrame) DataFrame containing differentiation scores data.
+        :param modality: (str) Modality for which differentiation time is calculated.
+                          Choose from "motility" or "intensity".
+        :param diff_threshold: (float) Differentiation threshold value.
+        :return: (pandas.DataFrame) DataFrame with added terminal differentiation time column.
+        """
+
     def calc_terminal_diff_time(track, modality, diff_threshold):
         terminal_diff_time = get_terminal_differentiation_time(track, modality, diff_threshold)
         return terminal_diff_time
 
-    def map_terminal_diff_time(x, persistence_lst):
-        return persistence_lst[x.iloc[0]]
-
     terminal_diff_time_lst = scores_df.groupby(['Spot track ID']).apply(
         lambda x: calc_terminal_diff_time(x, modality, diff_threshold))
     scores_df[f"terminal_diff_time_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
-        lambda x: map_terminal_diff_time(x, terminal_diff_time_lst))
+        lambda x: terminal_diff_time_lst[x.iloc[0]])
 
     return scores_df
 
 
 def get_differentiation_fusion_duration(scores_df, modality):
+    """
+    Calculates the duration between differentiation and fusion for each track based on the specified modality.
+
+    :param scores_df: (pandas.DataFrame) DataFrame containing differentiation scores data.
+    :param modality: (str) Modality for which differentiation-fusion duration is calculated.
+                     Choose from "motility" or "intensity".
+    :return: (pandas.DataFrame) DataFrame with added differentiation-fusion duration column.
+    """
+
     def calc_diff_fusion_duration(track, modality):
         duration = track["fusion_time"].iloc[0] - track[f"terminal_diff_time_{modality}"].iloc[0]
         return duration
 
-    def map_diff_fusion_duration(x, diff_fusion_duration_lst):
-        return diff_fusion_duration_lst[x.iloc[0]]
-
     diff_fusion_duration_lst = scores_df.groupby(['Spot track ID']).apply(
         lambda x: calc_diff_fusion_duration(x, modality))
-    scores_df[f"duration_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
-        lambda x: map_diff_fusion_duration(x, diff_fusion_duration_lst))
+    scores_df[f"diff_to_fusion_duration_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
+        lambda x: diff_fusion_duration_lst[x.iloc[0]])
 
     return scores_df
 
 
 def get_diff_duration(scores_df, modality, low_thresh, high_thresh):
+    """
+    Calculates the duration between the last occurrence of a low threshold scores sequence sequence and the first
+    occurrence of a high threshold scores sequence for each track, based on the specified modality.
+
+    :param scores_df: (pandas.DataFrame) DataFrame containing differentiation scores data.
+    :param modality: (str) Modality for which differentiation duration is calculated. Choose from "motility" or "intensity".
+    :param low_thresh: (tuple) The lower threshold value.
+    :param high_thresh: (tuple) The higher threshold value.
+    :return: (pandas.DataFrame) DataFrame with added differentiation duration column.
+    """
+
     def calc_diff_duration(track, modality, high_thresh, low_thresh):
         high_thresh_time = get_stable_threshold_time(track, high_thresh, modality, time_point="first")
         low_thresh_time = get_stable_threshold_time(track, low_thresh, modality, time_point="last",
@@ -306,36 +390,49 @@ def get_diff_duration(scores_df, modality, low_thresh, high_thresh):
         duration = high_thresh_time - low_thresh_time
         return duration
 
-    def map_diff_duration(x, duration_lst):
-        return duration_lst[x.iloc[0]]
-
     duration_lst = scores_df.groupby(['Spot track ID']).apply(
         lambda x: calc_diff_duration(x, modality, high_thresh, low_thresh))
     scores_df[f"diff_duration_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
-        lambda x: map_diff_duration(x, duration_lst))
+        lambda x: duration_lst[x.iloc[0]])
 
     return scores_df
 
 
 def get_diff_start_time(scores_df, modality, low_thresh, high_thresh):
+    """
+    Calculates the start time of differentiation based on the last occurrence of a low threshold following
+    the first occurrence of a high threshold for each track based on the specified modality.
+
+    :param scores_df: (pandas.DataFrame) DataFrame containing differentiation scores data.
+    :param modality: (str) Modality for which differentiation start time is calculated. Choose from "motility" or "intensity".
+    :param low_thresh: (tuple) The lower threshold value.
+    :param high_thresh: (tuple) The higher threshold value.
+    :return: (pandas.DataFrame) DataFrame with added differentiation start time column.
+    """
+
     def calc_diff_start_time(track, modality, high_thresh, low_thresh):
         high_thresh_time = get_stable_threshold_time(track, high_thresh, modality, time_point="first")
         low_thresh_time = get_stable_threshold_time(track, low_thresh, modality, time_point="last",
                                                     time_thresh=high_thresh_time)
         return low_thresh_time
 
-    def map_diff_start_time(x, start_time_lst):
-        return start_time_lst[x.iloc[0]]
-
     start_time_lst = scores_df.groupby(['Spot track ID']).apply(
         lambda x: calc_diff_start_time(x, modality, high_thresh, low_thresh))
     scores_df[f"diff_start_time_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
-        lambda x: map_diff_start_time(x, start_time_lst))
+        lambda x: start_time_lst[x.iloc[0]])
 
     return scores_df
 
 
 def get_mannkendall(scores_df, modality):
+    """
+    Calculates the Mann-Kendall trend test statistic for each track based on the specified modality.
+
+    :param scores_df: DataFrame containing differentiation scores data.
+    :param modality: Modality for which Mann-Kendall test is calculated. Choose from "motility" or "intensity".
+    :return: DataFrame with added Mann-Kendall test slope column.
+    """
+
     def calc_mannkendall(track, modality):
         try:
             mannkendall = mk.original_test(track[f"score_{modality}"], alpha=0.05).slope
@@ -343,24 +440,28 @@ def get_mannkendall(scores_df, modality):
             return np.nan
         return mannkendall
 
-    def map_mannkendall(x, mannkendall_lst):
-        return mannkendall_lst[x.iloc[0]]
-
     mannkendall_lst = scores_df.groupby(['Spot track ID']).apply(
         lambda x: calc_mannkendall(x, modality))
     scores_df[f"mannkendall_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
-        lambda x: map_mannkendall(x, mannkendall_lst))
+        lambda x: mannkendall_lst[x.iloc[0]])
 
     return scores_df
 
 
 def get_property(scores_df, feature_name, modality, func, func_args):
-    def map_value(x, lst):
-        return lst[x.iloc[0]]
+    """
+    Calculates a custom property for each track based on the specified function and arguments.
 
+    :param scores_df: (pandas.DataFrame) DataFrame containing differentiation scores data.
+    :param feature_name: (str) Name of the custom property.
+    :param modality: (str) Modality for which the property is calculated.
+    :param func: (callable) Custom function to calculate the property.
+    :param func_args: (tuple) Arguments to be passed to the custom function.
+    :return: (pandas.DataFrame) DataFrame with the added custom property column.
+    """
     lst = scores_df.groupby(['Spot track ID']).apply(lambda x: func(x, *func_args))
     scores_df[f"{feature_name}_{modality}"] = scores_df.groupby(['Spot track ID'])['Spot track ID'].transform(
-        lambda x: map_value(x, lst))
+        lambda x: lst[x.iloc[0]])
 
     return scores_df
 

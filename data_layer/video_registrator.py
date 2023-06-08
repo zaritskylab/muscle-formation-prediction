@@ -41,6 +41,13 @@ class VideoRegistratorStrategy(object):
         pass
 
     def registrate_tracks(self, flows, data_to_registrate):
+        """
+            Applies registration to tracks using flow data.
+
+            :param flows: (list) List of flow data.
+            :param data_to_registrate: (pd.DataFrame) Data to be registrated.
+            :return: (pd.DataFrame) Registrated data.
+        """
         to_reg_data = data_to_registrate.copy()
         for label, label_df in tqdm(to_reg_data.groupby("Spot track ID")):
 
@@ -74,6 +81,12 @@ class MeanOpticalFlowVideoRegistrator(VideoRegistratorStrategy, ABC):
         super(MeanOpticalFlowVideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, nuclei_vid):
+        """
+            Calculates shifts between consecutive frames using optical flow.
+
+            :param nuclei_vid: (list) List of image frames.
+            :return: (list) List of shift values (x_offset, y_offset) for each frame pair.
+        """
         flows = []
         for i in tqdm(range(len(nuclei_vid) - 2)):
             image0, image1 = nuclei_vid[i], nuclei_vid[i + 1]
@@ -87,6 +100,16 @@ class MeanOpticalFlowVideoRegistrator(VideoRegistratorStrategy, ABC):
         return flows
 
     def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix) -> (float, float):
+        """
+            Retrieves the registration coordinates (flow_x, flow_y) from the given flows at the specified spot_frame,
+            x_pix, y_pix.
+
+            :param flows: (list) List of flow values for each frame pair.
+            :param spot_frame: (int) Index of the spot frame.
+            :param x_pix: (int) X-coordinate of the spot position in pixels.
+            :param y_pix: (int) Y-coordinate of the spot position in pixels.
+            :return: (float, float) Registration coordinates (flow_x, flow_y).
+        """
         flow_x, flow_y = flows[spot_frame][0], flows[spot_frame][1]
         return flow_x, flow_y
 
@@ -101,6 +124,12 @@ class OpticalFlowVideoRegistrator(VideoRegistratorStrategy, ABC):
         super(OpticalFlowVideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, nuclei_vid):
+        """
+            Calculates the optical flow shifts between consecutive frames of the nuclei video.
+
+            :param nuclei_vid: (list) List of nuclei video frames.
+            :return: (list) List of flow values for each frame pair.
+            """
         flows = []
         for i in tqdm(range(len(nuclei_vid) - 2)):
             image0, image1 = nuclei_vid[i], nuclei_vid[i + 1]
@@ -110,11 +139,28 @@ class OpticalFlowVideoRegistrator(VideoRegistratorStrategy, ABC):
         return flows
 
     def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix):
+        """
+            Gets the registration coordinates for a specific spot frame and pixel location using the optical flow shifts.
+
+            :param flows: (list) List of flow values for each frame pair.
+            :param spot_frame: (int) Frame index of the spot.
+            :param x_pix: (int) X-coordinate of the pixel location.
+            :param y_pix: (int) Y-coordinate of the pixel location.
+            :return: (float, float) Registration coordinates (flow_x, flow_y).
+        """
         flow_x, flow_y = flows[spot_frame][..., 0], flows[spot_frame][..., 1]
 
         return flow_x[x_pix, y_pix], flow_y[x_pix, y_pix]
 
-    def calc_shifts_video(selfself, nuclei_vid):
+    def calc_shifts_video(selfself, nuclei_vid, saving_path=None):
+        """
+            Calculates optical flow shifts for each frame pair in a video and aligns the nuclei images based on the
+            computed flows.
+
+            :param saving_path: path to save the registrated video in
+            :param nuclei_vid: (numpy.ndarray) Array containing the nuclei video frames.
+            :return: (numpy.ndarray) Aligned nuclei images.
+            """
         im_nuc_new = np.zeros(nuclei_vid.shape)
         for i in tqdm(range(len(vid_arr) - 2)):
             image0, image1 = vid_arr[i], vid_arr[i + 1]
@@ -132,7 +178,8 @@ class OpticalFlowVideoRegistrator(VideoRegistratorStrategy, ABC):
             image1_warp = warp(image1, np.array([(row_coords + flow_y), (col_coords + flow_x)]),
                                mode='edge')
             im_nuc_new[i] = image1_warp
-        io.imsave(f"data/videos/{vid_info['name']}_Nuclei_aligned.tif", im_nuc_new)
+        saving_path = f"data/videos/{vid_info['name']}_Nuclei_aligned.tif" if saving_path is None else saving_path
+        io.imsave(saving_path, im_nuc_new)
 
 
 class StackRegVideoRegistrator(VideoRegistratorStrategy, ABC):
@@ -147,6 +194,12 @@ class StackRegVideoRegistrator(VideoRegistratorStrategy, ABC):
         super(StackRegVideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, nuclei_vid):
+        """
+            Calculates the optical flow shifts between consecutive frames of the nuclei video.
+
+            :param nuclei_vid: (list) List of nuclei video frames.
+            :return: (list) List of flow values for each frame pair.
+        """
         transition_mats = []
         for i in tqdm(range(len(nuclei_vid) - 2)):
             image0, image1 = nuclei_vid[i], nuclei_vid[i + 1]
@@ -156,6 +209,15 @@ class StackRegVideoRegistrator(VideoRegistratorStrategy, ABC):
         return transition_mats
 
     def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix) -> (float, float):
+        """
+            Retrieves the registration coordinates (flow) for a specific spot frame and pixel location.
+
+            :param flows: (numpy.ndarray) Array containing the flows calculated for each frame pair.
+            :param spot_frame: (int) Index of the spot frame.
+            :param x_pix: (int) X-coordinate of the pixel location.
+            :param y_pix: (int) Y-coordinate of the pixel location.
+            :return: (float, float) Registration coordinates (flow) for the specified spot frame and pixel location.
+        """
         flow_x, flow_y = flows[spot_frame][..., 2][0], flows[spot_frame][..., 2][1]
         return flow_x, flow_y
 
@@ -170,6 +232,12 @@ class CrossCorrelationVideoRegistrator(VideoRegistratorStrategy, ABC):
         super(CrossCorrelationVideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, *args):
+        """
+            Calculates the shifts between consecutive frames in a video using phase cross-correlation.
+
+            :param *args: Variable-length argument list of video frames.
+            :return: (list) List of shifts between consecutive frames.
+        """
         shifts = []
         for i in tqdm(range(len(vid_arr) - 2)):
             image0, image1 = vid_arr[i], vid_arr[i + 1]
@@ -178,6 +246,15 @@ class CrossCorrelationVideoRegistrator(VideoRegistratorStrategy, ABC):
         return shifts
 
     def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix) -> (float, float):
+        """
+            Retrieves the registration coordinates (flow) for a specific spot frame and pixel location.
+
+            :param flows: (numpy.ndarray) Array containing the flows calculated for each frame pair.
+            :param spot_frame: (int) Index of the spot frame.
+            :param x_pix: (int) X-coordinate of the pixel location.
+            :param y_pix: (int) Y-coordinate of the pixel location.
+            :return: (float, float) Registration coordinates (flow) for the specified spot frame and pixel location.
+        """
         flow_x, flow_y = flows[spot_frame][0], flows[spot_frame][1]
         return flow_x, flow_y
 
@@ -194,6 +271,12 @@ class OpticalFlowTvl1VideoRegistrator(VideoRegistratorStrategy, ABC):
         super(OpticalFlowTvl1VideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, *args):
+        """
+            Calculates the shifts between consecutive frames in a video using phase cross-correlation.
+
+            :param *args: Variable-length argument list of video frames.
+            :return: (list) List of shifts between consecutive frames.
+        """
         shifts = []
         for i in tqdm(range(len(vid_arr) - 2)):
             image0, image1 = vid_arr[i], vid_arr[i + 1]
@@ -202,6 +285,15 @@ class OpticalFlowTvl1VideoRegistrator(VideoRegistratorStrategy, ABC):
         return shifts
 
     def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix) -> (float, float):
+        """
+            Retrieves the registration coordinates (flow) for a specific spot frame and pixel location.
+
+            :param flows: (numpy.ndarray) Array containing the flows calculated for each frame pair.
+            :param spot_frame: (int) Index of the spot frame.
+            :param x_pix: (int) X-coordinate of the pixel location.
+            :param y_pix: (int) Y-coordinate of the pixel location.
+            :return: (float, float) Registration coordinates (flow) for the specified spot frame and pixel location.
+        """
         flow_x, flow_y = flows[spot_frame][0], flows[spot_frame][1]
         return flow_x[x_pix, y_pix], flow_y[x_pix, y_pix]
 
@@ -216,6 +308,12 @@ class Chi2ShiftVideoRegistrator(VideoRegistratorStrategy, ABC):  # not working
         super(Chi2ShiftVideoRegistrator, self).__init__(name)
 
     def calc_shifts(self, *args):
+        """
+            Calculates the shifts between consecutive frames in a video using phase cross-correlation.
+
+            :param *args: Variable-length argument list of video frames.
+            :return: (list) List of shifts between consecutive frames.
+        """
         flows = []
         for i in tqdm(range(len(vid_arr) - 2)):
             image0, image1 = vid_arr[i], vid_arr[i + 1]
@@ -224,6 +322,15 @@ class Chi2ShiftVideoRegistrator(VideoRegistratorStrategy, ABC):  # not working
         return flows
 
     def get_reg_coordinates(self, flows, spot_frame, x_pix, y_pix) -> (float, float):
+        """
+            Retrieves the registration coordinates (flow) for a specific spot frame and pixel location.
+
+            :param flows: (numpy.ndarray) Array containing the flows calculated for each frame pair.
+            :param spot_frame: (int) Index of the spot frame.
+            :param x_pix: (int) X-coordinate of the pixel location.
+            :param y_pix: (int) Y-coordinate of the pixel location.
+            :return: (float, float) Registration coordinates (flow) for the specified spot frame and pixel location.
+        """
         flow_x, flow_y = flows[spot_frame][0], flows[spot_frame][1]
         return flow_x, flow_y
 
