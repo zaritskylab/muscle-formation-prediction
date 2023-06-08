@@ -154,6 +154,28 @@ an example for possible output of the method "plot_avg_score":
 <img src="figures/Figure_2D.png" width=40%>
 </p>
 
+## Requirements
+```
+image_registration==0.2.5
+joblib==1.1.0
+matplotlib==3.5.1
+more_itertools==8.12.0
+numpy==1.20.3
+numpy==1.21.5
+opencv_python==3.4.17.61
+opencv_python_headless==4.6.0.66
+pandas==1.3.5
+plotly==5.5.0
+pymannkendall==1.4.3
+pystackreg==0.2.5
+scikit_image==0.19.1
+scikit_learn==1.0.1
+scipy==1.7.3
+seaborn==0.11.2
+tqdm==4.62.3
+tsfresh==0.19.0
+```
+
 ## Citation
 
 For a complete discussion of our findings please view our preprint:
