@@ -56,6 +56,47 @@ class TSFreshTransformStrategy(object):
         pass
 
 
+class TimeSplitsTSFreshTransform(TSFreshTransformStrategy, ABC):
+    """
+    An ordinary least squares (OLS) linear regression model
+    """
+
+    def __init__(self, impute_func=impute):
+        name = 'SingleCellTSFreshTransform'
+        super(TimeSplitsTSFreshTransform, self).__init__(name, impute_func=impute_func)
+
+    def split_data_for_parallel_run(self, data, n_splits, current_split_ind, track_len):
+        df_time_window_split_list = split_data_to_time_portions(data, track_len)
+        data_chunks = [list(c) for c in mit.divide(n_splits, df_time_window_split_list)]
+        return data_chunks[current_split_ind]
+
+    def ts_fresh_transform_df(self, df_to_transform, target, track_len):
+        print("transform data", flush=True)
+        if df_to_transform.empty:
+            return pd.DataFrame()
+
+        df_to_transform = remove_short_tracks(df_to_transform, track_len)
+        df_time_window_split_list = split_data_to_time_portions(df_to_transform, track_len)
+
+        df_transformed = pd.DataFrame()
+        for time_portion in df_time_window_split_list:
+
+            time_portion = remove_short_tracks(time_portion, track_len)
+            if not time_portion.empty:
+                portion_transformed = extract_features(time_portion,
+                                                       column_id="Spot track ID",
+                                                       column_sort="Spot frame",
+                                                       show_warnings=False,
+                                                       disable_progressbar=True,
+                                                       n_jobs=8)
+
+                portion_transformed["Spot track ID"] = portion_transformed.index
+                portion_transformed["Spot frame"] = time_portion["Spot frame"].max()
+                portion_transformed["target"] = target
+                df_transformed = df_transformed.append(portion_transformed, ignore_index=True)
+        return df_transformed
+
+
 class SingleCellTSFreshTransform(TSFreshTransformStrategy, ABC):
     """
     An ordinary least squares (OLS) linear regression model
@@ -115,45 +156,4 @@ class SingleCellTSFreshTransform(TSFreshTransformStrategy, ABC):
 
         df_transformed = self.impute_function(df_transformed)
 
-        return df_transformed
-
-
-class TimeSplitsTSFreshTransform(TSFreshTransformStrategy, ABC):
-    """
-    An ordinary least squares (OLS) linear regression model
-    """
-
-    def __init__(self, impute_func=impute):
-        name = 'SingleCellTSFreshTransform'
-        super(TimeSplitsTSFreshTransform, self).__init__(name, impute_func=impute_func)
-
-    def split_data_for_parallel_run(self, data, n_splits, current_split_ind, track_len):
-        df_time_window_split_list = split_data_to_time_portions(data, track_len)
-        data_chunks = [list(c) for c in mit.divide(n_splits, df_time_window_split_list)]
-        return data_chunks[current_split_ind]
-
-    def ts_fresh_transform_df(self, df_to_transform, target, track_len):
-        print("transform data", flush=True)
-        if df_to_transform.empty:
-            return pd.DataFrame()
-
-        df_to_transform = remove_short_tracks(df_to_transform, track_len)
-        df_time_window_split_list = split_data_to_time_portions(df_to_transform, track_len)
-
-        df_transformed = pd.DataFrame()
-        for time_portion in df_time_window_split_list:
-
-            time_portion = remove_short_tracks(time_portion, track_len)
-            if not time_portion.empty:
-                portion_transformed = extract_features(time_portion,
-                                                       column_id="Spot track ID",
-                                                       column_sort="Spot frame",
-                                                       show_warnings=False,
-                                                       disable_progressbar=True,
-                                                       n_jobs=8)
-
-                portion_transformed["Spot track ID"] = portion_transformed.index
-                portion_transformed["Spot frame"] = time_portion["Spot frame"].max()
-                portion_transformed["target"] = target
-                df_transformed = df_transformed.append(portion_transformed, ignore_index=True)
         return df_transformed

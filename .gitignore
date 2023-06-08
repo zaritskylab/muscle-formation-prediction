@@ -1,14 +1,3 @@
 /Coordination
 /analysis/notebooks/outputs
-/analysis/notebooks/auc_over_time_script.ipynb
-/analysis/notebooks/calibration analysis.ipynb
-/analysis/notebooks/cellular_properties.ipynb
-/analysis/notebooks/cellular_properties-correlations.ipynb
-/analysis/notebooks/differentiation over time.ipynb
-/analysis/notebooks/explainability_shap.ipynb
-/analysis/notebooks/fusion_correlations.ipynb
-/analysis/notebooks/fusion_correlations- old.ipynb
-/analysis/notebooks/rf_hyperparams_tunning.ipynb
-/analysis/notebooks/simple classifiers comaprison.ipynb
-/analysis/notebooks/single_cell_tracking_fig.ipynb
-/analysis/notebooks/UpdateVisualizaion.ipynb
+/analysis/notebooks/old notebooks

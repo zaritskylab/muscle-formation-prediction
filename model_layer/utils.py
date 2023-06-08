@@ -17,6 +17,16 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 def evaluate(clf, X_test, y_test):
+    """
+    Evaluates the performance of a classifier on the test data. It predicts the labels using the classifier,
+    generates a classification report, calculates the AUC score based on the predicted labels and true labels,
+    and returns the classification report and AUC score.
+
+    :param clf: (classifier) The trained classifier.
+    :param X_test: (pd.DataFrame) Test features.
+    :param y_test: (pd.Series) True labels for the test data.
+    :return: (Tuple[str, float]) Classification report and AUC score.
+    """
     pred = clf.predict(X_test)
     report = classification_report(y_test, pred)
 
@@ -28,6 +38,18 @@ def evaluate(clf, X_test, y_test):
 
 
 def train_model_compare_algorithms(X_train, y_train, X_test, y_test, dir_path):
+    """
+    Trains multiple classification models and compares their performance on the test data. It trains Random Forest,
+    Gradient Boosting, Logistic Regression, K-Nearest Neighbors, and Support Vector Machine classifiers. It evaluates
+    each classifier using the evaluate function, calculates the AUC score, and saves the results in a text file.
+
+    :param X_train: (pd.DataFrame) Training features.
+    :param y_train: (pd.Series) True labels for the training data.
+    :param X_test: (pd.DataFrame) Test features.
+    :param y_test: (pd.Series) True labels for the test data.
+    :param dir_path: (str) Path to save the comparison results.
+    :return: None
+    """
     models = []
     models.append(('RF', RandomForestClassifier()))
     models.append(('GB', GradientBoostingClassifier()))
@@ -47,6 +69,16 @@ def train_model_compare_algorithms(X_train, y_train, X_test, y_test, dir_path):
 
 
 def train_model(X_train, y_train, modality):
+    """
+    Trains a Random Forest classifier on the provided training data. The classifier is customized based on the specified
+    modality. It uses pre-defined parameters for 'motility' and 'actin_intensity' modalities. Returns the trained
+    classifier.
+
+    :param X_train: (pd.DataFrame) Training features.
+    :param y_train: (pd.Series) True labels for the training data.
+    :param modality: (str) Modality for customizing the classifier.
+    :return: (RandomForestClassifier) Trained Random Forest classifier.
+    """
     params_dict = {"motility": {'max_depth': 12, 'min_samples_leaf': 1, 'n_estimators': 100},
                    "actin_intensity": {'max_depth': 20, 'min_samples_leaf': 1, 'n_estimators': 200}}
     params = params_dict.get(modality) if params_dict.get(modality) is not None else {}
@@ -56,22 +88,37 @@ def train_model(X_train, y_train, modality):
     return clf
 
 
-def extract_distinct_features(df, feature_list, column_id="Spot track ID", column_sort="Spot frame"):
-    df = extract_features(df, column_id=column_id, column_sort=column_sort)  # , show_warnings=False
-    impute(df)
-    return df[feature_list]
+def split_data_to_time_portions(data, temporal_segment_len):
+    """
+    Splits the provided data into time portions based on the specified temporalsegment length.
+    The function sorts the data by 'Spot frame', and then creates time windows of length 'temporal_segment_len'
+    with a stride of 1. Returns a list of dataframes, where each dataframe represents a time
+    portion.
 
-
-def split_data_to_time_portions(data, track_len):
-    data = data.drop_duplicates(subset=["Spot track ID", "Spot frame"])  # remove duplicates
+    :param data: (pd.DataFrame) Data to be split into time portions.
+    :param temporal_segment_len: (int) Length of each time portion.
+    :return: (List[pd.DataFrame]) List of dataframes representing time portions.
+    """
+    data = data.drop_duplicates(subset=["Spot track ID", "Spot frame"])
     time_windows = data.sort_values("Spot frame")['Spot frame'].unique()
-    time_windows_strides = list(mit.windowed(time_windows, n=track_len, step=1))
+    time_windows_strides = list(mit.windowed(time_windows, n=temporal_segment_len, step=1))
     t_portion_lst = [data[data["Spot frame"].isin(time_windows_strides[i])] for i in range(len(time_windows_strides))]
 
     return t_portion_lst
 
 
 def calc_state_trajectory(transformed_tracks_df, clf, n_frames=260):
+    """
+    Calculates single cells state scores over time trajectories based on the provided tracks dataframe and the trained
+    classifier. The function iterates over each track in the dataframe, sorts the track frames, and predicts the state
+    at each frame using the classifier. The states are then stored in a new dataframe, where each row
+    represents a track and each column represents a frame's score.
+
+    :param transformed_tracks_df: (pd.DataFrame) Transformed tracks dataframe containing the data for prediction.
+    :param clf: (Classifier) Trained classifier for predicting the single cell state scores.
+    :param n_frames: (int) Number of frames in the trajectory (default: 260).
+    :return: (pd.DataFrame) Dataframe containing the state scores for each track at each frame.
+    """
     df_score = pd.DataFrame(columns=[i for i in range(n_frames)])
     for track_id, track in transformed_tracks_df.groupby("Spot track ID"):
         spot_frames = list(track.sort_values("Spot frame")["Spot frame"])
@@ -92,6 +139,18 @@ def calc_state_trajectory(transformed_tracks_df, clf, n_frames=260):
 
 
 def concat_dfs(diff_df, con_df, diff_t_window=None, con_t_windows=None):
+    """
+    Concatenates the ERK and control dataframes into a single dataframe for further processing.
+    The function cuts the required time windows from the dataframes and assigns target labels.
+
+    :param diff_df: (pd.DataFrame) Dataframe containing the ERK data.
+    :param con_df: (pd.DataFrame) Dataframe containing the control data.
+    :param diff_t_window: (Optional[Tuple[int, int]]) Time window for the ERK data (start frame, end frame)
+                            (default: None).
+    :param con_t_windows: (Optional[List[Tuple[int, int]]]) Time windows for the control data (list of start and end
+                            frames) (default: None).
+    :return: (pd.DataFrame) Concatenated dataframe containing the ERK and control data.
+    """
     def set_indexes(df, target, max_val):
         df["Spot track ID"] = df["Spot track ID"] + max_val
         max_val = df["Spot track ID"].max() + 1

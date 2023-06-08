@@ -19,7 +19,13 @@ from configuration import consts
 
 
 def convert_score_df(score_df, modality):
-    """converts the scores dataframe from horizontal to vertical view"""
+    """
+        Converts the scores dataframe from horizontal to vertical view.
+
+        :param score_df: (pd.DataFrame) The scores dataframe in horizontal view.
+        :param modality: (str) The modality of the scores- "motility" or "intensity".
+        :return: (pd.DataFrame) The scores dataframe in vertical view.
+    """
     df = pd.DataFrame()
     for i in range(len(score_df)):
         track = score_df.iloc[i, :]
@@ -155,6 +161,13 @@ def load_clean_rows(file_path):
 
 
 def remove_short_tracks(df_to_transform, len_threshold):
+    """
+        Removes short tracks from the dataframe based on a length threshold.
+
+        :param df_to_transform: (pd.DataFrame) The dataframe to transform.
+        :param len_threshold: (int) The minimum length threshold for tracks.
+        :return: (pd.DataFrame) The transformed dataframe with short tracks removed.
+    """
     counts = df_to_transform.groupby("Spot track ID")["Spot track ID"].transform(len)
     mask = (counts >= len_threshold)
     return df_to_transform[mask]
@@ -183,13 +196,21 @@ def get_tracks(file_path, tagged_only=False, manual_tagged_list=True, target=1):
     return df_s, tracks_s
 
 
-def load_tsfresh_transformed_df(modality, vid_num, cols=None):
+def load_tsfresh_transformed_df(modality, vid_num, cols=None, path=None):
+    """
+        Loads the transformed dataframe from the tsfresh transformation for a specific modality and video number.
+        :param path: (str) path to load the data from.
+        :param modality: (str) The modality of the data ("motility", "actin_intensity", or "combined").
+        :param vid_num: (int) The video number.
+        :param cols: (list or None) Optional list of column names to select from the dataframe.
+        :return: (pd.DataFrame) The loaded tsfresh transformed dataframe.
+    """
+
     modalities = ["motility", "actin_intensity"] if modality == "combined" else [modality]
     df = pd.DataFrame(columns=["Spot track ID", "Spot frame"])
     for modal in modalities:
-        tsfresh_transform_path = consts.storage_path + f"data/mastodon/ts_transformed/{modal}/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/S{vid_num}/" \
-                                                       f"merged_chunks_reg={consts.REG_METHOD},local_den=False,win size={consts.WIN_SIZE}.pkl"
-        df_s = pickle.load(open(tsfresh_transform_path, 'rb'))
+        path = consts.transformed_data_path % (modal, vid_num) if path is None else path
+        df_s = pickle.load(open(path, 'rb'))
         if cols is not None:
             df_s = df_s[set(cols).intersection(set(df_s.columns))]
         df = df.merge(df_s, on=["Spot track ID", "Spot frame"], how="right")
@@ -197,6 +218,12 @@ def load_tsfresh_transformed_df(modality, vid_num, cols=None):
 
 
 def load_fusion_data(path=consts.storage_path + r"data/mastodon/no_reg_S3 all detections.csv"):
+    """
+        Loads the fusion data from a CSV file.
+
+        :param path: (str) The path to the CSV file.
+        :return: (pd.DataFrame) The loaded fusion data.
+    """
     # load the raw data with fusion tags
     chunksize = 200000
     df = pd.DataFrame()
@@ -206,11 +233,8 @@ def load_fusion_data(path=consts.storage_path + r"data/mastodon/no_reg_S3 all de
         df = df.append(chunk, ignore_index=True)
 
     df.rename(columns=lambda x: x.replace("_", " ").strip(), inplace=True)
-    fusion_cols = ['Spot track ID', 'Spot frame', 'Spot position X', 'Spot position Y', 'manual manual'] + [col for col
-                                                                                                            in
-                                                                                                            df.columns
-                                                                                                            if
-                                                                                                            "First" in col]
+    fusion_cols = ['Spot track ID', 'Spot frame', 'Spot position X', 'Spot position Y', 'manual manual'] + \
+                  [col for col in df.columns if "First" in col]
     df = df[fusion_cols]
     df.rename(columns=lambda x: x.split(" ")[3] if "First" in x else x, inplace=True)
     df = df[1:]
@@ -228,6 +252,11 @@ def load_fusion_data(path=consts.storage_path + r"data/mastodon/no_reg_S3 all de
 
 
 def get_scores_df_with_fusion():
+    """
+        Retrieves the differentiation scores dataframe with fusion data.
+
+        :return: (pd.DataFrame) The merged scores dataframe with fusion timing and spot positions data.
+    """
     # load & merge fusion timing data with spot positions data
     fusion_time_df = load_fusion_data(
         path=consts.storage_path + r"data/mastodon/no_reg_S3 all detections.csv")
@@ -244,6 +273,3 @@ def get_scores_df_with_fusion():
     scores_df_s3 = scores_df_s3.astype("float")
 
     return scores_df_s3
-
-
-
