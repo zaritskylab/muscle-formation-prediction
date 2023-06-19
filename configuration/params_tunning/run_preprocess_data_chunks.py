@@ -16,14 +16,14 @@ if __name__ == '__main__':
 
     # get arguments from sbatch
     task_id = int(os.getenv('SLURM_ARRAY_TASK_ID')[1:])
+    modality = sys.argv[1]  # The modality of the data (e.g., actin_intensity, motility)
+    n_tasks = int(sys.argv[2])  # The number of tasks
+    vid_info = consts.vid_info_dict[sys.argv[3]]  # Video information dictionary
 
-    modality = sys.argv[1]
-    n_tasks = int(sys.argv[2])
-    vid_info = consts.vid_info_dict[sys.argv[3]]
-
-    # feature type is the name of the feature that we change
+    # The feature type is the name of the feature that will be changed
     feature_type = sys.argv[4]
 
+    # Define base directory path and video path based on modality and video information
     base_dir_path = consts.storage_path + f"data/mastodon/ts_transformed/{modality}/{consts.IMPUTE_METHOD}_{consts.IMPUTE_FUNC}/{vid_info['name']} "
     vid_path = vid_info["actin_path"] if modality == "actin_intensity" else vid_info["nuc_path"]
 
@@ -31,16 +31,17 @@ if __name__ == '__main__':
     save_data_path = f"/{vid_info['name']}_reg={consts.REG_METHOD},local_den=False" + \
                      (f"win size {consts.WIN_SIZE}" if modality != "motility" else "")
 
+    # Load tracks data from CSV file
     print("\n===== load data =====")
     tracks_csv_path = consts.data_csv_path % (consts.REG_METHOD, vid_info['name'])
     tracks_df, _ = get_tracks(tracks_csv_path, tagged_only=True)
 
-    # if this is the original model - not sensitivity analysis
+    # If this is the original model - not sensitivity analysis
     if feature_type is None:
         save_data_dir_path = base_dir_path
         os.makedirs(save_data_dir_path, exist_ok=True)
 
-        # build model by original feature
+        # Build model using the original feature
         prepare_data_in_parallel_chunks(tracks_df=tracks_df, vid_path=vid_path, modality=modality,
                                         target=vid_info["target"], n_tasks=n_tasks,
                                         job_id=task_id, win_size=consts.WIN_SIZE,
@@ -48,7 +49,7 @@ if __name__ == '__main__':
                                         save_data_dir_path=save_data_dir_path,
                                         save_data_path=save_data_dir_path + save_data_path)
 
-    # build model by sensitive analysis on crop window size feature
+    # Build model by sensitivity analysis on crop window size feature
     elif feature_type == "window_size_arr":
         save_data_dir_path = base_dir_path + f"/{feature_type}/"
         for win_size in params.feature_calc_types[feature_type]:
@@ -61,7 +62,7 @@ if __name__ == '__main__':
                                             save_data_path=save_data_dir_path + save_data_path)
             print(f"finish preprocess_data with window size: {win_size}")
 
-    # build model by sensitive analysis on temporal_segment feature
+    # Build model by sensitivity analysis on temporal_segment feature
     elif feature_type == "temporal_segment_arr":
         # array of arrays that each array is one of temporal segment array, differentiation_window array and control
         # window array
@@ -84,7 +85,7 @@ if __name__ == '__main__':
                                             save_data_path=save_data_dir_path + save_data_path)
             print(f"finish preprocess_data with temporal segment size: {temporal_segment}")
 
-    # build model by sensitive analysis on diff_win feature
+    # Build model by sensitivity analysis on diff_win feature
     elif feature_type == "diff_window_arr":
         for diff_win in params.feature_calc_types[feature_type]:
             save_data_dir_path = base_dir_path + f"/{feature_type}/{diff_win}"
