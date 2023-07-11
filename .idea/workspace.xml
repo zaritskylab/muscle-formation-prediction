@@ -22,23 +22,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="updated gitignore">
-      <change afterPath="$PROJECT_DIR$/analysis/notebooks/figure_s10.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/analysis/notebooks/figure_s7.ipynb" afterDir="false" />
+    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="Added analysis for figures s7, s10. Added documentation to all functions">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/calc_diff_score.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_diff_score.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/figure_1_mean_actin_speed.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/figure_1.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/figure_2.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/figure_2.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/figure_3.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/figure_3.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/notebooks/sup_figure_binary_clf.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/notebooks/sup_figure_binary_clf.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configuration/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/consts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_layer/tsfresh_transformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/tsfresh_transformer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_layer/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_layer/video_registrator.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_layer/video_registrator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_layer/build_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_layer/build_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_layer/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_layer/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -513,14 +499,8 @@
       <workItem from="1685944297688" duration="12872000" />
       <workItem from="1685958541612" duration="18804000" />
       <workItem from="1686025019150" duration="38374000" />
-      <workItem from="1686198552025" duration="12163000" />
-    </task>
-    <task id="LOCAL-00009" summary="time series classification- added validations to tsfresh's pipeline, such as tracks_length_analysis.py, and LeaveOneOutTraining.py">
-      <created>1624436427608</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1624436427608</updated>
+      <workItem from="1686198552025" duration="13509000" />
+      <workItem from="1689081286864" duration="2761000" />
     </task>
     <task id="LOCAL-00010" summary="time series classification- added validations to tsfresh's pipeline, such as tracks_length_analysis.py, and LeaveOneOutTraining.py">
       <created>1628414993099</created>
@@ -858,7 +838,14 @@
       <option name="project" value="LOCAL" />
       <updated>1686128881250</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="Added analysis for figures s7, s10. Added documentation to all functions">
+      <created>1686215922885</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1686215922885</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -898,17 +885,18 @@
     <MESSAGE value="Added analysis notebooks, change variables, modules &amp; function names" />
     <MESSAGE value="added notebooks for: fig 5, fig S1, fig S3, fig S12" />
     <MESSAGE value="updated gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated gitignore" />
+    <MESSAGE value="Added analysis for figures s7, s10. Added documentation to all functions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added analysis for figures s7, s10. Added documentation to all functions" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="393" y="181" key="#Deployment" timestamp="1683609937968">
+    <state x="393" y="181" key="#Deployment" timestamp="1689081339540">
       <screen x="0" y="0" width="1680" height="1002" />
     </state>
-    <state x="393" y="181" key="#Deployment/0.0.1680.1002@0.0.1680.1002" timestamp="1683609937968" />
-    <state x="416" y="146" key="#SSH_Configurations" timestamp="1683609921714">
+    <state x="393" y="181" key="#Deployment/0.0.1680.1002@0.0.1680.1002" timestamp="1689081339540" />
+    <state x="416" y="146" key="#SSH_Configurations" timestamp="1689081338022">
       <screen x="0" y="0" width="1680" height="1002" />
     </state>
-    <state x="416" y="146" key="#SSH_Configurations/0.0.1680.1002@0.0.1680.1002" timestamp="1683609921714" />
+    <state x="416" y="146" key="#SSH_Configurations/0.0.1680.1002@0.0.1680.1002" timestamp="1689081338022" />
     <state x="555" y="303" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1683698838962">
       <screen x="0" y="0" width="1680" height="1002" />
     </state>
@@ -917,29 +905,25 @@
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="2490" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1684234493408" />
-    <state x="2301" y="234" key="MultipleFileMergeDialog" timestamp="1679986943364">
-      <screen x="1920" y="23" width="1680" height="1002" />
-    </state>
-    <state x="2301" y="234" key="MultipleFileMergeDialog/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1679986943364" />
     <state x="2261" y="169" key="SettingsEditor" timestamp="1685949978657">
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="2261" y="169" key="SettingsEditor/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685949978657" />
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1686128882511">
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1686215924460">
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686128882511" />
+    <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686215924460" />
     <state x="432" y="221" key="Vcs.Push.Dialog.v2/0.0.1680.1002@0.0.1680.1002" timestamp="1684906594358" />
     <state x="710" y="393" key="publish.login" timestamp="1683740580290">
       <screen x="0" y="0" width="1680" height="1002" />
     </state>
     <state x="710" y="393" key="publish.login/0.0.1680.1002@0.0.1680.1002" timestamp="1683740580290" />
-    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup" timestamp="1686201317347">
-      <screen x="1920" y="23" width="1680" height="1002" />
+    <state x="503" y="215" width="672" height="678" key="search.everywhere.popup" timestamp="1689083093635">
+      <screen x="0" y="0" width="1680" height="1002" />
     </state>
     <state x="383" y="144" width="672" height="455" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@0.0.1280.672" timestamp="1685852395790" />
-    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686201317347" />
-    <state x="503" y="215" width="672" height="678" key="search.everywhere.popup/0.0.1680.1002@0.0.1680.1002" timestamp="1685523093303" />
+    <state x="2423" y="238" width="672" height="678" key="search.everywhere.popup/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686223322448" />
+    <state x="503" y="215" width="672" height="678" key="search.everywhere.popup/0.0.1680.1002@0.0.1680.1002" timestamp="1689083093635" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -966,7 +950,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/analysis/calc_single_cell_properties.py</url>
-          <line>372</line>
+          <line>377</line>
           <option name="timeStamp" value="1706" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

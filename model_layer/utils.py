@@ -130,7 +130,6 @@ def calc_state_trajectory(transformed_tracks_df, clf, n_frames=260):
 
             diff_score_df = pd.DataFrame(diff_score, index=[0])
             df_score = pd.concat([df_score, diff_score_df], ignore_index=True, sort=False)
-            # df_score = df_score.append(diff_score, ignore_index=True, sort=False)
         except Exception as e:
             print(e)
             print(track[track["Spot frame"] == t].drop(["Spot track ID", "Spot frame"], axis=1).size)
@@ -159,7 +158,6 @@ def concat_dfs(diff_df, con_df, diff_t_window=None, con_t_windows=None):
 
     max_val = 0
     diff_start, diff_end = diff_t_window
-    window_size = diff_end - diff_start
 
     # Erk video
     # Cut the needed time window
