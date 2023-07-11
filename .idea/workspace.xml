@@ -22,9 +22,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="Added analysis for figures s7, s10. Added documentation to all functions">
+    <list default="true" id="cd20b634-a1eb-421e-9b0a-e5033b59521b" name="Default Changelist" comment="compute  % of cells with p-value smaller then pval_thresh">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/calc_single_cell_properties.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -500,14 +500,7 @@
       <workItem from="1685958541612" duration="18804000" />
       <workItem from="1686025019150" duration="38374000" />
       <workItem from="1686198552025" duration="13509000" />
-      <workItem from="1689081286864" duration="2761000" />
-    </task>
-    <task id="LOCAL-00010" summary="time series classification- added validations to tsfresh's pipeline, such as tracks_length_analysis.py, and LeaveOneOutTraining.py">
-      <created>1628414993099</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1628414993099</updated>
+      <workItem from="1689081286864" duration="3706000" />
     </task>
     <task id="LOCAL-00011" summary="PIV">
       <created>1629033221220</created>
@@ -845,7 +838,14 @@
       <option name="project" value="LOCAL" />
       <updated>1686215922885</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="compute  % of cells with p-value smaller then pval_thresh">
+      <created>1689085257948</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1689085257948</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -886,7 +886,8 @@
     <MESSAGE value="added notebooks for: fig 5, fig S1, fig S3, fig S12" />
     <MESSAGE value="updated gitignore" />
     <MESSAGE value="Added analysis for figures s7, s10. Added documentation to all functions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added analysis for figures s7, s10. Added documentation to all functions" />
+    <MESSAGE value="compute  % of cells with p-value smaller then pval_thresh" />
+    <option name="LAST_COMMIT_MESSAGE" value="compute  % of cells with p-value smaller then pval_thresh" />
   </component>
   <component name="WindowStateProjectService">
     <state x="393" y="181" key="#Deployment" timestamp="1689081339540">
@@ -909,11 +910,11 @@
       <screen x="1920" y="23" width="1680" height="1002" />
     </state>
     <state x="2261" y="169" key="SettingsEditor/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1685949978657" />
-    <state x="2352" y="244" key="Vcs.Push.Dialog.v2" timestamp="1686215924460">
-      <screen x="1920" y="23" width="1680" height="1002" />
+    <state x="432" y="221" key="Vcs.Push.Dialog.v2" timestamp="1689085259690">
+      <screen x="0" y="0" width="1680" height="1002" />
     </state>
     <state x="2352" y="244" key="Vcs.Push.Dialog.v2/0.0.1280.672/1920.23.1680.1002@1920.23.1680.1002" timestamp="1686215924460" />
-    <state x="432" y="221" key="Vcs.Push.Dialog.v2/0.0.1680.1002@0.0.1680.1002" timestamp="1684906594358" />
+    <state x="432" y="221" key="Vcs.Push.Dialog.v2/0.0.1680.1002@0.0.1680.1002" timestamp="1689085259690" />
     <state x="710" y="393" key="publish.login" timestamp="1683740580290">
       <screen x="0" y="0" width="1680" height="1002" />
     </state>

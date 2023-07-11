@@ -8,6 +8,7 @@ import seaborn as sns
 import pandas as pd
 
 from analysis.calc_auc_over_time import auc_over_time, plot_auc_over_time
+from analysis.calc_single_cell_properties import get_monotonicity
 from data_layer.utils import load_tsfresh_transformed_df, convert_score_df
 from configuration import consts
 
@@ -337,3 +338,42 @@ def plot_violin_spearman_corr(data_list, modalities, color, corr_metric, ylim=(-
     fig_name = f"single cell correlation time & score cls" if fig_name is None else fig_name
     plt.savefig(consts.storage_path + f"eps_figs/" + fig_name + f" compare metric={corr_metric}.eps", format="eps")
     plt.show()
+
+
+def plot_monotonicity_dist(df, vid_name, time, rolling_w, modality, color, pval_thresh):
+    """
+    Calculates monotonicity rates for single cells and plots the distribution
+    :pararm df: (pd.DataFrame) single cell's track dataframe, with differntiation scores by motility & actin intensity models
+    :pararm vid_name: (Str) name of video the data eas extracted from.
+    :pararm time: (tuple) time range to calculate correlationin (start_time, end_time).
+    :pararm rolling_w: (int) size of window for rolling average smoothing.
+    :pararm modality: (Str) "motility"/"intensity".
+    """
+    sns.set_style("white")
+    mono_values = []
+    mono_p_values = []
+    for track_id, track_df in df.groupby("Spot track ID"):
+        if len(track_df) > rolling_w:
+            mono = get_monotonicity(track_df, modality, time, rolling_w, return_p_val=False)[
+                f"monotonicity_{modality}"].values[0]
+            mono_p_val = get_monotonicity(track_df, modality, time, rolling_w, return_p_val=True)[
+                f"monotonicity_{modality}"].values[0]
+            mono_values.append(mono)
+            mono_p_values.append(mono_p_val)
+
+    mean = round(np.nanmean(mono_values), 3)
+    median = round(np.nanmedian(mono_values), 3)
+
+    sns.histplot(mono_values, stat="percent", bins=10, color=color)
+    plt.axvline(median, linestyle='dashed', color="black")
+    plt.savefig(consts.storage_path + f"eps_figs/monotonicity distribution vid {vid_name} {modality}.eps", format="eps")
+    plt.show()
+
+    print(modality, "mean", mean, "median", median)
+    print("Number of cells in this analysis: ", len(mono_values))
+
+    # print the % of cells with p-value smaller then pval_thresh
+    num_pval_lower_then_thresh = sum(x < pval_thresh for x in np.array(mono_p_values))
+
+    print(
+        f"% of cells with p-value smaller then pval_thresh: {round((num_pval_lower_then_thresh / len(mono_p_values)) * 100, 3)}")
