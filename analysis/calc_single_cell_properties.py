@@ -4,6 +4,8 @@ speed, mean actin intensity, persistence, local density, monotonicity, and termi
 properties are computed using the provided data frames and video information. """
 
 import sys, os
+
+from scipy.stats import spearmanr
 from skimage import io
 import pymannkendall as mk
 
@@ -220,30 +222,33 @@ def get_properties(scores_df, vid_name, actin_vid_path, exist_ok=True):
     return scores_df
 
 
-def get_monotonicity_value(track_df, modality, time, rolling_w=1):
+def get_monotonicity_value(track_df, modality, time, rolling_w=1, return_p_val=False):
     """
     Calculates monotonicity, as defined by the Spearman correlation between differentiation score and time
-    :param track_df: (pd.DataFrame) single cell's track dataframe, with differntiation scores by motility & actin intensity models
+    :param return_p_val: if True, return the p-value instead of the coefficients.
+    :param track_df: (pd.DataFrame) single cell's track dataframe, with differentiation scores by motility & actin intensity models
     :param modality: (Str) "motility"/"intensity".
-    :param time: (tuple) time range to calculate correlationin (start_time, end_time).
+    :param time: (tuple) time range to calculate correlation in (start_time, end_time).
     :param rolling_w: (int) size of window for rolling average smoothing.
     :return: (float) correlation coefficient.
     """
     track_df = track_df[(track_df["time"] >= time[0]) & (track_df["time"] <= time[1])]
     track_df = track_df.astype('float64')
 
+    val = 1 if return_p_val else 0
     corr = track_df.groupby('Spot track ID').apply(lambda df: df[f"score_{modality}"].rolling(rolling_w).mean()
-                                                   .corr(df["time"].rolling(rolling_w).mean(), method="spearman"))
+                                                   .corr(df["time"].rolling(rolling_w).mean(),
+                                                         method=lambda x, y: spearmanr(x, y)[val]))
     corr = np.array(corr)
     corr = corr[0] if len(corr) > 0 else np.nan
 
     return round(corr, 4)
 
 
-def get_monotonicity(scores_df, modality, time, rolling_w=1):
+def get_monotonicity(scores_df, modality, time, rolling_w=1, return_p_val=False):
     """
        Calculates and adds the monotonicity values to the scores DataFrame for the specified modality.
-
+        :param return_p_val: if True, return the p-value instead of the coefficients.
        :param scores_df: (pandas.DataFrame) DataFrame containing scores data.
        :param modality: (str) Modality for which monotonicity values are calculated,
        Choose from "motility" or "intensity".
@@ -253,7 +258,7 @@ def get_monotonicity(scores_df, modality, time, rolling_w=1):
        """
 
     def calc_monotonicity_value(track, modality, time, rolling_w):
-        monotonicity = get_monotonicity_value(track, modality, time, rolling_w)
+        monotonicity = get_monotonicity_value(track, modality, time, rolling_w, return_p_val)
         return monotonicity
 
     monotonicity_lst = scores_df.groupby(['Spot track ID']).apply(
