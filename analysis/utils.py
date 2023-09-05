@@ -252,7 +252,6 @@ def evaluate_model(clf, x_test, y_test, modality, con_test_n, diff_test_n, plot_
         cols = list(clf.feature_names_in_) + ["Spot track ID", "Spot frame"]
         df_con = load_tsfresh_transformed_df(modality, con_test_n, cols)
         df_diff = load_tsfresh_transformed_df(modality, diff_test_n, cols)
-
         aucs = auc_over_time(df_con[cols], df_diff[cols], clf)
         plot_auc_over_time([(aucs, modality)],
                            path=consts.storage_path + f"eps_figs/auc_over_time s{con_test_n}, s{diff_test_n} {modality}.eps")
@@ -340,6 +339,23 @@ def plot_violin_spearman_corr(data_list, modalities, color, corr_metric, ylim=(-
     plt.show()
 
 
+def remove_speed_outlaiers(scores_df, speed_threshold):
+    # cells with missing timepont in the track (causes a bias in speed)
+    miss_step_tracks = set()
+    for track_id, track in scores_df.groupby(['Spot track ID']):
+        if track["Spot frame"].diff().max() > 1:
+            miss_step_tracks.add(track_id)
+
+    # cells with speed higher then 20
+    speed_outliars = set(scores_df[scores_df["speed"] >= speed_threshold]['Spot track ID'].unique())
+
+    # remove bad tracks for calculation
+    track_ids = set(scores_df['Spot track ID'].unique()) - speed_outliars - miss_step_tracks
+
+    fraction = round((len(speed_outliars) + len(miss_step_tracks)) / scores_df['Spot track ID'].nunique(), 3)
+
+    return track_ids
+
 def plot_monotonicity_dist(df, vid_name, time, rolling_w, modality, color, pval_thresh):
     """
     Calculates monotonicity rates for single cells and plots the distribution
@@ -366,6 +382,7 @@ def plot_monotonicity_dist(df, vid_name, time, rolling_w, modality, color, pval_
 
     sns.histplot(mono_values, stat="percent", bins=10, color=color)
     plt.axvline(median, linestyle='dashed', color="black")
+    plt.yticks(np.arange(0, 45, 15))
     plt.savefig(consts.storage_path + f"eps_figs/monotonicity distribution vid {vid_name} {modality}.eps", format="eps")
     plt.show()
 
@@ -374,6 +391,7 @@ def plot_monotonicity_dist(df, vid_name, time, rolling_w, modality, color, pval_
 
     # print the % of cells with p-value smaller then pval_thresh
     num_pval_lower_then_thresh = sum(x < pval_thresh for x in np.array(mono_p_values))
+
 
     print(
         f"% of cells with p-value smaller then pval_thresh: {round((num_pval_lower_then_thresh / len(mono_p_values)) * 100, 3)}")
