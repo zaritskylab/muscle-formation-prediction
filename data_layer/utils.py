@@ -205,15 +205,16 @@ def load_tsfresh_transformed_df(modality, vid_num, cols=None, path=None):
         :param cols: (list or None) Optional list of column names to select from the dataframe.
         :return: (pd.DataFrame) The loaded tsfresh transformed dataframe.
     """
-
     modalities = ["motility", "actin_intensity"] if modality == "combined" else [modality]
     df = pd.DataFrame(columns=["Spot track ID", "Spot frame"])
     for modal in modalities:
         path = consts.transformed_data_path % (modal, vid_num) if path is None else path
         df_s = pickle.load(open(path, 'rb'))
+        # print(df_s.columns)
         if cols is not None:
             df_s = df_s[set(cols).intersection(set(df_s.columns))]
         df = df.merge(df_s, on=["Spot track ID", "Spot frame"], how="right")
+        path = None
     return df
 
 
